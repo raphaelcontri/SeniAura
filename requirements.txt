@@ -7,3 +7,5 @@ gunicorn
 openpyxl
 statsmodels
 scipy
+scikit-learn
+numpy
