@@ -1,0 +1,34 @@
+
+# Persistence Callbacks
+@callback(
+    [Output('shared-epci', 'data'),
+     Output('shared-vars-social', 'data'),
+     Output('shared-vars-offre', 'data'),
+     Output('shared-vars-env', 'data')],
+    [Input('map-epci-search', 'value'),
+     Input('map-filter-social', 'value'),
+     Input('map-filter-offre', 'value'),
+     Input('map-filter-env', 'value')]
+)
+def update_store_from_map(epci, social, offre, env):
+    # This might loop if not careful. 
+    # Store -> Input (Page Load) -> Callback -> Output Store -> Loop?
+    # Dash handles circular dependencies if they are in different callbacks or structured well.
+    # To sync:
+    # 1. Update LOCAL dropdowns from STORE (on page load/store change)
+    # 2. Update STORE from LOCAL dropdowns (on user interaction)
+    # This requires 2 callbacks.
+    return epci, social, offre, env
+
+@callback(
+    [Output('map-epci-search', 'value'),
+     Output('map-filter-social', 'value'),
+     Output('map-filter-offre', 'value'),
+     Output('map-filter-env', 'value')],
+    [Input('shared-epci', 'data'),
+     Input('shared-vars-social', 'data'),
+     Input('shared-vars-offre', 'data'),
+     Input('shared-vars-env', 'data')]
+)
+def update_map_from_store(epci, social, offre, env):
+    return epci, social, offre, env

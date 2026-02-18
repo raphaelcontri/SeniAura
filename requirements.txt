@@ -1,0 +1,9 @@
+dash
+pandas
+plotly
+geopandas
+fiona
+gunicorn
+openpyxl
+statsmodels
+scipy

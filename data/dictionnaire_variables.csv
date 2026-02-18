@@ -1,0 +1,118 @@
+Variable,Source,Catégorie,Description,Link,Sens,Nom_Court
+CODE_EPCI,,autre,Code SIREN de l'EPCI,,0,Code SIREN de l'EPCI
+LIBEPCI,,autre,Libellé de l'EPCI,,0,Libellé de l'EPCI
+nom_EPCI,,autre,Nom de l'EPCI,,0,Nom de l'EPCI
+Nb_Communes,,autre,Nombre de communes par ECPI,,0,Nombre de communes par ECPI
+NATURE_EPCI,,autre,"CC = Comunauté de communes, CA = Communauté d'agglomération",,0,NATURE_EPCI
+Département,,autre,Département,,0,Département
+Département_code,,autre,Code du département,,0,Code du département
+INCI_AVC,Odissé (Santé Publique France),Santé,incidence pour 100.000 habitants : moyenne 2021/2023 accidents vasculaires cérébraux,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Incidence AVC
+INCI_CardIsch,Odissé (Santé Publique France),Santé,incidence pour 100.000 habitants : moyenne 2021/2023 cardiopathies ischémiques,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Incidence Cardio Isch.
+INCI_InsuCard,Odissé (Santé Publique France),Santé,incidence pour 100.000 habitants : moyenne 2021/2023 insuffisance cardiaque,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Incidence Insu. Card.
+MORT_AVC,Odissé (Santé Publique France),Santé,mortalité pour 100.000 habitants : moyenne 2020/2022 accidents vasculaires cérébraux,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Mortalité AVC
+MORT_CardIsch,Odissé (Santé Publique France),Santé,mortalité pour 100.000 habitants : moyenne 2020/2022 cardiopathies ischémiques,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Mortalité Cardio Isch.
+MORT_InsuCard,Odissé (Santé Publique France),Santé,mortalité pour 100.000 habitants : moyenne 2020/2022 insuffisance cardiaque,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Mortalité Insu. Card.
+PREV_AVC,Odissé (Santé Publique France),Santé,prévalence % de la population adulte : année 2022 accidents vasculaires cérébraux,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Prévalence AVC
+PREV_CardIsch,Odissé (Santé Publique France),Santé,prévalence % de la population adulte : année 2022 cardiopathies ischémiques ,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Prévalence Cardio Isch.
+PREV_InsuCard,Odissé (Santé Publique France),Santé,prévalence % de la population adulte : année 2022 insuffisance cardiaque,https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-region/information/?disjunctive.patho&disjunctive.type_indic&disjunctive.reglib,-1,Prévalence Insu. Card.
+AIR01,Balises,Environnement,"Exposition moyenne de la population à des particules fines PM2,5 (en μg/m3)",,-1,AIR01
+AIR02,Balises,Environnement,"Part de la population exposée à des niveaux de PM2,5 supérieurs à 10 μg/m3",,-1,Pop. Exposée PM2.5
+AIR03,Balises,Environnement,Evolution de l'exposition moyenne de la population aux PM2.5 entre 2018 et 2023 (en μg/m3),,-1,exposition PM2.5
+AIR04,Balises,Environnement,Taux d'évolution de l'exposition moyenne de la population aux PM2.5 entre 2018 et 2023,,-1,AIR04
+AIR05,Balises,Environnement,Exposition moyenne de la population au NO2 (en μg/m3),,-1,AIR05
+AIR06,Balises,Environnement,Part de la population exposée à des niveaux de NO2 supérieurs à 10 μg/m3,,-1,Pop. Exposée NO2
+AIR07,Balises,Environnement,Evolution de l'exposition moyenne de la population au NO2 entre 2018 et 2023 (en μg/m3),,-1,AIR07
+AIR08,Balises,Environnement,Taux d'évolution de l'exposition moyenne de la population au NO2 entre 2018 et 2023,,-1,AIR08
+AIR09,Balises,Environnement,"Nombre de décès attribuables aux PM2,5",,-1,Mortalité Pollution
+AIR10,Balises,Environnement,"Part de décès attribuables aux PM2,5",,-1,Mortalité Pollution
+AIR11,Balises,Environnement,Nombre de décès attribuables au NO2,,-1,Mortalité Pollution
+AIR12,Balises,Environnement,Part de décès attribuables au NO2,,-1,Mortalité Pollution
+BRUIT01,Balises,Environnement,Part de la surface soumise à un niveau de bruit inférieur ou égal à 60 Lden,,-1,BRUIT01
+BRUIT02,Balises,Environnement,Nombre d'habitants exposés à un niveau de bruit supérieur à 70 Lden,,-1,BRUIT02
+BRUIT03,Balises,Environnement,Part de la population exposée à un niveau de bruit supérieur à 70 Lden,,-1,BRUIT03
+BRUIT04,Balises,Environnement,Nombre de mois de vie en bonne santé perdus imputables aux bruits des transports,,-1,BRUIT04
+AIR_BRUIT01,Balises,Environnement,Nombre d'habitants vivant dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.,,-1,AIR_BRUIT01
+AIR_BRUIT02,Balises,Environnement,Part de la population vivant dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.,,-1,AIR_BRUIT02
+AIR_BRUIT03,Balises,Environnement,Nombre d'établissements recevant du public vulnérable (ERPV) situés dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore,,-1,AIR_BRUIT03
+AIR_BRUIT04,Balises,Environnement,Part des établissements recevant du public vulnérable (ERPV) situés dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.,,-1,AIR_BRUIT04
+POLLEN01,Balises,Environnement,Nombre d'habitants potentiellement allergiques à l'ambroisie,,-1,POLLEN01
+POLLEN02,Balises,Environnement,Part d'habitants potentiellement allergique à l'ambroisie,,-1,POLLEN02
+EAU01,Balises,Environnement,Nombre d'habitants alimentés par de l'eau de bonne qualité bactériologique,,1,EAU01
+EAU02,Balises,Environnement,Part de la population alimentée par de l'eau de bonne qualité bactériologique,,1,EAU02
+EAU03,Balises,Environnement,Nombre d'habitants alimentés par de l'eau respectant en permanence les limites de qualité pour les pesticides,,1,EAU03
+EAU04,Balises,Environnement,Part de la population alimentée par de l'eau respectant en permanence les limites de qualité pour les pesticides,,1,EAU04
+EAU05,Balises,Environnement,Nombre d'habitants alimentés par de l'eau respectant en permanence les limites de qualité pour les nitrates,,1,EAU05
+EAU06,Balises,Environnement,Part de la population alimentée par de l'eau respectant en permanence les limites de qualité pour les nitrates,,1,EAU06
+SOLS01,Balises,Environnement,Nombre d'anciens sites industriels et activités de service (BASIAS),,-1,SOLS01
+SOLS02,Balises,Environnement,Nombre de sites et sols pollués (ou potentiellement pollués) appelant une action des pouvoirs publics,,-1,SOLS02
+INDUSTRIE01,Balises,Environnement,Part d'habitants résidant à moins d'1 km d'une activité industrielle soumise à la directive IED ,,-1,INDUSTRIE01
+LOGEMENT01,Balises,Socioéco,Nombre d'établissements recevant des populations vulnérables (ERPV),,-1,LOGEMENT01
+LOGEMENT02,Balises,Socioéco,Nombre de résidences principales potentiellement indignes (PPPI),,-1,LOGEMENT02
+LOGEMENT03,Balises,Socioéco,Nombre de résidences principales suroccupées,,-1,LOGEMENT03
+LOGEMENT04,Balises,Socioéco,Part des résidences principales suroccupées,,-1,LOGEMENT04
+LOGEMENT05,Balises,Socioéco,Nombre de ménages en situation de précarité énergétique logement par niveau de vie,,-1,LOGEMENT05
+LOGEMENT06,Balises,Socioéco,Part des ménages en situation de précarité énergétique logement par niveau de vie,,-1,LOGEMENT06
+AGRI01,Balises,Environnement,Part de la Surface Agricole Utile en bio (SAU),sec.stat = secret statistique,1,AGRI01
+ADT01,Balises,Environnement,Pourcentage de surface arborée.,,1,ADT01
+ADT02,Balises,Environnement,Part de la population ayant accès à un espace arboré de plus de 5 000  m² à moins de 300 m de leur habitation.,,1,ADT02
+ADT03,Balises,Socioéco,Nombre d'équipements sportifs.,,1,ADT03
+ADT04,Balises,Socioéco,Nombre d'équipements sportifs pour 10 000 habitants.,,1,ADT04
+ADT05,Balises,Socioéco,Nombre d'installations sportives.,,1,ADT05
+ADT06,Balises,Socioéco,Nombre d'installations sportives pour 10 000 habitants.,,1,ADT06
+MOB01,Balises,Autre,Part des déplacements domicile/travail effectués avec un véhicule individuel motorisé.,,0,MOB01
+MOB02,Balises,Autre,Part des déplacements domicile/travail effectués en marchant.,,0,MOB02
+MOB03,Balises,Autre,Part des déplacements domicile/travail effectués en utilisant les transports en commun.,,0,MOB03
+MOB04,Balises,Autre,Part des déplacements domicile/travail effectués à vélo.,,0,MOB04
+Indice_Precarite,Caisse des dépots,Autre,Variable non documentée spécifiquement,,0,Précarité (Score)
+MED_SL,INSEE,Socioéco,Médiane du niveau de vie ,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC,1,Niveau de Vie Médian
+IR_D9_D1_SL,INSEE,Socioéco,Rapport interdécile (D9/D1) du niveau de vie,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC,-1,Inégalités (D9/D1)
+PR_MD_60,INSEE,Socioéco,Taux de pauvreté au seuil de 60% du smic,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC,-1,Tx Pauvreté (60%)
+PCS_1,INSEE,Socioéco,1 : Agriculteurs,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Agriculteurs
+PCS_2,INSEE,Socioéco,"2 : Artisans, commerçants et chefs d’entreprise",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Artisans/Comm.
+PCS_3,INSEE,Socioéco,3 : Cadres et professions intellectuelles supérieures,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,1,PCS Cadres
+PCS_4,INSEE,Socioéco,4 : Professions intermédiaires,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,1,PCS Prof. Interm.
+PCS_5,INSEE,Socioéco,5 : Employés,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Employés
+PCS_6,INSEE,Socioéco,6 : Ouvriers,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,Ouvriers
+PCS_T,INSEE,Socioéco,_T : Total,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,TOTAL Actifs
+DIPLOME_001T100_RP,INSEE,Socioéco,001T100_RP : Aucun diplôme ou certificat d'études primaires,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Sans Diplôme
+DIPLOME_300_RP,INSEE,Socioéco,"200_RP : BEPC, brevet élémentaire, brevet des collèges, DNB",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Brevet/Collège
+DIPLOME_500_RP,INSEE,Socioéco,"300_RP : CAP, BEP ou diplôme de niveau équivalent",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,CAP/BEP
+DIPLOME_600_RP,INSEE,Socioéco,"350T351_RP : Baccalauréat, brevet professionnel ou équivalent",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,diplôme Bac
+DIPLOME_350T351_RP,INSEE,Socioéco,"500_RP : Enseignement supérieur de cycle court : BTS, DUT, Deug, Deust, diplôme de la santé ou du social de niveau bac+2, diplôme",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Supérieur Court (Bac+2)
+DIPLOME_700_RP,INSEE,Socioéco,"600_RP : Baccalauréat universitaire ou équivalent : Licence, licence pro, maîtrise, diplôme équivalent de niveau bac+3 ou bac+4",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,1,Licence (Bac+3/4)
+DIPLOME__T,INSEE,Socioéco,700_RP : Diplôme de niveau bac + 5 ou plus,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,1,Master et + (Bac+5)
+Part de personnes isolées_General_Avg,INSEE,Socioéco,Part de personnes isolées_General_Avg,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_MENAGES_PRINC,-1,Part de personnes isolées
+Taux de chomeurs_2022,INSEE,Socioéco,Taux de chomeurs_2022,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Taux Chômage
+FDep_2021,,Socioéco,FDEP en 2021,,-1,Indice défavorisation (FDep)
+Population_Totale,INSEE,autre,Population totale ,,0,Population totale 
+Degré de densité (3 postes),INSEE,autre,Dégrès de densité où la population est la plus importante.,,0,Degré de densité (3 postes)
+Libellé degré de densité (3 postes),INSEE,autre,Intitulé du degrès de densité où la population est la plus importante.,,0,Libellé degré de densité (3 postes)
+Part population dans niveau 1,INSEE,autre,Part de la population vivant dans des zones urbaines denses.,,0,Part population dans niveau 1
+Part population dans niveau 2,INSEE,autre,Part de la population vivant dans des zones urbaines intermédiaires.,,0,Part population dans niveau 2
+Part population dans niveau 3,INSEE,autre,Part de la population vivant dans des zones rurales.,,0,Part population dans niveau 3
+Pop_standardisee 2020,DRESS,autre,standardisé en fonction de l'âge voir détail dans pdf sur les APL dans littérature,,0,Pop_standardisee 2020
+POP_2016,INSEE,autre,,,0,nan
+POP_2019,INSEE,autre,,,0,nan
+POP_2021,INSEE,autre,,,0,nan
+POP_2022,INSEE,autre,,,0,nan
+Officines_2024,Balises,Offre de soins,"Effectif d'officines (lieu où le pharmacien vend, entrepose ses médicaments) en 2024",,1,Officines_2024
+Officines_2025,Balises,Offre de soins,Effectif d'officines en 2025,,1,Effectif d'officines en 2025
+Centres_Sante_2024,Balises,Offre de soins,Effectif de centres de santé en 2024,,1,Centres_Sante_2024
+Centres_Sante_2025,Balises,Offre de soins,Effectif de centres de santé en 2025,,1,Centres_Sante_2025
+Maisons_Sante_2024,Balises,Offre de soins,Effectif de maisons de santé en 2024,,1,Maisons_Sante_2024
+Maisons_Sante_2025,Balises,Offre de soins,Effectif de maisons de santé en 2025,,1,Maisons_Sante_2025
+Pharmaciens_2021,Balises,Offre de soins,Effectif de pharmaciens en 2021,,1,Pharmaciens (2021)
+Pharmaciens_2022,Balises,Offre de soins,Effectif de pharmaciens en 2022,,1,Pharmaciens (2022)
+Pharmaciens_2023,Balises,Offre de soins,Effectif de pharmaciens en 2023,,1,Pharmaciens (2023)
+Pharmaciens_2024,Balises,Offre de soins,Effectif de pharmaciens en 2024,,1,Pharmaciens (2024)
+Pharmaciens_2025,Balises,Offre de soins,Effectif de pharmaciens en 2025,,1,Pharmaciens (2025)
+APL-sages_femmes_2022,DRESS,Offre de soins,APL sages-femmes en 2022,,1,APL Sages-Femmes (2022)
+APL-sages_femmes_2023,DRESS,Offre de soins,APL sages-femmes en 2023,,1,APL Sages-Femmes (2023)
+APL-kine_2022,DRESS,Offre de soins,APL kinésithérapeutes en 2022,,1,APL Kinés (2022)
+APL-kine_2023,DRESS,Offre de soins,APL kinésithérapeutes en 2023,,1,APL Kinés (2023)
+APl-infirmieres_2022,DRESS,Autre,APL infirmiers en 2022,,0,APL Infirmiers (2022)
+APL-infirmieres_2023,DRESS,Offre de soins,APL infirmières en 2023,,1,APL Infirmiers (2023)
+APL-chir_dent_2022,DRESS,Offre de soins,APL chirurgiens-dentistes en 2022,,1,APL Dentistes (2022)
+APL-chir_dent_2023,DRESS,Offre de soins,APL chirurgiens-dentistes en 2023,,1,APL Dentistes (2023)
+APL-med_general_2023,DRESS,Offre de soins,APL médecins généralistes en 2023,,1,APL Généralistes (2023)
+APL-med_general_2022,DRESS,Offre de soins,APL médecins généralistes en 2022,,1,APL Généralistes (2022)
