@@ -1,0 +1,443 @@
+/* Global Styles */
+body {
+    background-color: #f4f6f9;
+    color: #2c3e50;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+}
+
+/* Flex Container for Sidebar + Content */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 280px;
+    background-color: #2c3e50;
+    /* Dark blue sidebar */
+    color: #ecf0f1;
+    padding: 20px;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Fix dropdown text contrast inside sidebar */
+.sidebar .Select-value-label,
+.sidebar .Select-option,
+.sidebar .Select-placeholder,
+.sidebar .Select-input input,
+.sidebar .Select--single > .Select-control .Select-value,
+.sidebar .dash-dropdown .Select-value-label,
+.sidebar .dash-dropdown .Select-option {
+    color: #2c3e50 !important;
+}
+
+.sidebar .Select-menu-outer {
+    color: #2c3e50 !important;
+}
+
+.sidebar h2 {
+    color: #ecf0f1;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #34495e;
+    padding-bottom: 1rem;
+}
+
+.sidebar-info {
+    font-size: 0.9rem;
+    color: #bdc3c7;
+    text-align: center;
+    margin-top: auto;
+    /* Push to bottom */
+    padding-top: 20px;
+}
+
+/* Vertical Tabs Styling */
+.custom-tabs-container {
+    width: 100%;
+}
+
+.custom-tabs {
+    flex-direction: column;
+}
+
+.custom-tab {
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    color: #bdc3c7;
+    background-color: transparent;
+    border: none !important;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.custom-tab:hover {
+    background-color: #34495e;
+    color: #ffffff;
+}
+
+.custom-tab--selected {
+    background-color: #3498db !important;
+    /* Active Color */
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Area */
+.content {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #f4f6f9;
+}
+
+/* Cards */
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid #e1e4e8;
+}
+
+/* Headers */
+h3 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    display: inline-block;
+    margin-top: 0;
+}
+
+/* Statistics Box */
+.stats-box {
+    background-color: #ecf0f1;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin-top: 20px;
+    font-family: 'Courier New', monospace;
+}
+
+/* Inputs & Dropdowns */
+label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Helper utility */
+.row {
+    display: flex;
+    gap: 20px;
+}
+
+.col-half {
+    width: 48%;
+}
+
+.col-full {
+    width: 100%;
+}
+
+/* --- V2 Dashboard Styles --- */
+
+/* Home Page Container */
+/* Home Page Container */
+.home-container {
+    display: flex;
+    flex-direction: row;
+    /* Side by side */
+    align-items: flex-start;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 40px;
+    gap: 40px;
+    /* Space between columns */
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Left Column: Header + Nav */
+.home-left-column {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    flex-shrink: 0;
+    height: 100%;
+    justify-content: center;
+    /* Center vertically */
+}
+
+.home-header {
+    margin-bottom: 30px;
+    animation: fadeIn 1s ease-out;
+    text-align: left;
+}
+
+.main-title {
+    font-size: 3rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #34495e;
+    max-width: 100%;
+    margin: 0;
+}
+
+/* Navigation Cards (Vertical Stack) */
+.nav-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.nav-card-link {
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.nav-card {
+    background: white;
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border-left: 5px solid transparent;
+    /* Left border for accent */
+    border-top: none;
+    /* Reset top border */
+}
+
+.nav-card:hover {
+    transform: translateX(5px);
+    /* Move right on hover */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #3498db;
+    border-top: none;
+}
+
+.nav-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    border-bottom: none;
+    /* Remove default h3 underline if any */
+    padding-bottom: 0;
+}
+
+.nav-card p {
+    color: #7f8c8d;
+    line-height: 1.4;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* Right Column: Intro Text */
+.intro-text-container {
+    flex: 1;
+    height: 100%;
+    /* Fill height */
+    overflow-y: auto;
+    width: 100%;
+    max-width: 900px;
+    margin-top: 0;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    /* All corners rounded */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Page Headers & Back Button */
+.page-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.back-button {
+    text-decoration: none;
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 600;
+    margin-right: 20px;
+    transition: background 0.2s;
+}
+
+.back-button:hover {
+    background-color: #bdc3c7;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    flex-grow: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* New Sidebar Styles */
+.nav-link {
+    display: block;
+    padding: 15px 20px;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: background 0.3s;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.nav-link:hover {
+    background-color: #34495e;
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-link i {
+    width: 25px;
+    text-align: center;
+}
+
+/* --- User Guide Drawer & Button --- */
+
+/* Floating Button */
+.guide-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 1000;
+    transition: transform 0.3s, background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.guide-button:hover {
+    transform: scale(1.1);
+    background-color: #2980b9;
+}
+
+/* Off-Canvas Drawer (Right Side) */
+.guide-drawer {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Hidden off-screen right */
+    width: 350px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Class to show the drawer */
+.guide-drawer-open {
+    right: 0 !important;
+}
+
+.guide-header {
+    padding: 20px;
+    background-color: #34495e; /* Matches Sidebar Header */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.guide-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: white;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.guide-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.guide-content {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #2c3e50;
+}
+
+.guide-content h4 {
+    color: #2980b9;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.guide-content ul {
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.guide-content li {
+    margin-bottom: 5px;
+}
