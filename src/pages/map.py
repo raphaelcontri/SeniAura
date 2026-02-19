@@ -55,17 +55,17 @@ layout = html.Div(style={'height': '100vh', 'display': 'flex', 'flexDirection': 
             html.Button("×", id='map-guide-close', className='guide-close')
         ]),
         html.Div(className='guide-content', children=[
-            html.H4("1. Visualiser des indicateurs"),
+            html.H4("Visualiser des indicateurs"),
             html.P("Sélectionnez un indicateur de santé et une pathologie dans le panneau de gauche."),
             
-            html.H4("2. Filtrer les territoires"),
-            html.P("Les filtres dans la sidebar globale (Socio-Eco, Soins, Env) permettent de restreindre les EPCI affichés."),
+            html.H4("Filtrer les territoires"),
+            html.P("Les filtres (sliders) dans le menu gauche (Socio-Eco, Soins, Env) permettent de restreindre les EPCI affichés. Quand vous modifiez un filtre, les EPCI qui n'appartiennent pas à la nouvelle plage sont grisés. Sélectionnez plusieurs filtres afin de filtrer les EPCI selon plusieurs paramètres"),
             
-            html.H4("3. Écart diagnostique"),
-            html.P("Le graphique en bas montre les 15 EPCI où l'état de santé est plus mauvais que ce que les variables sélectionnées prédiraient. Un écart élevé = territoire prioritaire pour la prévention."),
+            html.H4("Usages de cet outil"),
+            html.P("Cet outil permet de raisonner à l'échelle régionale et d'identifier rapidement les EPCI \"à risque\" selon les variables choisies. Cette carte permet ainsi d'avoir une première idée des zones de la région dans lesquelles il serait peut-être intéressant de cibler des politiques de prévention, et dans lesquelles une analyse plus fine pourrait être menée grâce aux profils types et au graphique radar de ce dashboard, entre autres, afin d'identifier les forces et faiblesses de ces territoires en particulier."),
             
-            html.H4("4. Synchronisation"),
-            html.P("Les filtres sont partagés avec le Radar Comparatif.")
+            html.H4("Astuce ! "),
+            html.P("Les filtres sont partagés avec le radar comparatif. Les EPCI peuvent être sélectionnés soit en cliquant sur la carte, soit en les sélectionnant ou en les cherchant dans le menu déroulant du menu gauche. ")
         ])
     ])
 ])
@@ -83,8 +83,8 @@ def update_sliders(social, offre, env):
     for var in selected:
         if var in gdf_merged.columns:
             mn, mx = gdf_merged[var].min(), gdf_merged[var].max()
-            p05 = gdf_merged[var].quantile(0.05)
-            p95 = gdf_merged[var].quantile(0.95)
+            # p05 = gdf_merged[var].quantile(0.05)
+            # p95 = gdf_merged[var].quantile(0.95)
             
             # Helper to format numbers nicely
             def fmt(val):
@@ -94,14 +94,14 @@ def update_sliders(social, offre, env):
             marks = {
                 mn: {'label': fmt(mn), 'style': {'color': '#bdc3c7', 'fontSize': '0.7rem'}},
                 mx: {'label': fmt(mx), 'style': {'color': '#bdc3c7', 'fontSize': '0.7rem'}},
-                p05: {'label': '5%', 'style': {'color': '#e67e22', 'fontWeight': 'bold', 'fontSize': '0.8rem'}},
-                p95: {'label': '95%', 'style': {'color': '#e67e22', 'fontWeight': 'bold', 'fontSize': '0.8rem'}}
+                # p05: {'label': '5%', 'style': {'color': '#e67e22', 'fontWeight': 'bold', 'fontSize': '0.8rem'}},
+                # p95: {'label': '95%', 'style': {'color': '#e67e22', 'fontWeight': 'bold', 'fontSize': '0.8rem'}}
             }
             
             controls.append(html.Div([
                 html.Div([
                     html.Label(variable_dict.get(var, var), style={'fontSize': '0.85rem', 'fontWeight': '600'}),
-                    html.Span(f" (Q5: {fmt(p05)} - Q95: {fmt(p95)})", style={'fontSize': '0.75rem', 'color': '#7f8c8d'})
+                    # html.Span(f" (Q5: {fmt(p05)} - Q95: {fmt(p95)})", style={'fontSize': '0.75rem', 'color': '#7f8c8d'})
                 ], style={'display':'flex', 'justifyContent':'space-between', 'alignItems':'baseline'}),
                 
                 dcc.RangeSlider(
@@ -135,8 +135,34 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, slid
             if col in gdf_merged.columns:
                  mask &= gdf_merged[col].between(val[0], val[1])
 
-    df_focus = gdf_merged[mask]
+    df_focus = gdf_merged[mask].copy()
     df_bg = gdf_merged[~mask]
+
+    # Build Custom Hover Text
+    selected_vars = (social or []) + (offre or []) + (env or [])
+    
+    def build_hover(row):
+        t_val = row[target]
+        t_str = f"{t_val:.0f}" if isinstance(t_val, (int, float)) and abs(t_val) >= 10 else f"{t_val:.2f}"
+        
+        txt = f"<b>{row['nom_EPCI']}</b><br>"
+        txt += f"{variable_dict.get(target, target)}: {t_str}<br>"
+        
+        if selected_vars:
+            txt += "<br><i>Variables sélectionnées :</i><br>"
+            for v in selected_vars:
+                if v in row:
+                    val = row[v]
+                    if pd.notna(val):
+                        v_str = f"{val:.0f}" if isinstance(val, (int, float)) and abs(val) >= 10 else f"{val:.2f}"
+                        label = variable_dict.get(v, v)
+                        # Truncate label if too long
+                        if len(label) > 30: label = label[:27] + "..."
+                        txt += f"{label}: {v_str}<br>"
+        return txt
+
+    if not df_focus.empty:
+        df_focus['hover_text'] = df_focus.apply(build_hover, axis=1)
 
     fig = go.Figure()
     if not df_bg.empty:
@@ -147,7 +173,7 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, slid
             geojson=df_focus.geometry.__geo_interface__, locations=df_focus.index, z=df_focus[target],
             colorscale="Blues", marker_opacity=1, marker_line_width=1, marker_line_color='white',
             colorbar=dict(title=variable_dict.get(target, target)),
-            text=df_focus['nom_EPCI'], hovertemplate="<b>%{text}</b><br>Val: %{z:.2f}<extra></extra>"
+            text=df_focus['hover_text'], hovertemplate="%{text}<extra></extra>"
         ))
         
     # Highlight Selected EPCIs from Radar (Red Point)

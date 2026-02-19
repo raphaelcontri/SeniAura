@@ -59,6 +59,23 @@ layout = html.Div(className='page-container', style={'padding': '20px'}, childre
     html.P("Explorez les variables disponibles organisées par thématique. Ces variables sont utilisées dans les filtres de la Carte et du Radar.", 
            style={'color': '#555', 'marginBottom': '25px'}),
     
+    html.Div(style={'backgroundColor': '#f8f9fa', 'padding': '20px', 'borderRadius': '5px', 'marginBottom': '30px'}, children=[
+        html.H3("Construction du dataset", style={'marginTop': '0'}),
+        html.P("Le dashboard repose sur une base de données constituée à l’échelle des EPCI, agrégeant des données **Open Data**.", style={'color': '#555'}),
+        
+        html.H3("Source des données"),
+        html.Ul(style={'color': '#555', 'lineHeight': '1.6'}, children=[
+            html.Li([html.B("Indicateurs de Santé"), " : Prévalence, incidence et mortalité (Odissé / Santé Publique France)."]),
+            html.Li([html.B("Offre de soins"), " : APL Médecins/Infirmières (DREES), Inventaire des structures (Balises / ORS AURA)."]),
+            html.Li([html.B("Déterminants Sociaux"), " : Revenus, précarité, indices F-EDI et FDep (Insee, Filosofi)."]),
+            html.Li([html.B("Déterminants Environnementaux"), " : Polluants (PM2.5, NO2), Bruit (Balises / ORS AURA)."]),
+        ]),
+        html.P("Dernière mise à jour : 6 février 2026", style={'fontStyle': 'italic', 'color': '#7f8c8d', 'fontSize': '0.9rem', 'marginTop': '10px'}),
+        
+        html.H3("Traitements effectués"),
+        html.P("Les données ont été nettoyées, harmonisées et agrégées à l'échelle des EPCI. Les variables ont été catégorisées et normalisées pour permettre la comparaison.", style={'color': '#555'}),
+    ]),
+    
     dcc.Tabs(id='methodo-tabs', value='socioeco', children=[
         dcc.Tab(label=f'Socio-Éco ({len(socioeco_vars)})', value='socioeco', 
                 style={'fontWeight': '500'}, selected_style={'fontWeight': 'bold', 'borderTop': '3px solid #3498db'}),

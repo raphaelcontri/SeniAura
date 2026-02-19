@@ -116,3 +116,28 @@ APL-chir_dent_2022,DRESS,Offre de soins,APL chirurgiens-dentistes en 2022,,1,APL
 APL-chir_dent_2023,DRESS,Offre de soins,APL chirurgiens-dentistes en 2023,,1,APL Dentistes (2023)
 APL-med_general_2023,DRESS,Offre de soins,APL médecins généralistes en 2023,,1,APL Généralistes (2023)
 APL-med_general_2022,DRESS,Offre de soins,APL médecins généralistes en 2022,,1,APL Généralistes (2022)
+DIPLOME_001T100_RP_rate,,Autre,DIPLOME_001T100_RP_rate,,0,DIPLOME_001T100_RP_rate
+DIPLOME_200_RP,,Autre,DIPLOME_200_RP,,0,DIPLOME_200_RP
+DIPLOME_200_RP_rate,,Autre,DIPLOME_200_RP_rate,,0,DIPLOME_200_RP_rate
+DIPLOME_300_RP_rate,,Autre,DIPLOME_300_RP_rate,,0,DIPLOME_300_RP_rate
+DIPLOME_350T351_RP_rate,,Autre,DIPLOME_350T351_RP_rate,,0,DIPLOME_350T351_RP_rate
+DIPLOME_500_RP_rate,,Autre,DIPLOME_500_RP_rate,,0,DIPLOME_500_RP_rate
+DIPLOME_600_RP_rate,,Autre,DIPLOME_600_RP_rate,,0,DIPLOME_600_RP_rate
+DIPLOME_700_RP_rate,,Autre,DIPLOME_700_RP_rate,,0,DIPLOME_700_RP_rate
+EDI_Moyen,,Autre,EDI_Moyen,,0,EDI_Moyen
+EDI_moyen,,Autre,EDI_moyen,,0,EDI_moyen
+IR_D9_D1_SL.1,,Autre,IR_D9_D1_SL.1,,0,IR_D9_D1_SL.1
+Nb_Communes_ODI,,Autre,Nb_Communes_ODI,,0,Nb_Communes_ODI
+PCS_1_rate,,Socioéco,PCS_1_rate,,0,PCS_1_rate
+PCS_2_rate,,Socioéco,PCS_2_rate,,0,PCS_2_rate
+PCS_3_rate,,Socioéco,PCS_3_rate,,0,PCS_3_rate
+PCS_4_rate,,Socioéco,PCS_4_rate,,0,PCS_4_rate
+PCS_5_rate,,Socioéco,PCS_5_rate,,0,PCS_5_rate
+PCS_6_rate,,Socioéco,PCS_6_rate,,0,PCS_6_rate
+PCS__T,,Autre,PCS__T,,0,PCS__T
+Part de personnes isolées 60 ans et plus,,Autre,Part de personnes isolées 60 ans et plus,,0,Part de personnes isolées 60 ans et plus
+Pop_Dataset_60plus_Pop2016,,Autre,Pop_Dataset_60plus_Pop2016,,0,Pop_Dataset_60plus_Pop2016
+Pop_Dataset_60plus_PopTotale,,Autre,Pop_Dataset_60plus_PopTotale,,0,Pop_Dataset_60plus_PopTotale
+Pop_FDep_2019,,Autre,Pop_FDep_2019,,0,Pop_FDep_2019
+Pop_Filosofi_2021,,Autre,Pop_Filosofi_2021,,0,Pop_Filosofi_2021
+Population municipale 2022,,Autre,Population municipale 2022,,0,Population municipale 2022

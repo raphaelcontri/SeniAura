@@ -1,4 +1,3 @@
-
 import dash
 from dash import dcc, html, Input, Output, callback, State
 import plotly.graph_objects as go
@@ -27,21 +26,27 @@ layout = html.Div(style={'height': '100vh', 'display': 'flex', 'flexDirection': 
             html.Button("×", id='radar-guide-close', className='guide-close')
         ]),
         html.Div(className='guide-content', children=[
-            html.H4("1. Principe"),
-            html.P("Le graphique radar compare le profil d'un EPCI à la moyenne régionale."),
+            html.H4("Sélectionnez les variables"),
+            html.P("Dans le menu gauche, sélectionnez les variables que vous souhaitez ajouter au graphique radar (au moins trois). Les variables ainsi que les EPCI qui avaient déjà été sélectionnés sur la carte restent sélectionnés !"),
             
-            html.H4("2. Lecture"),
+            html.H4("Lecture"),
             html.Ul([
                 html.Li("Ligne discontinue = Moyenne régionale."),
-                html.Li("Zone grise = 'Tunnel de normalité' (Moyenne +/- 1 écart-type)."),
-                html.Li("Ligne pleine = Votre territoire."),
-                html.Li("Si votre ligne sort de la zone grise, l'écart est significatif.")
+                html.Li("Zone grise = écart type (moyenne des écarts à la moyenne)."),
+                html.Li("Ligne pleine = Vos territoires."),
+                html.Li("Si votre ligne sort de la zone grise, l'écart est significatif."),
             ]),
+            
+            html.H4("Usages de cet outil"),
+            html.P("Après avoir identifié les zones à risque grâce à la carte interactive, il peut être intéressant de passer à une analyse plus fine sur ces zones à risque pour mieux les comprendre. Cet outil permet donc :"),
+            html.Ul([
+                html.Li("D'identifier les forces et faiblesses d'un EPCI en particulier, en comparant les variables sélectionnés pour cet EPCI et la moyenne régionnale de ces varaibles. La zone d'écart type permet de mesurer à quel point la valeur d'une variable pour un EPCI en particulier est éloignée de la valeur moyenne régionale."),
+                html.Li("De comparer plusieurs EPCI. En sélectionnant plusieurs EPCI, vous pouvez tirer des conclusions sur les forces et faiblesses d'un EPCI en particulier par rapport aux EPCI voisins par exemple, ou aux autres EPCI vulnérables"),
+            ]),
+            html.P("Cet outil permet donc une analyse plus fine sur les territoires à risques pour mesurer un potentiel \"cumul des vulnérabilités\" sanitaires, sociales, économiques et environnementales. Cet outil peut donc indiquer sur quelles variables en particulier des politiques de prévnetion pourraient agir afin d'améliorer la vulnérabilité sociale, économique et environnementale d'un EPCI. L'outil de profils types peut être aussi utilisé pour analyser plus facilement la situation par groupes d'EPCI et donc faciliter la prise de décisions de mesures de prévention, pour éviter de faire du 'cas par cas'.")
         ])
     ])
 ])
-
-
 # Callbacks — use global sidebar IDs
 
 @callback(

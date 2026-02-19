@@ -36,19 +36,7 @@ Détail de l'ensemble des variables et sources de données utilisées, avec poss
 
 ---
 
-## Méthodologie & Données
 
-Le dashboard repose sur une base de données constituée à l’échelle des EPCI, agrégeant des données **Open Data**.
-
-### Sources et périmètres
-- **Indicateurs de Santé** : Prévalence, incidence et mortalité (Odissé / Santé Publique France).
-- **Offre de soins** : APL Médecins/Infirmières (DREES), Inventaire des structures (Balises / ORS AURA).
-- **Déterminants Sociaux** : Revenus, précarité, indices F-EDI et FDep (Insee, Filosofi).
-- **Déterminants Environnementaux** : Polluants (PM2.5, NO2), Bruit (Balises / ORS AURA).
-
-*Dernière mise à jour : 6 février 2026*
-
----
 
 ### À propos
 
