@@ -1,8 +1,5 @@
-
 from dash import dcc, html
-
-
-# Read the introductory text
+import dash_mantine_components as dmc
 import os
 from pathlib import Path
 
@@ -16,23 +13,25 @@ try:
 except FileNotFoundError:
     intro_text = "Le fichier de texte introductif est introuvable."
 
-layout = html.Div(className='home-container', children=[
-    
-    # Left Column: Header + Nav Buttons
-    html.Div(className='home-left-column', children=[
-        html.Div(className='home-header', children=[
-            html.H1("SeniAura : Diagnostic des maladies Cardio-Neuro-Vasculaires en Auvergne Rhone-Alpes", className='main-title'),
-            html.P("", className='subtitle'),
-        ]),
-        
-
-
-        # Navigation cards removed as per user request (moved to sidebar)
-    ]),
-
-    # Right Column: Scrollable Introductory Text
-    html.Div(className='intro-text-container', children=[
-        dcc.Markdown(intro_text)
-    ])
-])
-
+layout = dmc.Container(
+    size="xl",
+    mt="xl",
+    children=[
+        dmc.Title(
+            "SeniAura : Diagnostic des maladies Cardio-Neuro-Vasculaires en Auvergne Rhône-Alpes",
+            order=1,
+            ta="center",
+            mb="xl",
+            c="blue"
+        ),
+        dmc.Paper(
+            shadow="lg",
+            p="xl",
+            radius="md",
+            withBorder=True,
+            children=[
+                dcc.Markdown(intro_text, className="intro-text")
+            ]
+        )
+    ]
+)

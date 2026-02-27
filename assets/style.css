@@ -35,7 +35,7 @@ body {
 .sidebar .Select-option,
 .sidebar .Select-placeholder,
 .sidebar .Select-input input,
-.sidebar .Select--single > .Select-control .Select-value,
+.sidebar .Select--single>.Select-control .Select-value,
 .sidebar .dash-dropdown .Select-value-label,
 .sidebar .dash-dropdown .Select-option {
     color: #2c3e50 !important;
@@ -319,6 +319,7 @@ label {
         transform: translateY(0);
     }
 }
+
 /* New Sidebar Styles */
 .nav-link {
     display: block;
@@ -356,7 +357,7 @@ label {
     width: 60px;
     height: 60px;
     font-size: 24px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     z-index: 1000;
     transition: transform 0.3s, background-color 0.3s;
@@ -374,11 +375,12 @@ label {
 .guide-drawer {
     position: fixed;
     top: 0;
-    right: -400px; /* Hidden off-screen right */
+    right: -400px;
+    /* Hidden off-screen right */
     width: 350px;
     height: 100vh;
     background-color: white;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
     transition: right 0.3s ease-in-out;
     z-index: 1001;
     display: flex;
@@ -392,7 +394,8 @@ label {
 
 .guide-header {
     padding: 20px;
-    background-color: #34495e; /* Matches Sidebar Header */
+    background-color: #34495e;
+    /* Matches Sidebar Header */
     color: white;
     display: flex;
     justify-content: space-between;
@@ -440,4 +443,45 @@ label {
 
 .guide-content li {
     margin-bottom: 5px;
+}
+
+/* Mantine 7 Specific Overrides for Sidebar NavLinks */
+.app-sidebar .mantine-NavLink-root {
+    transition: background-color 0.2s ease;
+}
+
+.app-sidebar .mantine-NavLink-root:hover {
+    background-color: #3d566e !important;
+    /* Lighter blue-gray on hover */
+}
+
+/* Force label color to stay white even on hover */
+.app-sidebar .mantine-NavLink-label {
+    color: white !important;
+}
+
+/* Dropdown (MultiSelect) Styling */
+.mantine-MultiSelect-option {
+    border-bottom: 2px solid #e9ecef !important;
+    padding: 12px 15px !important;
+    color: #2c3e50 !important;
+    font-size: 0.95rem !important;
+}
+
+.mantine-MultiSelect-option:last-child {
+    border-bottom: none !important;
+}
+
+.mantine-MultiSelect-option[data-hovered] {
+    background-color: #f1f3f5 !important;
+}
+
+.mantine-MultiSelect-option[data-selected] {
+    background-color: #3498db !important;
+    color: white !important;
+}
+
+/* Ensure icons in sidebar are always white */
+.app-sidebar .mantine-NavLink-icon {
+    color: white !important;
 }

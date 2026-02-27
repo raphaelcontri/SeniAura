@@ -23,6 +23,7 @@ Le projet est une application web construite en **Python** avec le framework **D
 ### Stack Technologique
 - **Core** : Python 3.9+
 - **Frontend/Backend** : Dash (Flask sous le capot)
+- **UI Components** : Dash Mantine Components (DMC) et Dash Iconify (remplace HTML brut ou Bootstrap pour un design moderne)
 - **Visualisation** : Plotly.py (Graph Objects & Express)
 - **Data Manipulation** : Pandas, NumPy
 - **Géomatique** : GeoPandas (fichiers GeoJSON)
@@ -73,21 +74,23 @@ Dash est une surcouche qui assemble trois technologies majeures :
 
 > **💡 Note** : En tant que développeur Python, vous n'écrivez pas de JavaScript. Dash transpile vos classes Python (`html.Div`, `dcc.Graph`) en composants React virtuels.
 
-### B. Les Layouts (L'Architecture Visuelle)
-L'interface est définie comme un **arbre hiérarchique de composants Python**.
-- **`dash.html`** : Contient tous les balises HTML standard (`Div`, `H1`, `P`, `Button`).
-- **`dash.dcc` (Dash Core Components)** : Contient les composants interactifs complexes (`Graph`, `Dropdown`, `Slider`, `Location`).
+### B. Les Layouts et Dash Mantine Components (DMC)
+L'interface est définie comme un **arbre hiérarchique de composants Python**. Historiquement, Dash utilise `dash.html` et `dash.dcc`. Dans ce projet, nous utilisons massivement **Dash Mantine Components (`dmc`)** :
+
+- **`dmc` (Dash Mantine Components)** : Fournit des composants UI modernes, esthétiques et réactifs (ex: `dmc.Container`, `dmc.Grid`, `dmc.Select`, `dmc.Alert`). C'est le pilier visuel du projet.
+- **`dash.dcc` (Dash Core Components)** : Utilisé pour les graphiques (`dcc.Graph`) ou la gestion d'état (`dcc.Store`, `dcc.Location`).
+- **`dash.html`** : Utilisé de manière résiduelle pour des balises standard (`html.Div`).
 
 Chaque composant a des propriétés (arguments) :
 - `id` : Identifiant unique (INDISPENSABLE pour les callbacks).
 - `children` : Le contenu (texte ou liste d'autres composants).
-- `style` : Dictionnaire CSS (ex: `{'color': 'red'}`).
+- `style` / `className` : Pour l'ajustement visuel.
 
-**Exemple de structure :**
+**Exemple de structure avec DMC :**
 ```python
-layout = html.Div([
-    html.H1("Mon Titre"),
-    dcc.Dropdown(id='mon-dropdown', options=[...]),
+layout = dmc.Container([
+    dmc.Title("Mon Titre", order=1),
+    dmc.Select(id='mon-dropdown', data=[...]),
     dcc.Graph(id='mon-graphique')
 ])
 ```
@@ -195,15 +198,15 @@ Le chargement des données est coûteux. Pour optimiser :
 
 ## 6. Algorithmes Clés
 
-### 🗺️ Carte : Analyse d'Écart ("Gap Analysis")
-L'innovation majeure de l'outil est la détection des "zones anormales".
+### 🗺️ Carte : Filtrage Interactif et Analyse Visuelle des Vulcanérabilités
+L'innovation majeure de la page Carte réside dans son système de filtrage granulaire et son feedback visuel explicite.
 - **Fichier** : `src/pages/map.py` -> `update_map`
-- **Logique** :
-    1.  On calcule le rang de chaque EPCI pour l'indicateur de santé ($Rank_{Santé}$).
-    2.  On calcule le rang composite moyen pour les variables de contexte sélectionnées ($Rank_{Contexte}$).
-        - Si `Sens` = -1 (ex: chômage), on inverse le rang (plus c'est haut, plus c'est mauvais).
-    3.  **Gap** = $Rank_{Santé} - Rank_{Contexte}$.
-    4.  Les EPCI avec le plus fort Gap positif sont ceux où la santé est bien pire que ce que le contexte socio-économique seul expliquerait. Ils sont surlignés en orange.
+- **Logique Globale** :
+    1.  **Filtrage Dynamique** : Les EPCI sont masqués (grisés) s'ils ne respectent pas les bornes définies par les "sliders" (curseurs) pour les variables socio-économiques, d'offre de soins ou environnementales, ou si la donnée est manquante (`NaN`).
+    2.  **Transparence Visuelle (Scattergeo)** : Au lieu de simplement faire disparaître les EPCI exclus, le programme calcule le centroïde géométrique de chaque zone grisée (`df_bg_4326.geometry.centroid`). 
+    3.  **Indication des Causes ("Pourquoi c'est exclu ?")** : Pour **chaque filtre** non respecté par un EPCI donné, un point coloré (`go.Scattergeo`) est placé sur son centroïde. Un léger décalage horizontal (`offset`) permet d'aligner plusieurs points côte à côte si le territoire cumule plusieurs raisons d'exclusion (multi-vulnérabilité).
+    4.  **Feedback Qualitatif (Hover)** : Un survol des zones grisées (`build_bg_hover`) détaille précisément pourquoi le territoire a été masqué (ex: "Densité (50 hors limites)" ou "Revenu (Donnée manquante)").
+    5.  **Feedback Quantitatif (Stats)** : Un encart compte en temps réel le total d'EPCI exclus et ventile cette exclusion filtre par filtre, ce qui permet à l'utilisateur de mesurer l'impact de ses seuils.
 
 ### 🕸️ Radar : Normalisation Min-Max
 Pour comparer des variables hétérogènes (Euros vs Pourcentages) :
@@ -261,4 +264,4 @@ Ouvrir le navigateur à l'adresse : `http://127.0.0.1:8050/`.
 3.  Si de nouvelles colonnes sont ajoutées, mettre à jour `data/dictionnaire_variables.csv` pour qu'elles apparaissent dans les menus.
 
 ---
-*Document généré le 18 Février 2026 pour le projet SeniAura.*
+*Document mis à jour pour refléter les ajouts récents sur le projet SeniAura.*

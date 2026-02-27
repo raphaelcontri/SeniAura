@@ -67,20 +67,20 @@ Indice_Precarite,Caisse des dépots,Autre,Variable non documentée spécifiqueme
 MED_SL,INSEE,Socioéco,Médiane du niveau de vie ,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC,1,Niveau de Vie Médian
 IR_D9_D1_SL,INSEE,Socioéco,Rapport interdécile (D9/D1) du niveau de vie,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC,-1,Inégalités (D9/D1)
 PR_MD_60,INSEE,Socioéco,Taux de pauvreté au seuil de 60% du smic,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC,-1,Tx Pauvreté (60%)
-PCS_1,INSEE,Socioéco,1 : Agriculteurs,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Agriculteurs
-PCS_2,INSEE,Socioéco,"2 : Artisans, commerçants et chefs d’entreprise",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Artisans/Comm.
-PCS_3,INSEE,Socioéco,3 : Cadres et professions intellectuelles supérieures,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,1,PCS Cadres
-PCS_4,INSEE,Socioéco,4 : Professions intermédiaires,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,1,PCS Prof. Interm.
-PCS_5,INSEE,Socioéco,5 : Employés,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Employés
-PCS_6,INSEE,Socioéco,6 : Ouvriers,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,Ouvriers
-PCS_T,INSEE,Socioéco,_T : Total,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,TOTAL Actifs
-DIPLOME_001T100_RP,INSEE,Socioéco,001T100_RP : Aucun diplôme ou certificat d'études primaires,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Sans Diplôme
-DIPLOME_300_RP,INSEE,Socioéco,"200_RP : BEPC, brevet élémentaire, brevet des collèges, DNB",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Brevet/Collège
-DIPLOME_500_RP,INSEE,Socioéco,"300_RP : CAP, BEP ou diplôme de niveau équivalent",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,CAP/BEP
-DIPLOME_600_RP,INSEE,Socioéco,"350T351_RP : Baccalauréat, brevet professionnel ou équivalent",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,diplôme Bac
-DIPLOME_350T351_RP,INSEE,Socioéco,"500_RP : Enseignement supérieur de cycle court : BTS, DUT, Deug, Deust, diplôme de la santé ou du social de niveau bac+2, diplôme",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Supérieur Court (Bac+2)
-DIPLOME_700_RP,INSEE,Socioéco,"600_RP : Baccalauréat universitaire ou équivalent : Licence, licence pro, maîtrise, diplôme équivalent de niveau bac+3 ou bac+4",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,1,Licence (Bac+3/4)
-DIPLOME__T,INSEE,Socioéco,700_RP : Diplôme de niveau bac + 5 ou plus,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,1,Master et + (Bac+5)
+PCS_1,INSEE,Autre,1 : Agriculteurs,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Agriculteurs
+PCS_2,INSEE,Autre,"2 : Artisans, commerçants et chefs d’entreprise",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Artisans/Comm.
+PCS_3,INSEE,Autre,3 : Cadres et professions intellectuelles supérieures,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,1,PCS Cadres
+PCS_4,INSEE,Autre,4 : Professions intermédiaires,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,1,PCS Prof. Interm.
+PCS_5,INSEE,Autre,5 : Employés,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,PCS Employés
+PCS_6,INSEE,Autre,6 : Ouvriers,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,Ouvriers
+PCS_T,INSEE,Autre,_T : Total,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP,-1,TOTAL Actifs
+DIPLOME_001T100_RP,INSEE,Autre,001T100_RP : Aucun diplôme ou certificat d'études primaires,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Sans Diplôme
+DIPLOME_300_RP,INSEE,Autre,"200_RP : BEPC, brevet élémentaire, brevet des collèges, DNB",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Brevet/Collège
+DIPLOME_500_RP,INSEE,Autre,"300_RP : CAP, BEP ou diplôme de niveau équivalent",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,CAP/BEP
+DIPLOME_600_RP,INSEE,Autre,"350T351_RP : Baccalauréat, brevet professionnel ou équivalent",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,diplôme Bac
+DIPLOME_350T351_RP,INSEE,Autre,"500_RP : Enseignement supérieur de cycle court : BTS, DUT, Deug, Deust, diplôme de la santé ou du social de niveau bac+2, diplôme",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Supérieur Court (Bac+2)
+DIPLOME_700_RP,INSEE,Autre,"600_RP : Baccalauréat universitaire ou équivalent : Licence, licence pro, maîtrise, diplôme équivalent de niveau bac+3 ou bac+4",https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,1,Licence (Bac+3/4)
+DIPLOME__T,INSEE,Autre,700_RP : Diplôme de niveau bac + 5 ou plus,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,1,Master et + (Bac+5)
 Part de personnes isolées_General_Avg,INSEE,Socioéco,Part de personnes isolées_General_Avg,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_MENAGES_PRINC,-1,Part de personnes isolées
 Taux de chomeurs_2022,INSEE,Socioéco,Taux de chomeurs_2022,https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC,-1,Taux Chômage
 FDep_2021,,Socioéco,FDEP en 2021,,-1,Indice défavorisation (FDep)
@@ -116,26 +116,26 @@ APL-chir_dent_2022,DRESS,Offre de soins,APL chirurgiens-dentistes en 2022,,1,APL
 APL-chir_dent_2023,DRESS,Offre de soins,APL chirurgiens-dentistes en 2023,,1,APL Dentistes (2023)
 APL-med_general_2023,DRESS,Offre de soins,APL médecins généralistes en 2023,,1,APL Généralistes (2023)
 APL-med_general_2022,DRESS,Offre de soins,APL médecins généralistes en 2022,,1,APL Généralistes (2022)
-DIPLOME_001T100_RP_rate,,Autre,DIPLOME_001T100_RP_rate,,0,DIPLOME_001T100_RP_rate
-DIPLOME_200_RP,,Autre,DIPLOME_200_RP,,0,DIPLOME_200_RP
-DIPLOME_200_RP_rate,,Autre,DIPLOME_200_RP_rate,,0,DIPLOME_200_RP_rate
-DIPLOME_300_RP_rate,,Autre,DIPLOME_300_RP_rate,,0,DIPLOME_300_RP_rate
-DIPLOME_350T351_RP_rate,,Autre,DIPLOME_350T351_RP_rate,,0,DIPLOME_350T351_RP_rate
-DIPLOME_500_RP_rate,,Autre,DIPLOME_500_RP_rate,,0,DIPLOME_500_RP_rate
-DIPLOME_600_RP_rate,,Autre,DIPLOME_600_RP_rate,,0,DIPLOME_600_RP_rate
-DIPLOME_700_RP_rate,,Autre,DIPLOME_700_RP_rate,,0,DIPLOME_700_RP_rate
+DIPLOME_001T100_RP_rate,,Socioéco,DIPLOME_001T100_RP_rate,,0,DIPLOME_001T100_RP_rate
+DIPLOME_200_RP,,Socioéco,DIPLOME_200_RP,,0,DIPLOME_200_RP
+DIPLOME_200_RP_rate,,Socioéco,DIPLOME_200_RP_rate,,0,DIPLOME_200_RP_rate
+DIPLOME_300_RP_rate,,Socioéco,DIPLOME_300_RP_rate,,0,DIPLOME_300_RP_rate
+DIPLOME_350T351_RP_rate,,Socioéco,DIPLOME_350T351_RP_rate,,0,DIPLOME_350T351_RP_rate
+DIPLOME_500_RP_rate,,Socioéco,DIPLOME_500_RP_rate,,0,DIPLOME_500_RP_rate
+DIPLOME_600_RP_rate,,Socioéco,DIPLOME_600_RP_rate,,0,DIPLOME_600_RP_rate
+DIPLOME_700_RP_rate,,Socioéco,DIPLOME_700_RP_rate,,0,DIPLOME_700_RP_rate
 EDI_Moyen,,Autre,EDI_Moyen,,0,EDI_Moyen
 EDI_moyen,,Autre,EDI_moyen,,0,EDI_moyen
-IR_D9_D1_SL.1,,Autre,IR_D9_D1_SL.1,,0,IR_D9_D1_SL.1
+IR_D9_D1_SL.1,,Socioéco,IR_D9_D1_SL.1,,0,D1_sur_D9
 Nb_Communes_ODI,,Autre,Nb_Communes_ODI,,0,Nb_Communes_ODI
-PCS_1_rate,,Socioéco,PCS_1_rate,,0,PCS_1_rate
-PCS_2_rate,,Socioéco,PCS_2_rate,,0,PCS_2_rate
-PCS_3_rate,,Socioéco,PCS_3_rate,,0,PCS_3_rate
-PCS_4_rate,,Socioéco,PCS_4_rate,,0,PCS_4_rate
-PCS_5_rate,,Socioéco,PCS_5_rate,,0,PCS_5_rate
-PCS_6_rate,,Socioéco,PCS_6_rate,,0,PCS_6_rate
+PCS_1_rate,,Socioéco,PCS_1_rate,,0,PCS1
+PCS_2_rate,,Socioéco,PCS_2_rate,,0,PCS2
+PCS_3_rate,,Socioéco,PCS_3_rate,,0,PCS3
+PCS_4_rate,,Socioéco,PCS_4_rate,,0,PCS4
+PCS_5_rate,,Socioéco,PCS_5_rate,,0,PCS5
+PCS_6_rate,,Socioéco,PCS_6_rate,,0,PCS6
 PCS__T,,Autre,PCS__T,,0,PCS__T
-Part de personnes isolées 60 ans et plus,,Autre,Part de personnes isolées 60 ans et plus,,0,Part de personnes isolées 60 ans et plus
+Part de personnes isolées 60 ans et plus,,Socioéco,Part de personnes isolées 60 ans et plus,,0,Part de personnes isolées 60 ans et plus
 Pop_Dataset_60plus_Pop2016,,Autre,Pop_Dataset_60plus_Pop2016,,0,Pop_Dataset_60plus_Pop2016
 Pop_Dataset_60plus_PopTotale,,Autre,Pop_Dataset_60plus_PopTotale,,0,Pop_Dataset_60plus_PopTotale
 Pop_FDep_2019,,Autre,Pop_FDep_2019,,0,Pop_FDep_2019
