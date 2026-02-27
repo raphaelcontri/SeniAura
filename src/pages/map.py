@@ -69,7 +69,13 @@ layout = dmc.Container(
                                     ],
                                     value='AVC',
                                     allowDeselect=False,
-                                    mb="xl"
+                                    mb="sm"
+                                ),
+                                dmc.Switch(
+                                    id='map-show-markers-switch',
+                                    label="Afficher les points (EPCI grisés)",
+                                    checked=True,
+                                    mb="md"
                                 ),
                                 
                                 dmc.Divider(my="md"),
@@ -175,10 +181,11 @@ def update_sliders(social, offre, env):
     [Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input({'type': 'map-slider', 'index': ALL}, 'value'),
      Input('sidebar-epci-radar', 'value'),
-     Input('sidebar-filter-social', 'value'), Input('sidebar-filter-offre', 'value'), Input('sidebar-filter-env', 'value')],
+     Input('sidebar-filter-social', 'value'), Input('sidebar-filter-offre', 'value'), Input('sidebar-filter-env', 'value'),
+     Input('map-show-markers-switch', 'checked')],
     State({'type': 'map-slider', 'index': ALL}, 'id')
 )
-def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, slider_ids):
+def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, show_markers, slider_ids):
     target = f"{ind}_{patho}"
     if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
     
@@ -261,7 +268,7 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, slid
             showlegend=False
         ))
         
-        if slider_vals:
+        if slider_vals and show_markers:
             if hasattr(df_bg, 'crs') and df_bg.crs:
                 df_bg_4326 = df_bg.to_crs(epsg=4326)
             else:
