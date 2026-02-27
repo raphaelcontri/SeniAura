@@ -8,7 +8,7 @@ import pandas as pd
 from ..data import load_data
 
 # Load shared data
-gdf_merged, variable_dict, category_dict, sens_dict, _ = load_data()
+gdf_merged, variable_dict, category_dict, sens_dict, _, unit_dict, gdf_deps = load_data()
 
 layout = dmc.Container(
     fluid=True,
@@ -91,18 +91,19 @@ layout = dmc.Container(
                 # Main Map Area
                 dmc.GridCol(
                     span=9,
-                    style={"height": "85vh"},
+                    style={"height": "85vh", "display": "flex", "flexDirection": "column"},
                     children=[
                         dmc.Paper(
                             withBorder=True,
                             shadow="sm",
                             radius="md",
-                            style={"height": "100%", "position": "relative"},
+                            style={"flex": 1, "minHeight": 0, "display": "flex", "flexDirection": "column"},
                             children=[
                                 dcc.Loading(
-                                    dcc.Graph(id='map-graph', style={'height': '100%', 'width': '100%'}, config={'responsive': True}),
-                                    parent_style={'height': '100%'}
-                                )
+                                    dcc.Graph(id='map-graph', style={'flex': 1, 'minHeight': 0, 'width': '100%'}, config={'responsive': True}),
+                                    parent_style={'flex': 1, 'minHeight': 0, 'display': 'flex', 'flexDirection': 'column'}
+                                ),
+                                html.Div(id='map-reading-guide', style={'padding': '10px 20px 20px 20px'})
                             ]
                         )
                     ]
@@ -162,9 +163,14 @@ def update_sliders(social, offre, env):
             def fmt(val):
                 return f"{val:.0f}" if abs(val) >= 10 else f"{val:.2f}"
             
+            var_label = variable_dict.get(var, var)
+            var_unit = unit_dict.get(var, "")
+            if var_unit:
+                var_label += f" ({var_unit})"
+                
             controls.append(dmc.Box(mb="xl", children=[
                 dmc.Group(justify="space-between", mb="xs", children=[
-                    dmc.Text(variable_dict.get(var, var), size="sm", fw=600),
+                    dmc.Text(var_label, size="sm", fw=600),
                 ]),
                 dcc.RangeSlider(
                     id={'type': 'map-slider', 'index': var},
@@ -177,7 +183,8 @@ def update_sliders(social, offre, env):
 
 @callback(
     [Output('map-graph', 'figure'),
-     Output('map-filter-stats', 'children')],
+     Output('map-filter-stats', 'children'),
+     Output('map-reading-guide', 'children')],
     [Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input({'type': 'map-slider', 'index': ALL}, 'value'),
      Input('sidebar-epci-radar', 'value'),
@@ -190,7 +197,7 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, show
     if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
     
     if target not in gdf_merged.columns:
-        return go.Figure(), None
+        return go.Figure(), None, None
 
     total_epci = len(gdf_merged)
     mask = pd.Series([True] * total_epci)
@@ -217,7 +224,9 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, show
         t_str = f"{t_val:.0f}" if isinstance(t_val, (int, float)) and abs(t_val) >= 10 else f"{t_val:.2f}"
         
         txt = f"<b>{row['nom_EPCI']}</b><br>"
-        txt += f"{variable_dict.get(target, target)}: {t_str}<br>"
+        target_unit = unit_dict.get(target, "")
+        target_unit_str = f" {target_unit}" if target_unit else ""
+        txt += f"{variable_dict.get(target, target)}: {t_str}{target_unit_str}<br>"
         
         if selected_vars:
             txt += "<br><i>Variables sélectionnées :</i><br>"
@@ -227,8 +236,10 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, show
                     if pd.notna(val):
                         v_str = f"{val:.0f}" if isinstance(val, (int, float)) and abs(val) >= 10 else f"{val:.2f}"
                         label = variable_dict.get(v, v)
+                        v_unit = unit_dict.get(v, "")
+                        v_unit_str = f" {v_unit}" if v_unit else ""
                         if len(label) > 30: label = label[:27] + "..."
-                        txt += f"{label}: {v_str}<br>"
+                        txt += f"{label}: {v_str}{v_unit_str}<br>"
         return txt
 
     if not df_focus.empty:
@@ -317,12 +328,28 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, show
                         ))
     
     if not df_focus.empty:
+        cb_title = f"{variable_dict.get(target, target)} {unit_dict.get(target, '')}".strip()
         fig.add_trace(go.Choropleth(
             geojson=df_focus.geometry.__geo_interface__, locations=df_focus.index, z=df_focus[target],
             colorscale="Blues", marker_opacity=1, marker_line_width=1, marker_line_color='white',
-            colorbar=dict(title=variable_dict.get(target, target)),
+            colorbar=dict(title=cb_title),
             text=df_focus['hover_text'], hovertemplate="%{text}<extra></extra>",
+
             customdata=df_focus['EPCI_CODE']
+        ))
+        
+    # --- DEPARTMENT BOUNDARIES OVERLAY ---
+    if not gdf_deps.empty:
+        fig.add_trace(go.Choropleth(
+            geojson=gdf_deps.geometry.__geo_interface__,
+            locations=gdf_deps.index,
+            z=[0] * len(gdf_deps),
+            colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
+            showscale=False,
+            marker_line_width=2,
+            marker_line_color='rgba(0, 0, 0, 0.4)',  # Dark gray/black subtle line
+            hoverinfo='skip',
+            showlegend=False
         ))
         
     if epci_selection:
@@ -417,8 +444,32 @@ def update_map(ind, patho, slider_vals, epci_selection, social, offre, env, show
                 mb="md",
                 p="sm",
             )
+            
+    # --- READING GUIDE LOGIC ---
+    guide_children = None
+    var_label = variable_dict.get(target, target).lower()
+    
+    if guide_children is None:
+        min_val = gdf_merged[target].min()
+        max_val = gdf_merged[target].max()
+        min_str = f"{min_val:.0f}" if pd.notna(min_val) and abs(min_val) >= 10 else f"{min_val:.2f}"
+        max_str = f"{max_val:.0f}" if pd.notna(max_val) and abs(max_val) >= 10 else f"{max_val:.2f}"
+        
+        nb_correspondants = mask.sum()
+        total_excluded = total_epci - nb_correspondants if slider_vals else 0
+        
+        guide_children = dmc.Alert(
+            title="💡 Guide de lecture", color="indigo", radius="sm", variant="light",
+            children=dmc.Text([
+                "En région Auvergne-Rhône-Alpes, ", dmc.Text(var_label, fw=700, span=True),
+                f" varie de {min_str} à {max_str}. Actuellement, ",
+                dmc.Text(f"{nb_correspondants} EPCI", fw=700, span=True),
+                " correspondent exactement à vos critères de filtrage, tandis que ",
+                dmc.Text(f"{total_excluded} autres", fw=700, span=True), " sont exclus."
+            ], size="sm", c="dark")
+        )
 
-    return fig, stats_children
+    return fig, stats_children, guide_children
 
 @callback(
     Output('map-guide-drawer', 'opened'),

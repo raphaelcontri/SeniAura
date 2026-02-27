@@ -7,7 +7,7 @@ import os
 from ..data import load_data, PROJECT_ROOT
 
 # Load data
-gdf_merged, variable_dict, category_dict, _, description_dict = load_data()
+gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _ = load_data()
 
 # Group variables by category
 def get_vars_by_category(target_cat):
@@ -17,7 +17,10 @@ def get_vars_by_category(target_cat):
         cat = str(category_dict.get(var_code, 'Autre')).lower()
         if cat == target_cat.lower():
             desc = description_dict.get(var_code, "")
-            result.append({'code': var_code, 'label': label, 'desc': desc})
+            unit = unit_dict.get(var_code, "-")
+            if not unit:
+                unit = "-"
+            result.append({'code': var_code, 'label': label, 'desc': desc, 'unit': unit})
     return sorted(result, key=lambda x: x['label'])
 
 def make_var_table(vars_list):
@@ -31,6 +34,7 @@ def make_var_table(vars_list):
             dmc.TableTr([
                 dmc.TableTd(dmc.Text(item['label'], fw=500)),
                 dmc.TableTd(dmc.Text(item['desc'], size="sm", c="dimmed")),
+                dmc.TableTd(dmc.Text(item['unit'], size="sm", c="dimmed")),
                 dmc.TableTd(dmc.Code(item['code'])),
             ])
         )
@@ -39,6 +43,7 @@ def make_var_table(vars_list):
         dmc.TableTr([
             dmc.TableTh("Variable"),
             dmc.TableTh("Description"),
+            dmc.TableTh("Unité"),
             dmc.TableTh("Code"),
         ])
     )

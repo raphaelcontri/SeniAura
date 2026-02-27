@@ -10,7 +10,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from ..data import load_data
 
-gdf_merged, variable_dict, category_dict, _, _ = load_data()
+gdf_merged, variable_dict, category_dict, _, _, _, _ = load_data()
 
 # Prepare options by category
 def get_options(target_cats):
@@ -106,13 +106,15 @@ layout = dmc.Container(
             dmc.Paper(withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", children=[
                 dmc.Title("📊 Profils des Clusters", order=3, mb="xs"),
                 dmc.Text("Chaque axe du radar représente la valeur moyenne normalisée (0-1) d'une variable pour chaque cluster.", c="dimmed", size="sm", mb="md"),
-                dcc.Graph(id='cluster-radar', style={'height': '500px'})
+                dcc.Graph(id='cluster-radar', style={'height': '500px'}),
+                html.Div(id='cluster-radar-guide', style={'marginTop': '20px'})
             ]),
 
             dmc.Paper(withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", children=[
                 dmc.Title("🔍 Détail par Variable (normalisé)", order=3, mb="xs"),
                 dmc.Text("Valeurs moyennes normalisées (0-1) de chaque variable par cluster. Toutes les variables sont sur la même échelle.", c="dimmed", size="sm", mb="md"),
-                dcc.Graph(id='cluster-bars', style={'height': '400px'})
+                dcc.Graph(id='cluster-bars', style={'height': '400px'}),
+                html.Div(id='cluster-bars-guide', style={'marginTop': '20px'})
             ]),
 
             dmc.Paper(withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", children=[
@@ -133,7 +135,9 @@ CLUSTER_COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9
      Output('cluster-radar', 'figure'),
      Output('cluster-bars', 'figure'),
      Output('cluster-epci-list', 'children'),
-     Output('cluster-status', 'children')],
+     Output('cluster-status', 'children'),
+     Output('cluster-radar-guide', 'children'),
+     Output('cluster-bars-guide', 'children')],
     Input('cluster-run-btn', 'n_clicks'),
     [State('cluster-vars-social', 'value'),
      State('cluster-vars-offre', 'value'),
@@ -143,7 +147,7 @@ CLUSTER_COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9
 )
 def run_clustering(n_clicks, social, offre, env, k):
     if not n_clicks:
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, ""
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, "", None, None
     
     selected = (social or []) + (offre or []) + (env or [])
     valid_vars = [v for v in selected if v in gdf_merged.columns]
@@ -151,14 +155,14 @@ def run_clustering(n_clicks, social, offre, env, k):
     if len(valid_vars) < 2:
         empty = go.Figure()
         err_msg = dmc.Alert("⚠️ Sélectionnez au moins 2 variables.", color="red", title="Attention")
-        return empty, empty, empty, err_msg, "⚠️ Pas assez de variables"
+        return empty, empty, empty, err_msg, "⚠️ Pas assez de variables", None, None
     
     df = gdf_merged[['nom_EPCI'] + valid_vars].dropna().copy()
     
     if len(df) < k:
         empty = go.Figure()
         err_msg = dmc.Alert("⚠️ Pas assez de données.", color="red")
-        return empty, empty, empty, err_msg, "⚠️ Pas assez de données"
+        return empty, empty, empty, err_msg, "⚠️ Pas assez de données", None, None
     
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(df[valid_vars])
@@ -272,4 +276,23 @@ def run_clustering(n_clicks, social, offre, env, k):
     
     status = f"✅ Clustering terminé : {k} clusters sur {len(df)} EPCI avec {len(valid_vars)} variables"
     
-    return map_fig, radar_fig, bar_fig, cluster_cards, status
+    # === GUIDES DE LECTURE ===
+    # Radar guide
+    radar_guide = dmc.Alert(
+        title="💡 Lecture du Radar", color="indigo", radius="sm", variant="light",
+        children=dmc.Text([
+            "Ce graphique radar superpose les profils moyens des différents clusters. Observez la forme de chaque ligne : ",
+            "les sommets étirés vers l'extérieur indiquent une valeur moyenne élevée pour ce cluster sur la variable correspondante."
+        ], size="sm")
+    )
+    
+    # Bars guide
+    bars_guide = dmc.Alert(
+        title="💡 Lecture des Barres", color="indigo", radius="sm", variant="light",
+        children=dmc.Text([
+            "Ce graphique permet de comparer l'ensemble des clusters, variable par variable. ",
+            "Il est particulièrement utile pour identifier la / les variable(s) qui différencient le plus fortement un cluster des autres."
+        ], size="sm")
+    )
+    
+    return map_fig, radar_fig, bar_fig, cluster_cards, status, radar_guide, bars_guide

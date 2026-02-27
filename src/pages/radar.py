@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from ..data import load_data
 
-gdf_merged, variable_dict, category_dict, sens_dict, _ = load_data()
+gdf_merged, variable_dict, category_dict, sens_dict, _, unit_dict, _ = load_data()
 
 # Layout — no local filters, everything comes from sidebar
 layout = dmc.Container(
@@ -36,9 +36,41 @@ layout = dmc.Container(
             withBorder=True,
             shadow="sm",
             radius="md",
-            style={"flex": 1, "minHeight": 0},
+            style={"flex": 1, "minHeight": 0, "display": "flex", "flexDirection": "column"},
             children=[
-                dcc.Graph(id='radar-chart', style={'height': '100%'})
+                # Placeholder for empty state
+                html.Div(
+                    id='radar-placeholder',
+                    style={'flex': 1, 'display': 'flex'},
+                    children=dmc.Center(
+                        style={"width": "100%"},
+                        children=dmc.Stack(
+                            align="center",
+                            gap="md",
+                            children=[
+                                dmc.ThemeIcon(
+                                    DashIconify(icon="solar:chart-2-bold-duotone", width=60),
+                                    size=100,
+                                    radius=100,
+                                    variant="light",
+                                    color="indigo",
+                                ),
+                                dmc.Text("Visualisation Radar", fw=700, size="xl"),
+                                dmc.Text(
+                                    "Sélectionnez au moins 3 variables dans le menu à gauche pour générer le profil comparatif des territoires.",
+                                    c="dimmed",
+                                    maw=400,
+                                    ta="center",
+                                    size="sm"
+                                ),
+                                dmc.Badge("En attente de sélection", variant="dot", color="indigo", size="lg", mt="sm")
+                            ]
+                        )
+                    )
+                ),
+                # The chart (hidden by default)
+                dcc.Graph(id='radar-chart', style={'display': 'none', 'flex': 1, 'minHeight': 0}),
+                html.Div(id='radar-reading-guide', style={'padding': '10px 20px 20px 20px'})
             ]
         ),
 
@@ -94,7 +126,10 @@ layout = dmc.Container(
 
 # Callbacks — use global sidebar IDs
 @callback(
-    Output('radar-chart', 'figure'),
+    [Output('radar-chart', 'figure'),
+     Output('radar-chart', 'style'),
+     Output('radar-placeholder', 'style'),
+     Output('radar-reading-guide', 'children')],
     [Input('sidebar-epci-radar', 'value'),
      Input('sidebar-filter-social', 'value'),
      Input('sidebar-filter-offre', 'value'),
@@ -104,8 +139,12 @@ def update_radar(epci_codes, social, offre, env):
     vars_list = (social or []) + (offre or []) + (env or [])
     
     if not vars_list or len(vars_list) < 3:
-        return go.Figure().update_layout(title="Sélectionnez au moins 3 variables dans la sidebar")
+        # Return empty figure and toggle styles to show placeholder
+        return go.Figure(), {'display': 'none'}, {'flex': 1, 'display': 'flex'}, None
     
+    # Toggle styles to show graph
+    graph_style = {'flex': 1, 'minHeight': 0, 'display': 'block'}
+    placeholder_style = {'display': 'none'}
     # Calculate stats
     df = gdf_merged.copy()
     
@@ -131,7 +170,14 @@ def update_radar(epci_codes, social, offre, env):
         minus_std.append(max(0, min(1, m_std)))
             
     fig = go.Figure()
-    theta = [variable_dict.get(v,v) for v in vars_list]
+    
+    theta = []
+    for v in vars_list:
+        name = variable_dict.get(v, v)
+        u = unit_dict.get(v, "")
+        if u:
+            name += f" ({u})"
+        theta.append(name)
     
     fig.add_trace(go.Scatterpolar(
         r=plus_std, theta=theta,
@@ -187,7 +233,42 @@ def update_radar(epci_codes, social, offre, env):
         legend=dict(orientation="h", y=-0.1)
     )
 
-    return fig
+    guide_children = None
+    if not epci_codes:
+        guide_children = dmc.Alert(
+            title="💡 Guide de lecture", color="indigo", radius="md", variant="light",
+            children=dmc.Text("Sélectionnez un ou plusieurs territoires dans le menu pour l'analyser. Comparez-le à la moyenne régionale (ligne discontinue).", size="sm")
+        )
+    else:
+        epci_codes_list = epci_codes if isinstance(epci_codes, list) else [epci_codes]
+        if len(epci_codes_list) == 1:
+            code = str(epci_codes_list[0])
+            row = df[df['EPCI_CODE_STR'] == code]
+            if not row.empty:
+                name = row['nom_EPCI'].values[0]
+                guide_children = dmc.Alert(
+                    title=f"💡 Analyse de {name}", color="indigo", radius="md", variant="light",
+                    children=dmc.Text(f"Visualisation des indicateurs sélectionnés pour {name}. Comparez les sommets du radar à la moyenne régionale (pointillés) et à la zone grise (écart-type).", size="sm")
+                )
+        elif len(epci_codes_list) == 2:
+            code1 = str(epci_codes_list[0])
+            code2 = str(epci_codes_list[1])
+            name1 = df[df['EPCI_CODE_STR'] == code1]['nom_EPCI'].values[0] if not df[df['EPCI_CODE_STR'] == code1].empty else code1
+            name2 = df[df['EPCI_CODE_STR'] == code2]['nom_EPCI'].values[0] if not df[df['EPCI_CODE_STR'] == code2].empty else code2
+            guide_children = dmc.Alert(
+                title="💡 Comparaison", color="indigo", radius="md", variant="light",
+                children=dmc.Text([
+                    "Vous comparez actuellement ", dmc.Text(name1, fw=700, span=True), " et ", dmc.Text(name2, fw=700, span=True),
+                    ". Observez sur quels axes leurs lignes s'écartent le plus l'une de l'autre pour identifier leurs différences de profil."
+                ], size="sm")
+            )
+        else:
+            guide_children = dmc.Alert(
+                title="💡 Comparaison multiple", color="indigo", radius="md", variant="light",
+                children=dmc.Text("Observez les lignes pleines pour identifier les EPCI qui s'éloignent le plus de la zone grise (standard régional) sur les différentes variables.", size="sm")
+            )
+
+    return fig, graph_style, placeholder_style, guide_children
 
 # Toggle Guide Drawer
 @callback(

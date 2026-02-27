@@ -10,7 +10,7 @@ from src.pages import home, map, radar, methodology, clustering
 from src.data import load_data
 
 # Load data for filter options
-gdf_merged, variable_dict, category_dict, _, _ = load_data()
+gdf_merged, variable_dict, category_dict, _, _, _, _ = load_data()
 
 def get_options(target_cats):
     options = []
