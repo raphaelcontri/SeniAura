@@ -134,17 +134,19 @@ sidebar = dmc.AppShellNavbar(
                             html.Div(style={'padding': '5px 0px'}, children=[
                                 dmc.MultiSelect(
                                     id='sidebar-epci-radar',
-                                    label="🎯 EPCI (Multi)",
+                                    label="EPCI (Multi)",
                                     data=epci_radar_options,
                                     placeholder="Choisir des EPCI...",
                                     searchable=True,
                                     clearable=True,
                                     mb="sm",
                                     styles={
-                                    "option": {"borderBottom": "2px solid #dee2e6", "padding": "12px", "color": "#2c3e50"}, # Darker text and thicker border
-                                    "dropdown": {"borderRadius": "8px", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}
-                                }
-                            )]),
+                                        "label": {"color": "white"},
+                                        "option": {"borderBottom": "2px solid #dee2e6", "padding": "12px", "color": "#2c3e50"}, # Darker text and thicker border
+                                        "dropdown": {"borderRadius": "8px", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}
+                                    }
+                                )
+                            ]),
 
                             # Variable Filters
                             html.Div(style={'padding': '5px 0px'}, children=[

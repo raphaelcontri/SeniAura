@@ -6,8 +6,8 @@ Nb_Communes,,Identification,Communes (nb),1.0,87.0,0,Nombre de communes par ECPI
 NATURE_EPCI,,Identification,,,,0,NATURE_EPCI,,"CC = Comunauté de communes, CA = Communauté d'agglomération"
 Département,,Identification,,,,0,Département,,Département
 Département_code,,Identification,,1.0,84.0,0,Code du département,,Code du département
-,DRESS,Socioéco,Habitants (nb),5401.0,856482.0,0,Pop_standardisee 2020,,standardisé en fonction de l'âge voir détail dans pdf sur les APL dans littérature
-Pop_standardisee 2020,INSEE,Socioéco,Habitants (nb),81.0,795202.0,0,Population totale,2019,Population totale
+Pop_standardisee 2020,DRESS,Socioéco,Habitants (nb),5401.0,856482.0,0,Pop_standardisee 2020,2020,standardisé en fonction de l'âge voir détail dans pdf sur les APL dans littérature
+Pop_totale,INSEE,Autre,Habitants (nb),,,0,Population totale,2019,Population totale
 Pop_Dataset_60plus_Pop2016,,Autre,,76.0,866388.0,0,,2016,Pop_Dataset_60plus_Pop2016
 Pop_Dataset_60plus_PopTotale,,Autre,,75.0,836557.0,0,,,Pop_Dataset_60plus_PopTotale
 Pop_FDep_2019,,Autre,,81.0,795202.0,0,,2019,Pop_FDep_2019
@@ -79,7 +79,7 @@ EDI_Moyen,Odissé,Socioéco,Indice F-EDI,-3.83,11.11,-1,Indice de défavorisatio
 FDep_2021,Balises,Socioéco,Indice,1.0,5.0,-1,Indice défavorisation (FDep),2021,FDEP en 2021
 IR_D9_D1_SL,INSEE,Socioéco,Indice,2.5,7.2,-1,Inégalités (rapport D9/D1),,Rapport interdécile (D9/D1) du niveau de vie
 MED_SL,INSEE,Socioéco,€,18890.0,40320.0,1,Niveau de Vie Médian,,Médiane du niveau de vie
-PR_MD_60,INSEE,Socioéco,%,5.0,26.3,-1,Tx Pauvreté (60%),,Taux de pauvreté au seuil de 60% du smic
+PR_MD60,INSEE,Socioéco,%,5.0,26.3,-1,Tx Pauvreté (60%),,Taux de pauvreté au seuil de 60% du smic
 PCS_1,INSEE,Autre,Habitants (nb),29.18,2977.5,-1,Nb agriculteurs,,Nombre d'agriculteurs
 PCS_2,INSEE,Autre,Habitants (nb),199.53,69335.98,-1,Nb artisans/commercants,,Nombre d'artisans/commercants et chefs d’entreprise
 PCS_3,INSEE,Autre,Habitants (nb),240.87,392100.8,1,Nb cadres,,Nombre de cadres et professions intellectuelles supérieures
@@ -128,7 +128,7 @@ APL-kine_2022,DRESS,Offre de soins,Indice APL,31.29,212.17,1,APL Kinés (2022),2
 APL-kine_2023,DRESS,Offre de soins,Indice APL,31.42,210.91,1,APL Kinés (2023),2023,APL kinésithérapeutes en 2023
 APl-infirmieres_2022,DRESS,Offre de soins,Indice APL,33.39,219.71,1,APL Infirmiers (2022),2022,APL infirmiers en 2022
 APL-infirmieres_2023,DRESS,Offre de soins,Indice APL,26.32,221.0,1,APL Infirmiers (2023),2023,APL infirmières en 2023
-APL-chir_dent_2022,DRESS,Autre,Indice APL,08.05,83.89,1,APL Dentistes (2022),2022,APL chirurgiens-dentistes en 2022
+APL-chir_dent_2022,DRESS,Autre,Indice APL,8.05,83.89,1,APL Dentistes (2022),2022,APL chirurgiens-dentistes en 2022
 APL-chir_dent_2023,DRESS,Autre,Indice APL,7.84,87.13,1,APL Dentistes (2023),2023,APL chirurgiens-dentistes en 2023
 APL-med_general_2023,DRESS,Offre de soins,Indice APL,1.26,6.56,1,APL Généralistes (2023),2023,APL médecins généralistes en 2023
 APL-med_general_2022,DRESS,Offre de soins,Indice APL,1.66,5.83,1,APL Généralistes (2022),2022,APL médecins généralistes en 2022
