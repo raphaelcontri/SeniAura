@@ -1,6 +1,7 @@
-
 from dash import dcc, html, Input, Output, State, callback
 import dash
+import dash_mantine_components as dmc
+from dash_iconify import DashIconify
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
@@ -9,7 +10,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from ..data import load_data
 
-gdf_merged, variable_dict, category_dict, _ = load_data()
+gdf_merged, variable_dict, category_dict, _, _, _, _ = load_data()
 
 # Prepare options by category
 def get_options(target_cats):
@@ -26,96 +27,104 @@ offre_options = get_options(['offre de soins'])
 env_options = get_options(['environnement'])
 
 # --- LAYOUT ---
-layout = html.Div(className='page-container', style={'padding': '30px', 'overflowY': 'auto', 'height': '100vh'}, children=[
-    html.H1("🔬 Clustering Territorial", style={'marginBottom': '5px'}),
-    html.P("Segmentation des territoires par apprentissage non supervisé", 
-           style={'color': '#7f8c8d', 'fontSize': '1.1rem', 'marginBottom': '25px'}),
+layout = dmc.Container(
+    fluid=True,
+    p="xl",
+    children=[
+        dmc.Title("🔬 Clustering Territorial", order=1, mb="xs"),
+        dmc.Text("Segmentation des territoires par apprentissage non supervisé", c="dimmed", size="lg", mb="xl"),
 
-    # Explanatory cards
-    html.Div(className='card', style={'padding': '25px', 'marginBottom': '20px', 'backgroundColor': '#fff', 'borderRadius': '8px', 'boxShadow': '0 2px 6px rgba(0,0,0,0.08)', 'borderLeft': '4px solid #3498db'}, children=[
-        html.H2("Qu'est-ce que le clustering ?", style={'color': '#2c3e50', 'marginTop': 0}),
-        html.P("Le clustering regroupe automatiquement des territoires similaires selon leurs caractéristiques. "
-               "Les EPCI d'un même cluster partagent un profil comparable (socio-éco, offre de soins, environnement). "
-               "Cela permet d'identifier des typologies territoriales et d'adapter les politiques de prévention."),
-        html.Ul(style={'lineHeight': '1.8'}, children=[
-            html.Li([html.B("K-Means"), " : partitionne les données en K groupes en minimisant la variance intra-cluster."]),
-            html.Li([html.B("Normalisation"), " : les variables sont standardisées (z-score) pour être comparables."]),
-            html.Li([html.B("Profils"), " : le radar ci-dessous montre les caractéristiques moyennes de chaque cluster."]),
+        # Explanatory card
+        dmc.Paper(
+            withBorder=True, shadow="sm", p="lg", radius="md", mb="xl",
+            style={"borderLeft": "4px solid #3498db"},
+            children=[
+                dmc.Title("Qu'est-ce que le clustering ?", order=2, mb="sm"),
+                dmc.Text("Le clustering regroupe automatiquement des territoires similaires selon leurs caractéristiques. Les EPCI d'un même cluster partagent un profil comparable (socio-éco, offre de soins, environnement). Cela permet d'identifier des typologies territoriales et d'adapter les politiques de prévention.", mb="sm"),
+                dmc.List(spacing="xs", children=[
+                    dmc.ListItem(html.Span([html.B("K-Means"), " : partitionne les données en K groupes en minimisant la variance intra-cluster."])),
+                    dmc.ListItem(html.Span([html.B("Normalisation"), " : les variables sont standardisées (z-score) pour être comparables."])),
+                    dmc.ListItem(html.Span([html.B("Profils"), " : le radar ci-dessous montre les caractéristiques moyennes de chaque cluster."]))
+                ])
+            ]
+        ),
+
+        # Interactive Tool Card
+        dmc.Paper(
+            withBorder=True, shadow="sm", p="lg", radius="md", mb="xl",
+            style={"borderLeft": "4px solid #2ecc71"},
+            children=[
+                dmc.Title("🛠️ Outil de Clustering Interactif", order=2, mb="lg"),
+                
+                dmc.Grid(gutter="md", mb="lg", children=[
+                    dmc.GridCol(span={"base": 12, "md": 4}, children=[
+                        dmc.MultiSelect(
+                            id='cluster-vars-social', label="Socio-Éco", data=social_options, 
+                            placeholder="Variables socio-éco...", searchable=True, clearable=True
+                        )
+                    ]),
+                    dmc.GridCol(span={"base": 12, "md": 4}, children=[
+                        dmc.MultiSelect(
+                            id='cluster-vars-offre', label="Offre de Soins", data=offre_options, 
+                            placeholder="Variables offre...", searchable=True, clearable=True
+                        )
+                    ]),
+                    dmc.GridCol(span={"base": 12, "md": 4}, children=[
+                        dmc.MultiSelect(
+                            id='cluster-vars-env', label="Environnement", data=env_options, 
+                            placeholder="Variables env...", searchable=True, clearable=True
+                        )
+                    ])
+                ]),
+                
+                dmc.Group(align="flex-end", gap="xl", mb="sm", children=[
+                    dmc.Box(w=300, children=[
+                        dmc.Text("Nombre de clusters (K)", fw=600, size="sm", mb="xs"),
+                        dmc.Slider(
+                            id='cluster-k', min=2, max=8, step=1, value=4,
+                            marks=[{"value": i, "label": str(i)} for i in range(2, 9)]
+                        )
+                    ]),
+                    dmc.Button(
+                        "🚀 Lancer le clustering", id='cluster-run-btn', n_clicks=0,
+                        color="green", size="md"
+                    )
+                ]),
+                
+                dmc.Text(id='cluster-status', c="dimmed", size="sm", mt="md")
+            ]
+        ),
+
+        # Results Section
+        dmc.Box(id='cluster-results', children=[
+            dmc.Paper(withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", children=[
+                dmc.Title("🗺️ Carte des Clusters", order=3, mb="xs"),
+                dmc.Text("Chaque couleur représente un cluster. Les EPCI de même couleur partagent un profil similaire.", c="dimmed", size="sm", mb="md"),
+                dcc.Graph(id='cluster-map', style={'height': '500px'}, config={'displayModeBar': False})
+            ]),
+
+            dmc.Paper(withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", children=[
+                dmc.Title("📊 Profils des Clusters", order=3, mb="xs"),
+                dmc.Text("Chaque axe du radar représente la valeur moyenne normalisée (0-1) d'une variable pour chaque cluster.", c="dimmed", size="sm", mb="md"),
+                dcc.Graph(id='cluster-radar', style={'height': '500px'}, config={'displayModeBar': False}),
+                html.Div(id='cluster-radar-guide', style={'marginTop': '20px'})
+            ]),
+
+            dmc.Paper(withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", children=[
+                dmc.Title("🔍 Détail par Variable (normalisé)", order=3, mb="xs"),
+                dmc.Text("Valeurs moyennes normalisées (0-1) de chaque variable par cluster. Toutes les variables sont sur la même échelle.", c="dimmed", size="sm", mb="md"),
+                dcc.Graph(id='cluster-bars', style={'height': '400px'}, config={'displayModeBar': False}),
+                html.Div(id='cluster-bars-guide', style={'marginTop': '20px'})
+            ]),
+
+            dmc.Paper(withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", children=[
+                dmc.Title("📋 Composition des Clusters", order=3, mb="xs"),
+                dmc.Text("Liste des EPCI dans chaque cluster.", c="dimmed", size="sm", mb="md"),
+                html.Div(id='cluster-epci-list')
+            ])
         ])
-    ]),
-
-    # Interactive Tool
-    html.Div(className='card', style={'padding': '25px', 'marginBottom': '20px', 'backgroundColor': '#fff', 'borderRadius': '8px', 'boxShadow': '0 2px 6px rgba(0,0,0,0.08)', 'borderLeft': '4px solid #2ecc71'}, children=[
-        html.H2("🛠️ Outil de Clustering Interactif", style={'color': '#2c3e50', 'marginTop': 0}),
-        
-        # Variable selection
-        html.Div(style={'display': 'flex', 'gap': '15px', 'marginBottom': '20px', 'flexWrap': 'wrap'}, children=[
-            html.Div(style={'flex': 1, 'minWidth': '200px'}, children=[
-                html.Label("Socio-Éco", style={'fontWeight': 'bold', 'fontSize': '0.9rem'}),
-                dcc.Dropdown(id='cluster-vars-social', options=social_options, multi=True, placeholder="Variables socio-éco...")
-            ]),
-            html.Div(style={'flex': 1, 'minWidth': '200px'}, children=[
-                html.Label("Offre de Soins", style={'fontWeight': 'bold', 'fontSize': '0.9rem'}),
-                dcc.Dropdown(id='cluster-vars-offre', options=offre_options, multi=True, placeholder="Variables offre...")
-            ]),
-            html.Div(style={'flex': 1, 'minWidth': '200px'}, children=[
-                html.Label("Environnement", style={'fontWeight': 'bold', 'fontSize': '0.9rem'}),
-                dcc.Dropdown(id='cluster-vars-env', options=env_options, multi=True, placeholder="Variables env...")
-            ]),
-        ]),
-        
-        # K selection + Run button
-        html.Div(style={'display': 'flex', 'gap': '20px', 'alignItems': 'flex-end', 'marginBottom': '15px'}, children=[
-            html.Div(style={'width': '200px'}, children=[
-                html.Label("Nombre de clusters (K)", style={'fontWeight': 'bold', 'fontSize': '0.9rem'}),
-                dcc.Slider(id='cluster-k', min=2, max=8, step=1, value=4,
-                          marks={i: str(i) for i in range(2, 9)},
-                          tooltip={"always_visible": False})
-            ]),
-            html.Button("🚀 Lancer le clustering", id='cluster-run-btn', n_clicks=0,
-                       style={'padding': '10px 25px', 'backgroundColor': '#2ecc71', 'color': 'white', 
-                              'border': 'none', 'borderRadius': '5px', 'cursor': 'pointer',
-                              'fontWeight': 'bold', 'fontSize': '1rem', 'height': '42px'}),
-        ]),
-        
-        html.Div(id='cluster-status', style={'color': '#7f8c8d', 'fontSize': '0.9rem', 'marginBottom': '10px'})
-    ]),
-
-    # Results Section
-    html.Div(id='cluster-results', children=[
-        # Cluster Map
-        html.Div(className='card', style={'padding': '20px', 'marginBottom': '20px', 'backgroundColor': '#fff', 'borderRadius': '8px', 'boxShadow': '0 2px 6px rgba(0,0,0,0.08)'}, children=[
-            html.H3("🗺️ Carte des Clusters", style={'color': '#2c3e50', 'marginTop': 0}),
-            html.P("Chaque couleur représente un cluster. Les EPCI de même couleur partagent un profil similaire.",
-                   style={'color': '#555', 'fontSize': '0.9rem'}),
-            dcc.Graph(id='cluster-map', style={'height': '500px'})
-        ]),
-
-        # Cluster Profiles (Radar)
-        html.Div(className='card', style={'padding': '20px', 'marginBottom': '20px', 'backgroundColor': '#fff', 'borderRadius': '8px', 'boxShadow': '0 2px 6px rgba(0,0,0,0.08)'}, children=[
-            html.H3("📊 Profils des Clusters", style={'color': '#2c3e50', 'marginTop': 0}),
-            html.P("Chaque axe du radar représente la valeur moyenne normalisée (0-1) d'une variable pour chaque cluster.",
-                   style={'color': '#555', 'fontSize': '0.9rem'}),
-            dcc.Graph(id='cluster-radar', style={'height': '500px'})
-        ]),
-
-        # Cluster Bar Chart (normalized)
-        html.Div(className='card', style={'padding': '20px', 'marginBottom': '20px', 'backgroundColor': '#fff', 'borderRadius': '8px', 'boxShadow': '0 2px 6px rgba(0,0,0,0.08)'}, children=[
-            html.H3("🔍 Détail par Variable (normalisé)", style={'color': '#2c3e50', 'marginTop': 0}),
-            html.P("Valeurs moyennes normalisées (0-1) de chaque variable par cluster. Toutes les variables sont sur la même échelle.",
-                   style={'color': '#555', 'fontSize': '0.9rem'}),
-            dcc.Graph(id='cluster-bars', style={'height': '400px'})
-        ]),
-
-        # EPCI list per cluster
-        html.Div(className='card', style={'padding': '20px', 'marginBottom': '20px', 'backgroundColor': '#fff', 'borderRadius': '8px', 'boxShadow': '0 2px 6px rgba(0,0,0,0.08)'}, children=[
-            html.H3("📋 Composition des Clusters", style={'color': '#2c3e50', 'marginTop': 0}),
-            html.P("Liste des EPCI dans chaque cluster.", style={'color': '#555', 'fontSize': '0.9rem'}),
-            html.Div(id='cluster-epci-list')
-        ]),
-    ])
-])
-
+    ]
+)
 
 # --- CALLBACKS ---
 
@@ -126,7 +135,9 @@ CLUSTER_COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9
      Output('cluster-radar', 'figure'),
      Output('cluster-bars', 'figure'),
      Output('cluster-epci-list', 'children'),
-     Output('cluster-status', 'children')],
+     Output('cluster-status', 'children'),
+     Output('cluster-radar-guide', 'children'),
+     Output('cluster-bars-guide', 'children')],
     Input('cluster-run-btn', 'n_clicks'),
     [State('cluster-vars-social', 'value'),
      State('cluster-vars-offre', 'value'),
@@ -136,40 +147,37 @@ CLUSTER_COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9
 )
 def run_clustering(n_clicks, social, offre, env, k):
     if not n_clicks:
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, ""
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, "", None, None
     
     selected = (social or []) + (offre or []) + (env or [])
     valid_vars = [v for v in selected if v in gdf_merged.columns]
     
     if len(valid_vars) < 2:
         empty = go.Figure()
-        return empty, empty, empty, html.P("⚠️ Sélectionnez au moins 2 variables.", style={'color': '#e74c3c'}), "⚠️ Pas assez de variables"
+        err_msg = dmc.Alert("⚠️ Sélectionnez au moins 2 variables.", color="red", title="Attention")
+        return empty, empty, empty, err_msg, "⚠️ Pas assez de variables", None, None
     
-    # Prepare data — keep index aligned with gdf_merged for the map
     df = gdf_merged[['nom_EPCI'] + valid_vars].dropna().copy()
     
     if len(df) < k:
         empty = go.Figure()
-        return empty, empty, empty, html.P("⚠️ Pas assez de données."), "⚠️ Pas assez de données"
+        err_msg = dmc.Alert("⚠️ Pas assez de données.", color="red")
+        return empty, empty, empty, err_msg, "⚠️ Pas assez de données", None, None
     
-    # Standardize for KMeans
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(df[valid_vars])
     
-    # Cluster
     kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
     df['cluster'] = kmeans.fit_predict(X_scaled)
     
-    # Labels
     var_labels = [variable_dict.get(v, v) for v in valid_vars]
     
-    # Min-max normalization for display (shared across radar + bars)
     mins = df[valid_vars].min()
     maxs = df[valid_vars].max()
     ranges = maxs - mins
     ranges[ranges == 0] = 1
     
-    # === MAP: Choropleth colored by cluster ===
+    # === MAP ===
     map_fig = go.Figure()
     gdf_with_clusters = gdf_merged.copy()
     gdf_with_clusters['cluster'] = np.nan
@@ -189,7 +197,6 @@ def run_clustering(n_clicks, social, offre, env, k):
                 hovertemplate="<b>%{text}</b><br>Cluster " + str(c+1) + "<extra></extra>"
             ))
     
-    # Grey out EPCIs not in clustering (missing data)
     excluded = gdf_with_clusters[gdf_with_clusters['cluster'].isna()]
     if not excluded.empty:
         map_fig.add_trace(go.Choropleth(
@@ -202,10 +209,14 @@ def run_clustering(n_clicks, social, offre, env, k):
         ))
     
     map_fig.update_geos(fitbounds="locations", visible=False)
-    map_fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, dragmode=False,
-                         legend=dict(orientation="h", yanchor="bottom", y=-0.05))
+    map_fig.update_layout(
+        template="plotly_white",
+        font=dict(family="Inter, sans-serif"),
+        margin={"r":0,"t":0,"l":0,"b":0}, dragmode=False,
+        legend=dict(orientation="h", yanchor="bottom", y=-0.05)
+    )
     
-    # === RADAR: Normalized cluster profiles ===
+    # === RADAR ===
     radar_fig = go.Figure()
     for c in range(k):
         cluster_data = df[df['cluster'] == c][valid_vars]
@@ -221,13 +232,15 @@ def run_clustering(n_clicks, social, offre, env, k):
         ))
     
     radar_fig.update_layout(
+        template="plotly_white",
+        font=dict(family="Inter, sans-serif"),
         polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
         title="Profils Normalisés des Clusters (0 = min régional, 1 = max régional)",
         legend=dict(orientation="h", yanchor="bottom", y=-0.2),
         margin=dict(t=60, b=80)
     )
     
-    # === BARS: Normalized means per cluster per variable ===
+    # === BARS ===
     bar_data = []
     for c in range(k):
         cluster_data = df[df['cluster'] == c][valid_vars]
@@ -243,6 +256,8 @@ def run_clustering(n_clicks, social, offre, env, k):
     bar_fig = px.bar(bar_df, x='Variable', y='Moyenne normalisée', color='Cluster', barmode='group',
                      color_discrete_sequence=CLUSTER_COLORS[:k])
     bar_fig.update_layout(
+        template="plotly_white",
+        font=dict(family="Inter, sans-serif"),
         title="Moyennes Normalisées par Cluster (0 = min, 1 = max)",
         xaxis_tickangle=-30,
         yaxis_range=[0, 1],
@@ -255,22 +270,37 @@ def run_clustering(n_clicks, social, offre, env, k):
     for c in range(k):
         epci_names = sorted(df[df['cluster'] == c]['nom_EPCI'].tolist())
         cluster_cards.append(
-            html.Div(style={
-                'padding': '15px', 'marginBottom': '10px', 'borderRadius': '5px',
-                'border': f'2px solid {CLUSTER_COLORS[c % len(CLUSTER_COLORS)]}',
-                'backgroundColor': '#fafafa'
-            }, children=[
-                html.H4(f"Cluster {c+1} — {len(epci_names)} EPCI", 
-                        style={'margin': '0 0 10px 0', 'color': CLUSTER_COLORS[c % len(CLUSTER_COLORS)]}),
-                html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '5px'}, children=[
-                    html.Span(name, style={
-                        'padding': '3px 8px', 'backgroundColor': '#fff', 'borderRadius': '3px',
-                        'fontSize': '0.8rem', 'border': '1px solid #ddd'
-                    }) for name in epci_names
-                ])
-            ])
+            dmc.Paper(
+                withBorder=True, shadow="xs", p="md", mb="md", radius="md",
+                style={'borderTop': f'4px solid {CLUSTER_COLORS[c % len(CLUSTER_COLORS)]}'},
+                children=[
+                    dmc.Title(f"Cluster {c+1} — {len(epci_names)} EPCI", order=4, c=CLUSTER_COLORS[c % len(CLUSTER_COLORS)], mb="sm"),
+                    dmc.Group(gap="xs", children=[
+                        dmc.Badge(name, variant="outline", color="gray", radius="sm") for name in epci_names
+                    ])
+                ]
+            )
         )
     
     status = f"✅ Clustering terminé : {k} clusters sur {len(df)} EPCI avec {len(valid_vars)} variables"
     
-    return map_fig, radar_fig, bar_fig, cluster_cards, status
+    # === GUIDES DE LECTURE ===
+    # Radar guide
+    radar_guide = dmc.Alert(
+        title="💡 Lecture du Radar", color="indigo", radius="sm", variant="light",
+        children=dmc.Text([
+            "Ce graphique radar superpose les profils moyens des différents clusters. Observez la forme de chaque ligne : ",
+            "les sommets étirés vers l'extérieur indiquent une valeur moyenne élevée pour ce cluster sur la variable correspondante."
+        ], size="sm")
+    )
+    
+    # Bars guide
+    bars_guide = dmc.Alert(
+        title="💡 Lecture des Barres", color="indigo", radius="sm", variant="light",
+        children=dmc.Text([
+            "Ce graphique permet de comparer l'ensemble des clusters, variable par variable. ",
+            "Il est particulièrement utile pour identifier la / les variable(s) qui différencient le plus fortement un cluster des autres."
+        ], size="sm")
+    )
+    
+    return map_fig, radar_fig, bar_fig, cluster_cards, status, radar_guide, bars_guide

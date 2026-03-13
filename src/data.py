@@ -23,6 +23,8 @@ def load_data():
         gdf_merged (GeoDataFrame): The merged data ready for visualization.
         variable_dict (dict): Dictionary mapping column names to human-readable labels.
         category_dict (dict): Dictionary mapping column names to their category.
+        sens_dict (dict): Dictionary mapping column names to their sens.
+        description_dict (dict): Dictionary mapping column names to their descriptions.
     """
 
     # 1. Load GeoJSON
@@ -43,6 +45,8 @@ def load_data():
     variable_dict = {}
     category_dict = {}
     sens_dict = {}
+    description_dict = {}
+    unit_dict = {}
     
     # Path to the new CSV
     DICT_PATH = os.path.join(DATA_DIR_DASH, "dictionnaire_variables.csv")
@@ -60,7 +64,7 @@ def load_data():
             # BUT we might need them for internal logic (like Code EPCI).
             # Strategy: Add everything to internal DF, but filter variable_dict for dropdowns.
             # Here we are building variable_dict which feeds dropdowns.
-            if cat.lower() == 'autre':
+            if cat.lower() in ('autre', 'identification'):
                 continue
                 
             # Prefer Nom_Court, then Description, then Code
@@ -80,6 +84,19 @@ def load_data():
                 sens_dict[var_code] = s if s != 0 else -1
             except:
                 sens_dict[var_code] = -1
+
+            # Description (raw)
+            if 'Description' in row and pd.notna(row['Description']):
+                description_dict[var_code] = str(row['Description']).strip()
+            else:
+                description_dict[var_code] = ""
+                
+            # Unité
+            col_unite = next((c for c in row.keys() if str(c).lower() in ['unité', 'unite']), None)
+            if col_unite and pd.notna(row[col_unite]):
+                unit_dict[var_code] = str(row[col_unite]).strip()
+            else:
+                unit_dict[var_code] = ""
             
     # Fallback/Overrides for critical variables if missing in CSV or strictly needed
     overrides = {
@@ -100,11 +117,15 @@ def load_data():
              # Default sens
              if k not in sens_dict:
                  sens_dict[k] = -1
+             if k not in description_dict:
+                 description_dict[k] = v
+             if k not in unit_dict:
+                 unit_dict[k] = ""
 
     # 4. Processing
     # Ensure numeric for known plotting variables
     for col in df.columns:
-        if col in variable_dict:
+        if col in variable_dict and col not in ['CODE_EPCI', 'EPCI_CODE', 'nom_EPCI', 'LIBEPCI', 'Département', 'NATURE_EPCI']:
             # Specific fix for Ratio D9/D1 often misinterpreted as Date by Excel
             if col == 'IR_D9_D1_SL':
                  df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -120,8 +141,14 @@ def load_data():
             variable_dict['Taux_CNR'] = 'Incidence Globale CNR'
             category_dict['Taux_CNR'] = 'santé'
             sens_dict['Taux_CNR'] = -1
+            description_dict['Taux_CNR'] = "Incidence Globale CNR (Somme des taux)"
+            unit_dict['Taux_CNR'] = "taux"
     
     # Merge
     gdf_merged = gdf_epci.merge(df, left_on='EPCI_CODE', right_on='CODE_EPCI', how='left')
+
+    # 5. Create Department boundaries for overlay
+    # Dissolve by department name to get department shapes
+    gdf_deps = gdf_epci.dissolve(by='DEPARTEMEN')
     
-    return gdf_merged, variable_dict, category_dict, sens_dict
+    return gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps
