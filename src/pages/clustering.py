@@ -10,7 +10,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from ..data import load_data
 
-gdf_merged, variable_dict, category_dict, _, _, _, _, _ = load_data()
+gdf_merged, variable_dict, category_dict, _, _, _, _ = load_data()
 
 # Prepare options by category
 def get_options(target_cats):

@@ -7,9 +7,7 @@ import os
 from ..data import load_data, PROJECT_ROOT
 
 # Load data
-gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _, source_dict = load_data()
-
-
+gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _ = load_data()
 
 # Group variables by category
 def get_vars_by_category(target_cat):
@@ -22,16 +20,13 @@ def get_vars_by_category(target_cat):
             unit = unit_dict.get(var_code, "-")
             if not unit:
                 unit = "-"
-            source = source_dict.get(var_code, "-")
-            if not source:
-                source = "-"
-            result.append({'code': var_code, 'label': label, 'desc': desc, 'unit': unit, 'source': source})
+            result.append({'code': var_code, 'label': label, 'desc': desc, 'unit': unit})
     return sorted(result, key=lambda x: x['label'])
 
 def make_var_table(vars_list):
-    """Create a styled table with fixed column widths for perfect alignment across tabs."""
+    """Create a styled table for a list of variables using DMC."""
     if not vars_list:
-        return dmc.Text("Aucune variable dans cette catégorie.", c="dimmed", fs="italic")
+        return dmc.Text("Aucune variable dans cette catégorie.", color="dimmed", fs="italic")
     
     rows = []
     for item in vars_list:
@@ -40,32 +35,22 @@ def make_var_table(vars_list):
                 dmc.TableTd(dmc.Text(item['label'], fw=500)),
                 dmc.TableTd(dmc.Text(item['desc'], size="sm", c="dimmed")),
                 dmc.TableTd(dmc.Text(item['unit'], size="sm", c="dimmed")),
-                dmc.TableTd(dmc.Text(item['source'], size="xs", c="dimmed")),
                 dmc.TableTd(dmc.Code(item['code'])),
             ])
         )
     
     head = dmc.TableThead(
         dmc.TableTr([
-            dmc.TableTh("Variable", style={"width": "200px"}),
-            dmc.TableTh("Description", style={"width": "400px"}),
-            dmc.TableTh("Unité", style={"width": "100px"}),
-            dmc.TableTh("Source", style={"width": "250px"}),
-            dmc.TableTh("Code", style={"width": "120px"}),
+            dmc.TableTh("Variable"),
+            dmc.TableTh("Description"),
+            dmc.TableTh("Unité"),
+            dmc.TableTh("Code"),
         ])
     )
     
     body = dmc.TableTbody(rows)
     
-    return dmc.Table(
-        [head, body], 
-        striped=True, 
-        highlightOnHover=True, 
-        withTableBorder=True, 
-        withColumnBorders=True,
-        layout="fixed",
-        style={"width": "1070px"}
-    )
+    return dmc.Table([head, body], striped=True, highlightOnHover=True, withTableBorder=True, withColumnBorders=True)
 
 socioeco_vars = get_vars_by_category('Socioéco')
 offre_vars = get_vars_by_category('Offre de soins')
@@ -76,156 +61,72 @@ layout = dmc.Container(
     fluid=True,
     p="xl",
     children=[
-        dmc.Title("Variables et méthodologie", order=1, mb="xs", style={"color": "#2c3e50"}),
+        dmc.Title("Méthodologie & Variables", order=1, mb="xs"),
         dmc.Text(
-            "Explorez les indicateurs pilotant les analyses de SeniAURA ainsi que la rigueur méthodologique du projet.", 
+            "Explorez les variables disponibles organisées par thématique. Ces variables sont utilisées dans les filtres de la Carte, du Radar et du Clustering.", 
             c="dimmed", size="lg", mb="xl"
+        ),
+        
+        dmc.Paper(
+            withBorder=True, shadow="sm", p="lg", radius="md", mb="xl", bg="gray.0",
+            children=[
+                dmc.Title("Construction du dataset", order=3, mb="sm"),
+                dmc.Text("Le dashboard repose sur une base de données constituée à l’échelle des EPCI, agrégeant des données Open Data.", mb="md"),
+                
+                dmc.Title("Source des données", order=4, mb="xs"),
+                dmc.List(
+                    spacing="xs", mb="md",
+                    icon=dmc.ThemeIcon(DashIconify(icon="akar-icons:check", width=16), radius="xl", color="blue", size=24),
+                    children=[
+                        dmc.ListItem(html.Span([html.B("Indicateurs de Santé"), " : Prévalence, incidence et mortalité (Odissé / Santé Publique France)."])),
+                        dmc.ListItem(html.Span([html.B("Offre de soins"), " : APL Médecins/Infirmières (DREES), Inventaire des structures (Balises / ORS AURA)."])),
+                        dmc.ListItem(html.Span([html.B("Déterminants Sociaux"), " : Revenus, précarité, indices F-EDI et FDep (Insee, Filosofi)."])),
+                        dmc.ListItem(html.Span([html.B("Déterminants Environnementaux"), " : Polluants (PM2.5, NO2), Bruit (Balises / ORS AURA)."])),
+                    ]
+                ),
+                
+                dmc.Title("Traitements effectués", order=4, mb="xs"),
+                dmc.Text("Les données ont été nettoyées, harmonisées et agrégées à l'échelle des EPCI. Les variables ont été catégorisées et normalisées pour permettre la comparaison.", mb="lg"),
+
+                dmc.Text("Dernière mise à jour : 6 février 2026", fs="italic", c="dimmed", size="sm")
+            ]
         ),
         
         dmc.Tabs(
             id='methodo-tabs',
             value='socioeco',
-            variant="pills",
-            radius="md",
-            styles={
-                "tab": {
-                    "padding": "12px 20px",
-                    "fontSize": "15px",
-                    "fontWeight": 600,
-                    "borderRadius": "12px",
-                    "border": "1px solid #e9ecef",      # Same border as sidebar
-                    "backgroundColor": "transparent",
-                    "color": "#2c3e50",                  # Same near-black as sidebar
-                    "transition": "background-color 200ms ease, border-color 200ms ease",
-                    "&[data-active]": {
-                        "backgroundColor": "#339af0 !important",
-                        "color": "white !important",
-                        "borderColor": "#1c7ed6 !important",
-                        # No box-shadow
-                    },
-                    "&:hover": {
-                        "backgroundColor": "#f1f3f5",    # Same hover bg as sidebar
-                        "color": "#2c3e50",              # Text stays black on hover
-                        "borderColor": "#339af0",        # Blue border on hover
-                        # No transform, no box-shadow
-                    }
-                },
-                "list": {"marginBottom": "24px", "gap": "6px"}
-            },
             children=[
-                # --- Tabs Navigation ---
                 dmc.TabsList([
-                    dmc.TabsTab("Socioéco", value="socioeco"),
-                    dmc.TabsTab("Offre de soins", value="offre"),
-                    dmc.TabsTab("Environnement", value="env"),
-                    dmc.TabsTab("Santé", value="sante"),
-                    dmc.TabsTab("Construction et méthodologie", value="construction"),
+                    dmc.TabsTab(f'Socio-Éco ({len(socioeco_vars)})', value='socioeco', color="blue"),
+                    dmc.TabsTab(f'Offre de Soins ({len(offre_vars)})', value='offre', color="green"),
+                    dmc.TabsTab(f'Environnement ({len(env_vars)})', value='env', color="orange"),
+                    dmc.TabsTab(f'Santé ({len(sante_vars)})', value='sante', color="red"),
                 ]),
                 
-                # --- Variables Panels ---
-                dmc.TabsPanel(value='socioeco', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables socio-économiques", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Population, emploi, revenus et logement.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(socioeco_vars), h=600)
-                    ])
+                dmc.TabsPanel(value='socioeco', pt="xl", children=[
+                    dmc.Title("🏠 Variables Socio-Économiques", order=3, mb="xs"),
+                    dmc.Text("Indicateurs relatifs à la population, l'emploi, les revenus, le logement et l'éducation.", c="dimmed", mb="md"),
+                    make_var_table(socioeco_vars)
                 ]),
                 
-                dmc.TabsPanel(value='offre', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables offre de soins", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Densité et accessibilité des professionnels de santé.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(offre_vars), h=600)
-                    ])
+                dmc.TabsPanel(value='offre', pt="xl", children=[
+                    dmc.Title("🏥 Variables Offre de Soins", order=3, mb="xs"),
+                    dmc.Text("Accessibilité et densité des professionnels de santé sur le territoire.", c="dimmed", mb="md"),
+                    make_var_table(offre_vars)
                 ]),
                 
-                dmc.TabsPanel(value='env', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables environnement", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Qualité de l'air, bruit et risques environnementaux.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(env_vars), h=600)
-                    ])
+                dmc.TabsPanel(value='env', pt="xl", children=[
+                    dmc.Title("🌿 Variables Environnement", order=3, mb="xs"),
+                    dmc.Text("Indicateurs liés à la qualité de l'environnement et aux risques environnementaux.", c="dimmed", mb="md"),
+                    make_var_table(env_vars)
                 ]),
                 
-                dmc.TabsPanel(value='sante', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables de santé", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Indicateurs cardiovasculaires (incidences et prévalences).", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(sante_vars), h=600)
-                    ])
-                ]),
-
-                # --- Methodology Panel ---
-                dmc.TabsPanel(value='construction', children=[
-                    dmc.Paper(
-                        withBorder=True, p="xl", radius="md", shadow="sm",
-                        children=[
-                            dmc.Title("Prétraitements et méthodologie", order=2, mb="xl", c="#2c3e50", style={"borderBottom": "2px solid #339af0", "paddingBottom": "10px"}),
-                            dmc.Accordion(
-                                chevronPosition="right",
-                                variant="separated",
-                                value="sources",
-                                radius="md",
-                                children=[
-                                    dmc.AccordionItem(
-                                        value="sources",
-                                        children=[
-                                            dmc.AccordionControl(
-                                                dmc.Group([
-                                                    DashIconify(icon="solar:database-linear", width=22, color="#339af0"),
-                                                    dmc.Text("Sources primaires et collecte des données", fw=600, fz="lg")
-                                                ])
-                                            ),
-                                            dmc.AccordionPanel([
-                                                dmc.Text("SeniAURA agrège des données hétérogènes issues de multiples sources institutionnelles :", mb="md"),
-                                                dmc.List(
-                                                    spacing="sm",
-                                                    icon=dmc.ThemeIcon(DashIconify(icon="akar-icons:check", width=12), radius="xl", color="blue", size=20),
-                                                    children=[
-                                                        dmc.ListItem(html.Span([html.B("Santé"), " : Odissé / Santé Publique France."])),
-                                                        dmc.ListItem(html.Span([html.B("Socio-économie"), " : Insee (Filosofi, Recensement)."])),
-                                                        dmc.ListItem(html.Span([html.B("Offre de soins"), " : DREES et ORS AURA."])),
-                                                        dmc.ListItem(html.Span([html.B("Environnement"), " : Balises / ORS AURA."]))
-                                                    ]
-                                                )
-                                            ]),
-                                        ],
-                                    ),
-                                    dmc.AccordionItem(
-                                        value="cleaning",
-                                        children=[
-                                            dmc.AccordionControl(
-                                                dmc.Group([
-                                                    DashIconify(icon="solar:magic-stick-3-linear", width=22, color="#339af0"),
-                                                    dmc.Text("Nettoyage et harmonisation numérique", fw=600, fz="lg")
-                                                ])
-                                            ),
-                                            dmc.AccordionPanel(
-                                                dmc.Text("Correction des formats, unification des séparateurs de milliers/décimales et gestion des types numériques pour garantir la fiabilité statistique.")
-                                            ),
-                                        ],
-                                    ),
-                                    dmc.AccordionItem(
-                                        value="geo",
-                                        children=[
-                                            dmc.AccordionControl(
-                                                dmc.Group([
-                                                    DashIconify(icon="solar:globus-linear", width=22, color="#339af0"),
-                                                    dmc.Text("Standardisation géographique (échelle EPCI)", fw=600, fz="lg")
-                                                ])
-                                            ),
-                                            dmc.AccordionPanel(
-                                                dmc.Text("Agrégation des données communales vers l'échelon intercommunal (EPCI) par moyenne pondérée.")
-                                            ),
-                                        ],
-                                    ),
-                                ]
-                            )
-                        ]
-                    )
+                dmc.TabsPanel(value='sante', pt="xl", children=[
+                    dmc.Title("❤️ Variables de Santé", order=3, mb="xs"),
+                    dmc.Text("Indicateurs d'incidence, mortalité et prévalence des pathologies cardiovasculaires.", c="dimmed", mb="md"),
+                    make_var_table(sante_vars)
                 ])
             ]
-        ),
-        dmc.Space(h="xl")
+        )
     ]
 )

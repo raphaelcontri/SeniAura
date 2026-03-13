@@ -8,7 +8,7 @@ import pandas as pd
 from ..data import load_data
 
 # Load shared data
-gdf_merged, variable_dict, category_dict, sens_dict, _, unit_dict, gdf_deps, _ = load_data()
+gdf_merged, variable_dict, category_dict, sens_dict, _, unit_dict, gdf_deps = load_data()
 
 layout = dmc.Container(
     fluid=True,

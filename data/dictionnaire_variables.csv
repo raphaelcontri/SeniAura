@@ -1,134 +1,134 @@
-Variable,Source,Catégorie,Unité,Min,Max,Sens,Nom_Court,Date,Description,Sources,
-CODE_EPCI,,Identification,,200000172.0,248400335.0,0,Code SIREN de l'EPCI,,Code SIREN de l'EPCI,?,
-LIBEPCI,,Identification,,,,0,Libellé de l'EPCI,,Libellé de l'EPCI,?,
-nom_EPCI,,Identification,,,,0,Nom de l'EPCI,,Nom de l'EPCI,?,
-Nb_Communes,,Identification,Communes (nb),1.0,87.0,0,Nombre de communes par ECPI,,Nombre de communes par ECPI,?,
-NATURE_EPCI,,Identification,,,,0,NATURE_EPCI,,"CC = Comunauté de communes, CA = Communauté d'agglomération",?,
-Département,,Identification,,,,0,Département,,Département,?,
-Département_code,,Identification,,1.0,84.0,0,Code du département,,Code du département,?,
-Pop_standardisee 2020,DRESS,Socioéco,Habitants (nb),5401.0,856482.0,0,Pop_standardisee 2020,2020,standardisé en fonction de l'âge voir détail dans pdf sur les APL dans littérature,?,
-Pop_totale,INSEE,Autre,Habitants (nb),,,0,Population totale,2019,Population totale,?,
-Pop_Dataset_60plus_Pop2016,,Autre,,76.0,866388.0,0,,2016,Pop_Dataset_60plus_Pop2016,?,
-Pop_Dataset_60plus_PopTotale,,Autre,,75.0,836557.0,0,,,Pop_Dataset_60plus_PopTotale,?,
-Pop_FDep_2019,,Autre,,81.0,795202.0,0,,2019,Pop_FDep_2019,?,
-Pop_Filosofi_2021,,Autre,,0.0,855941.0,0,,2021,Pop_Filosofi_2021,?,
-Population municipale 2022,,Autre,,4819.0,1433613.0,0,,2022,Population municipale 2022,?,
-INCI_AVC,Odissé,Santé,pour 100k hab.,129.84,287.77,-1,Incidence AVC,moyenne 2021/2023,incidence pour 100.000 habitants : moyenne 2021/2023 accidents vasculaires cérébraux,"Odissé - Santé Publique France, données 2021-2023",
-INCI_CardIsch,Odissé,Santé,pour 100k hab.,225.02,632.27,-1,Incidence Cardio Isch.,moyenne 2021/2023,incidence pour 100.000 habitants : moyenne 2021/2023 cardiopathies ischémiques,"Odissé - Santé Publique France, données 2021-2023",
-INCI_InsuCard,Odissé,Santé,pour 100k hab.,183.43,510.4,-1,Incidence Insu. Card.,moyenne 2021/2023,incidence pour 100.000 habitants : moyenne 2021/2023 insuffisance cardiaque,"Odissé - Santé Publique France, données 2021-2023",
-MORT_AVC,Odissé,Santé,pour 100k hab.,6.13,126.12,-1,Mortalité AVC,moyenne 2020/2022,mortalité pour 100.000 habitants : moyenne 2020/2022 accidents vasculaires cérébraux,"Odissé - Santé Publique France, données 2021-2023",
-MORT_CardIsch,Odissé,Santé,pour 100k hab.,11.86,134.97,-1,Mortalité Cardio Isch.,moyenne 2020/2022,mortalité pour 100.000 habitants : moyenne 2020/2022 cardiopathies ischémiques,"Odissé - Santé Publique France, données 2021-2023",
-MORT_InsuCard,Odissé,Santé,pour 100k hab.,19.91,104.02,-1,Mortalité Insu. Card.,moyenne 2020/2022,mortalité pour 100.000 habitants : moyenne 2020/2022 insuffisance cardiaque,"Odissé - Santé Publique France, données 2021-2023",
-PREV_AVC,Odissé,Santé,%,1.22,2.31,-1,Prévalence AVC,2022,prévalence % de la population adulte : année 2022 accidents vasculaires cérébraux,"Odissé - Santé Publique France, données 2021-2023",
-PREV_CardIsch,Odissé,Santé,%,2.75,7.29,-1,Prévalence Cardio Isch.,2022,prévalence % de la population adulte : année 2022 cardiopathies ischémiques,"Odissé - Santé Publique France, données 2021-2023",
-PREV_InsuCard,Odissé,Santé,%,1.17,4.17,-1,Prévalence Insu. Card.,2022,prévalence % de la population adulte : année 2022 insuffisance cardiaque,"Odissé - Santé Publique France, données 2021-2023",
-AIR01,Balises,Environnement,μg/m3,4.7,9.9,-1,Expos. Moyenne PM2.5,,"Exposition moyenne de la population à des particules fines PM2,5 (en μg/m3)","Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR02,Balises,Environnement,%,0.0,26.0,-1,Pop. Exposée PM2.5,,"Part de la population exposée à des niveaux de PM2,5 supérieurs à 10 μg/m3","Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR03,Balises,Environnement,μg/m3,-6.0,-1.0,-1,Evol. expos moyenne PM2.5,évol. 2018 et 2023,Evolution de l'exposition moyenne de la population aux PM2.5 entre 2018 et 2023 (en μg/m3),"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR04,Balises,Environnement,%,-46.2,-9.1,-1,Taux Évol. PM2.5,évol. 2018 et 2023,Taux d'évolution de l'exposition moyenne de la population aux PM2.5 entre 2018 et 2023,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR05,Balises,Environnement,μg/m3,5.3,15.5,-1,Expos. Moyenne NO2,,Exposition moyenne de la population au NO2 (en μg/m3),"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR06,Balises,Environnement,%,0.0,99.8,-1,Pop. Exposée NO2,,Part de la population exposée à des niveaux de NO2 supérieurs à 10 μg/m3,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR07,Balises,Environnement,μg/m3,-8.0,0.0,-1,Évol. Expos. moyenne NO2,évol. 2018 et 2023,Evolution de l'exposition moyenne de la population au NO2 entre 2018 et 2023 (en μg/m3),"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR08,Balises,Environnement,%,-40.0,0.0,-1,Taux Évol. NO2,évol. 2018 et 2023,Taux d'évolution de l'exposition moyenne de la population au NO2 entre 2018 et 2023,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR09,Balises,Environnement,Décès (nb),3.0,959.0,-1,"Mortalité Pollution (PM2,5)",,"Nombre de décès attribuables aux PM2,5","Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR10,Balises,Environnement,%,0.3,10.9,-1,"% Décès (PM2,5)",,"Part de décès attribuables aux PM2,5","Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR11,Balises,Environnement,Décès (nb),3.0,465.0,-1,Mortalité Pollution (NO2),,Nombre de décès attribuables au NO2,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR12,Balises,Environnement,%,1.0,5.3,-1,% Décès (NO2),,Part de décès attribuables au NO2,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-BRUIT01,Balises,Environnement,%,64.9,100.0,-1,% Surface Calme,,Part de la surface soumise à un niveau de bruit inférieur ou égal à 60 Lden,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-BRUIT02,Balises,Environnement,Habitants (nb),0.0,62463.0,-1,Hab. Exposés Bruit,,Nombre d'habitants exposés à un niveau de bruit supérieur à 70 Lden,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-BRUIT03,Balises,Environnement,%,0.0,10.9,-1,Part Pop. Exposés Bruit,,Part de la population exposée à un niveau de bruit supérieur à 70 Lden,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-BRUIT04,Balises,Environnement,Mois de vie (nb),0.0,8.0,-1,Mois de vie perdus à cause du bruit,,Nombre de mois de vie en bonne santé perdus imputables aux bruits des transports,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR_BRUIT01,Balises,Environnement,Habitants (nb),0.0,66603.0,-1,Expos. Moyenne PM2.5,,Nombre d'habitants vivant dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR_BRUIT02,Balises,Environnement,%,0.0,5.0,-1,Pop. Exposée PM2.5,,Part de la population vivant dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR_BRUIT03,Balises,Environnement,Établissements (nb),0.0,66603.0,-1,Évol. Expos. PM2.5,,Nombre d'établissements recevant du public vulnérable (ERPV) situés dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AIR_BRUIT04,Balises,Environnement,%,0.0,5.0,-1,Taux Évol. PM2.5,,Part des établissements recevant du public vulnérable (ERPV) situés dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-POLLEN01,Balises,Environnement,Habitants (nb),273.0,154503.0,-1,Hab. Allergiques Ambroisie,,Nombre d'habitants potentiellement allergiques à l'ambroisie,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-POLLEN02,Balises,Environnement,%,6.1,14.4,-1,Part Pop. Allergiques Ambroisie,,Part d'habitants potentiellement allergique à l'ambroisie,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-EAU01,Balises,Environnement,Habitants (nb),3591.0,1422340.0,1,Hab. alimenté par de l'eau de qualité,,Nombre d'habitants alimentés par de l'eau de bonne qualité bactériologique,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-EAU02,Balises,Environnement,%,67.0,100.0,1,Part pop alimenté par de l'eau de qualité,,Part de la population alimentée par de l'eau de bonne qualité bactériologique,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-EAU03,Balises,Environnement,Habitants (nb),0.0,1418629.0,1,Hab. Eau Conforme Pesticides,,Nombre d'habitants alimentés par de l'eau respectant en permanence les limites de qualité pour les pesticides,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-EAU04,Balises,Environnement,%,0.0,100.0,1,Part Pop Eau Conforme Pesticides,,Part de la population alimentée par de l'eau respectant en permanence les limites de qualité pour les pesticides,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-EAU05,Balises,Environnement,Habitants (nb),3317.0,1422340.0,1,Hab. Eau Conforme Nitrates,,Nombre d'habitants alimentés par de l'eau respectant en permanence les limites de qualité pour les nitrates,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-EAU06,Balises,Environnement,%,98.2,100.0,1,Part Pop Eau Conforme Nitrates,,Part de la population alimentée par de l'eau respectant en permanence les limites de qualité pour les nitrates,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-SOLS01,Balises,Environnement,Sites (nb),25.0,10341.0,-1,Nb. Sites BASIAS,,Nombre d'anciens sites industriels et activités de service (BASIAS),"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-SOLS02,Balises,Environnement,Sites (nb),0.0,324.0,-1,Sites Pollués,,Nombre de sites et sols pollués (ou potentiellement pollués) appelant une action des pouvoirs publics,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-INDUSTRIE01,Balises,Environnement,%,0.0,30.5,-1,Part Pop. Proximité activité industrielle,,Part d'habitants résidant à moins d'1 km d'une activité industrielle soumise à la directive IED,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-LOGEMENT01,Balises,Socioéco,Etablissements (nb),7.0,2511.0,-1,Nb. etab. recevant pop. Vulnerables,,Nombre d'établissements recevant des populations vulnérables (ERPV),"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-LOGEMENT02,Balises,Socioéco,Résidences principales (nb),0.0,10149.0,-1,Logements Indignes,,Nombre de résidences principales potentiellement indignes (PPPI),"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-LOGEMENT03,Balises,Socioéco,Résidences principales (nb),20.0,106993.0,-1,Nb. Logements Suroccupés,,Nombre de résidences principales suroccupées,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-LOGEMENT04,Balises,Socioéco,%,0.8,16.0,-1,Part Logements Suroccupés,,Part des résidences principales suroccupées,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-LOGEMENT05,Balises,Socioéco,Résidences principales (nb),98.0,64032.0,-1,Précarité énergetique (Nb),,Nombre de ménages en situation de précarité énergétique logement par niveau de vie,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-LOGEMENT06,Balises,Socioéco,%,3.8,25.5,-1,Précarité énergetique (%),,Part des ménages en situation de précarité énergétique logement par niveau de vie,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-AGRI01,Balises,Environnement,%,0.0,70.0,1,% Agric. Bio,,Part de la Surface Agricole Utile en bio (SAU),"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-ADT01,Balises,Environnement,%,10.5,66.6,1,% Surface Arborée,,Pourcentage de surface arborée.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-ADT02,Balises,Environnement,%,55.8,100.0,1,Accès Espaces Verts (%),,Part de la population ayant accès à un espace arboré de plus de 5 000 m² à moins de 300 m de leur habitation.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-ADT03,Balises,Socioéco,Equipements (nb),40.0,3354.0,1,Nb. Équipements Sportifs,,Nombre d'équipements sportifs.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-ADT04,Balises,Socioéco,Equipements pour 10k hab.,18.0,325.0,1,Équipements Sportifs / 10k hab.,,Nombre d'équipements sportifs pour 10 000 habitants.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-ADT05,Balises,Socioéco,Equipements (nb),26.0,1158.0,1,Nb. Installations Sportives,,Nombre d'installations sportives.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-ADT06,Balises,Socioéco,pour 10k hab.,8.0,207.0,1,Installations Sportives / 10k hab.,,Nombre d'installations sportives pour 10 000 habitants.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-MOB01,Balises,Autre,%,44.1,91.6,0,Mobilité : Voiture (%),,Part des déplacements domicile/travail effectués avec un véhicule individuel motorisé.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-MOB02,Balises,Autre,%,1.9,24.9,0,Mobilité : Marche (%),,Part des déplacements domicile/travail effectués en marchant.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-MOB03,Balises,Autre,%,0.2,32.1,0,Transports en commun (%),,Part des déplacements domicile/travail effectués en utilisant les transports en commun.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-MOB04,Balises,Autre,%,0.3,12.5,0,Mobilité : Vélo (%),,Part des déplacements domicile/travail effectués à vélo.,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-Degré de densité (3 postes),INSEE,Socioéco,Degrès de l'INSEE,1.0,3.0,0,Degré de densité (3 postes),,Dégrès de densité où la population est la plus importante.,?,
-Libellé degré de densité (3 postes),INSEE,Socioéco,,,,0,Libellé degré de densité (3 postes),,Intitulé du degrès de densité où la population est la plus importante.,?,
-Part population dans niveau 1,INSEE,Socioéco,%,0.0,83.33,0,Part population dans niveau 1,,Part de la population vivant dans des zones urbaines denses.,?,
-Part population dans niveau 2,INSEE,Socioéco,%,0.0,91.42,0,Part population dans niveau 2,,Part de la population vivant dans des zones urbaines intermédiaires.,?,
-Part population dans niveau 3,INSEE,Socioéco,%,0.9,100.0,0,Part population dans niveau 3,,Part de la population vivant dans des zones rurales.,?,
-EDI_Moyen,Odissé,Socioéco,Indice F-EDI,-3.83,11.11,-1,Indice de défavorisation sociale,2021,Le calcul du French european deprivation index (F-EDI) par EPCI est fait en faisant la moyenne des communes.," French european deprivation index (F-EDI), données 2021",
-FDep_2021,Balises,Socioéco,Indice,1.0,5.0,-1,Indice défavorisation (FDep),2021,FDEP en 2021,"Balises ORS AURA, Observatoire Santé Environnement, données 2021",
-IR_D9_D1_SL,INSEE,Socioéco,Indice,2.5,7.2,-1,Inégalités (rapport D9/D1),,Rapport interdécile (D9/D1) du niveau de vie,"INSEE, indicateurs sur la pauvreté, 2021",
-MED_SL,INSEE,Socioéco,€,18890.0,40320.0,1,Niveau de Vie Médian,,Médiane du niveau de vie,"INSEE, indicateurs sur la pauvreté, 2021",
-PR_MD60,INSEE,Socioéco,%,5.0,2026.3,-1,Tx Pauvreté (60%),,Taux de pauvreté au seuil de 60% du smic,"INSEE, indicateurs sur la pauvreté, 2021",
-PCS_1,INSEE,Autre,Habitants (nb),29.18,2977.5,-1,Nb agriculteurs,,Nombre d'agriculteurs,"INSEE, population active et chomage, données 2021",
-PCS_2,INSEE,Autre,Habitants (nb),199.53,69335.98,-1,Nb artisans/commercants,,Nombre d'artisans/commercants et chefs d’entreprise,"INSEE, population active et chomage, données 2021",
-PCS_3,INSEE,Autre,Habitants (nb),240.87,392100.8,1,Nb cadres,,Nombre de cadres et professions intellectuelles supérieures,"INSEE, population active et chomage, données 2021",
-PCS_4,INSEE,Autre,Habitants (nb),627.93,354925.18,1,Nb prof. Interm.,,Nombre de professions intermédiaires,"INSEE, population active et chomage, données 2021",
-PCS_5,INSEE,Autre,Habitants (nb),1013.99,311664.61,-1,Nb employés,,Nombre d'employés,"INSEE, population active et chomage, données 2021",
-PCS_6,INSEE,Autre,Habitants (nb),663.32,181373.52,-1,Nb ouvriers,,Nombre d'ouvriers,"INSEE, population active et chomage, données 2021",
-PCS__T,INSEE,Autre,Habitants (nb),3901.8,1320889.53,0,,,PCS__T : total,"INSEE, population active et chomage, données 2021",
-PCS_1_rate,INSEE,Socioéco,%,0.0,0.15,0,Part des agriculteurs,,PCS_1_rate,"INSEE, population active et chomage, données 2021",
-PCS_2_rate,INSEE,Socioéco,%,0.04,0.19,0,Part des artisans/commercants,,PCS_2_rate,"INSEE, population active et chomage, données 2021",
-PCS_3_rate,INSEE,Socioéco,%,0.04,0.3,0,Part des cadres,,PCS_3_rate,"INSEE, population active et chomage, données 2021",
-PCS_4_rate,INSEE,Socioéco,%,0.1,0.37,0,Part des prof. Interm.,,PCS_4_rate,"INSEE, population active et chomage, données 2021",
-PCS_5_rate,INSEE,Socioéco,%,0.17,0.31,0,Part des employés,,PCS_5_rate,"INSEE, population active et chomage, données 2021",
-PCS_6_rate,INSEE,Socioéco,%,0.11,0.35,0,Part des ouvriers,,PCS_6_rate,"INSEE, population active et chomage, données 2021",
-DIPLOME_001T100_RP,INSEE,Autre,Habitants (nb),208.76,102358.32,0,Nb. Sans Diplôme / Primaire,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est CAP, BEP ou diplôme de niveau équivalent.","INSEE, population active et chomage, données 2021",
-DIPLOME_200_RP,INSEE,Autre,Habitants (nb),241.28,62520.37,0,Nb. Niveau Brevet,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB","INSEE, population active et chomage, données 2021",
-DIPLOME_300_RP,INSEE,Autre,Habitants (nb),758.74,122098.48,0,Nb. Niveau CAP/BEP,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB","INSEE, population active et chomage, données 2021",
-DIPLOME_350T351_RP,INSEE,Autre,Habitants (nb),602.66,194463.73,0,Nb. Niveau Bac,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est baccalauréat, brevet professionnel ou équivalent.","INSEE, population active et chomage, données 2021",
-DIPLOME_500_RP,INSEE,Autre,Habitants (nb),319.23,110091.38,0,Nb. Niveau Supérieur Court (Bac+2),,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est enseignement supérieur de cycle court : BTS, DUT, Deug, Deust, diplôme de la santé ou du social de niveau bac+2.","INSEE, population active et chomage, données 2021",
-DIPLOME_600_RP,INSEE,Autre,Habitants (nb),177.92,136047.3,0,Nb. Niveau Licence (Bac+3/4),,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est baccalauréat universitaire ou équivalent : Licence, licence pro, maîtrise, diplôme équivalent de niveau bac+3 ou bac+4.","INSEE, population active et chomage, données 2021",
-DIPLOME_700_RP,INSEE,Autre,Habitants (nb),117.99,212847.37,0,Nb. Niveau Master et + (Bac+5),,Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est diplôme de niveau bac + 5 ou plus.,"INSEE, population active et chomage, données 2021",
-DIPLOME__T,INSEE,Autre,Habitants (nb),5393.24,1880853.89,0,,,Total,"INSEE, population active et chomage, données 2021",
-DIPLOME_001T100_RP_rate,INSEE,Socioéco,%,0.03,0.13,0,Part Sans Diplôme / Primaire,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est CAP, BEP ou diplôme de niveau équivalent.","INSEE, population active et chomage, données 2021",
-DIPLOME_200_RP_rate,INSEE,Socioéco,%,0.04,0.07,0,Part Niveau Brevet,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB","INSEE, population active et chomage, données 2021",
-DIPLOME_300_RP_rate,INSEE,Socioéco,%,0.09,0.2,0,Part Niveau CAP/BEP,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB","INSEE, population active et chomage, données 2021",
-DIPLOME_350T351_RP_rate,INSEE,Socioéco,%,0.11,0.16,0,Part Niveau Bac,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est baccalauréat, brevet professionnel ou équivalent.","INSEE, population active et chomage, données 2021",
-DIPLOME_500_RP_rate,INSEE,Socioéco,%,0.05,0.11,0,Part Niveau Supérieur Court (Bac+2),,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est enseignement supérieur de cycle court : BTS, DUT, Deug, Deust, diplôme de la santé ou du social de niveau bac+2.","INSEE, population active et chomage, données 2021",
-DIPLOME_600_RP_rate,INSEE,Socioéco,%,0.03,0.11,0,Part Niveau Licence (Bac+3/4),,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est baccalauréat universitaire ou équivalent : Licence, licence pro, maîtrise, diplôme équivalent de niveau bac+3 ou bac+4.","INSEE, population active et chomage, données 2021",
-DIPLOME_700_RP_rate,INSEE,Socioéco,%,0.02,0.17,0,Part Niveau Master et + (Bac+5),,Part des personnes dont le diplôme le plus élevé déclaré par l'individu est diplôme de niveau bac + 5 ou plus.,"INSEE, population active et chomage, données 2021",
-Part de personnes isolées_General_Avg,INSEE,Socioéco,%,4.62,10.13,-1,Part de personnes isolées,,Part de personnes isolées_General_Avg,"INSEE, Couples - Familles - Ménages, données 2022 ",https://www.insee.fr/fr/statistiques/8647008#consulter
-Part de personnes isolées 60 ans et plus,INSEE,Socioéco,%,7.46,12.86,-1,Part de personnes isolées 60 ans & +,,Part de personnes isolées 60 ans et plus,"INSEE, Couples - Familles - Ménages, données 2022 ",
-Taux de chomeurs_2022,INSEE,Socioéco,%,0.03,0.22,-1,Taux Chômage en 2022,2022,Taux de chomeurs en 2022,"INSEE, population active et chomage, données 2021",
-Officines_2024,Balises,Offre de soins,Officines (nb),1.0,417.0,1,Effectif d'officines (2024),2024,"Effectif d'officines (lieu où le pharmacien vend, entrepose ses médicaments) en 2024","Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Officines_2025,Balises,Offre de soins,Officines (nb),1.0,406.0,1,Effectif d'officines (2025),2025,Effectif d'officines en 2025,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Centres_Sante_2024,Balises,Offre de soins,Centres de santé (nb),0.0,89.0,1,Effectif de centre de santé (2024),2024,Effectif de centres de santé en 2024,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Centres_Sante_2025,Balises,Offre de soins,Centres de santé (nb),0.0,84.0,1,Effectif de centre de santé (2025),2025,Effectif de centres de santé en 2025,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Maisons_Sante_2024,Balises,Offre de soins,Maisons de santé (nb),0.0,50.0,1,Effectif de maison de santé (2024),2024,Effectif de maisons de santé en 2024,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Maisons_Sante_2025,Balises,Offre de soins,Maisons de santé (nb),0.0,59.0,1,Effectif de maison de santé (2025),2025,Effectif de maisons de santé en 2025,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Pharmaciens_2021,Balises,Offre de soins,Pharmaciens (nb),0.0,1348.0,1,Effectif de pharmaciens (2021),2021,Effectif de pharmaciens en 2021,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Pharmaciens_2022,Balises,Offre de soins,Pharmaciens (nb),1.0,1330.0,1,Effectif de pharmaciens 2022),2022,Effectif de pharmaciens en 2022,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Pharmaciens_2023,Balises,Offre de soins,Pharmaciens (nb),0.0,1344.0,1,Effectif de pharmaciens (2023),2023,Effectif de pharmaciens en 2023,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Pharmaciens_2024,Balises,Offre de soins,Pharmaciens (nb),1.0,1365.0,1,Effectif de pharmaciens (2024),2024,Effectif de pharmaciens en 2024,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-Pharmaciens_2025,Balises,Offre de soins,Pharmaciens (nb),7.0,9423.0,1,Effectif de pharmaciens (2025),2025,Effectif de pharmaciens en 2025,"Balises ORS AURA, FIchier National des Etablissements Sanitaires et Sociaux, données 2024- 2025",
-APL-sages_femmes_2022,DRESS,Offre de soins,Indice APL,0.0,44.51,1,APL Sages-Femmes (2022),2022,APL sages-femmes en 2022,"Dress, accessibilité potentielle localisée, données 2022",
-APL-sages_femmes_2023,DRESS,Offre de soins,Indice APL,0.0,35.6,1,APL Sages-Femmes (2023),2023,APL sages-femmes en 2023,"Dress, accessibilité potentielle localisée, données 2022",
-APL-kine_2022,DRESS,Offre de soins,Indice APL,31.29,212.17,1,APL Kinés (2022),2022,APL kinésithérapeutes en 2022,"Dress, accessibilité potentielle localisée, données 2022",
-APL-kine_2023,DRESS,Offre de soins,Indice APL,31.42,210.91,1,APL Kinés (2023),2023,APL kinésithérapeutes en 2023,"Dress, accessibilité potentielle localisée, données 2022",
-APl-infirmieres_2022,DRESS,Offre de soins,Indice APL,33.39,219.71,1,APL Infirmiers (2022),2022,APL infirmiers en 2022,"Dress, accessibilité potentielle localisée, données 2023",
-APL-infirmieres_2023,DRESS,Offre de soins,Indice APL,26.32,221.0,1,APL Infirmiers (2023),2023,APL infirmières en 2023,"Dress, accessibilité potentielle localisée, données 2024",
-APL-chir_dent_2022,DRESS,Autre,Indice APL,08.05,83.89,1,APL Dentistes (2022),2022,APL chirurgiens-dentistes en 2022,"Dress, accessibilité potentielle localisée, données 2025",
-APL-chir_dent_2023,DRESS,Autre,Indice APL,7.84,87.13,1,APL Dentistes (2023),2023,APL chirurgiens-dentistes en 2023,"Dress, accessibilité potentielle localisée, données 2026",
-APL-med_general_2023,DRESS,Offre de soins,Indice APL,1.26,6.56,1,APL Généralistes (2023),2023,APL médecins généralistes en 2023,"Dress, accessibilité potentielle localisée, données 2027",
-APL-med_general_2022,DRESS,Offre de soins,Indice APL,1.66,5.83,1,APL Généralistes (2022),2022,APL médecins généralistes en 2022,"Dress, accessibilité potentielle localisée, données 2028",
+Variable,Source,Catégorie,Unité,Min,Max,Sens,Nom_Court,Date,Description
+CODE_EPCI,,Identification,,200000172.0,248400335.0,0,Code SIREN de l'EPCI,,Code SIREN de l'EPCI
+LIBEPCI,,Identification,,,,0,Libellé de l'EPCI,,Libellé de l'EPCI
+nom_EPCI,,Identification,,,,0,Nom de l'EPCI,,Nom de l'EPCI
+Nb_Communes,,Identification,Communes (nb),1.0,87.0,0,Nombre de communes par ECPI,,Nombre de communes par ECPI
+NATURE_EPCI,,Identification,,,,0,NATURE_EPCI,,"CC = Comunauté de communes, CA = Communauté d'agglomération"
+Département,,Identification,,,,0,Département,,Département
+Département_code,,Identification,,1.0,84.0,0,Code du département,,Code du département
+Pop_standardisee 2020,DRESS,Socioéco,Habitants (nb),5401.0,856482.0,0,Pop_standardisee 2020,2020,standardisé en fonction de l'âge voir détail dans pdf sur les APL dans littérature
+Pop_totale,INSEE,Autre,Habitants (nb),,,0,Population totale,2019,Population totale
+Pop_Dataset_60plus_Pop2016,,Autre,,76.0,866388.0,0,,2016,Pop_Dataset_60plus_Pop2016
+Pop_Dataset_60plus_PopTotale,,Autre,,75.0,836557.0,0,,,Pop_Dataset_60plus_PopTotale
+Pop_FDep_2019,,Autre,,81.0,795202.0,0,,2019,Pop_FDep_2019
+Pop_Filosofi_2021,,Autre,,0.0,855941.0,0,,2021,Pop_Filosofi_2021
+Population municipale 2022,,Autre,,4819.0,1433613.0,0,,2022,Population municipale 2022
+INCI_AVC,Odissé,Santé,pour 100k hab.,129.84,287.77,-1,Incidence AVC,moyenne 2021/2023,incidence pour 100.000 habitants : moyenne 2021/2023 accidents vasculaires cérébraux
+INCI_CardIsch,Odissé,Santé,pour 100k hab.,225.02,632.27,-1,Incidence Cardio Isch.,moyenne 2021/2023,incidence pour 100.000 habitants : moyenne 2021/2023 cardiopathies ischémiques
+INCI_InsuCard,Odissé,Santé,pour 100k hab.,183.43,510.4,-1,Incidence Insu. Card.,moyenne 2021/2023,incidence pour 100.000 habitants : moyenne 2021/2023 insuffisance cardiaque
+MORT_AVC,Odissé,Santé,pour 100k hab.,6.13,126.12,-1,Mortalité AVC,moyenne 2020/2022,mortalité pour 100.000 habitants : moyenne 2020/2022 accidents vasculaires cérébraux
+MORT_CardIsch,Odissé,Santé,pour 100k hab.,11.86,134.97,-1,Mortalité Cardio Isch.,moyenne 2020/2022,mortalité pour 100.000 habitants : moyenne 2020/2022 cardiopathies ischémiques
+MORT_InsuCard,Odissé,Santé,pour 100k hab.,19.91,104.02,-1,Mortalité Insu. Card.,moyenne 2020/2022,mortalité pour 100.000 habitants : moyenne 2020/2022 insuffisance cardiaque
+PREV_AVC,Odissé,Santé,%,1.22,2.31,-1,Prévalence AVC,2022,prévalence % de la population adulte : année 2022 accidents vasculaires cérébraux
+PREV_CardIsch,Odissé,Santé,%,2.75,7.29,-1,Prévalence Cardio Isch.,2022,prévalence % de la population adulte : année 2022 cardiopathies ischémiques
+PREV_InsuCard,Odissé,Santé,%,1.17,4.17,-1,Prévalence Insu. Card.,2022,prévalence % de la population adulte : année 2022 insuffisance cardiaque
+AIR01,Balises,Environnement,μg/m3,4.7,9.9,-1,Expos. Moyenne PM2.5,,"Exposition moyenne de la population à des particules fines PM2,5 (en μg/m3)"
+AIR02,Balises,Environnement,%,0.0,26.0,-1,Pop. Exposée PM2.5,,"Part de la population exposée à des niveaux de PM2,5 supérieurs à 10 μg/m3"
+AIR03,Balises,Environnement,μg/m3,-6.0,-1.0,-1,Evol. expos moyenne PM2.5,évol. 2018 et 2023,Evolution de l'exposition moyenne de la population aux PM2.5 entre 2018 et 2023 (en μg/m3)
+AIR04,Balises,Environnement,%,-46.2,-9.1,-1,Taux Évol. PM2.5,évol. 2018 et 2023,Taux d'évolution de l'exposition moyenne de la population aux PM2.5 entre 2018 et 2023
+AIR05,Balises,Environnement,μg/m3,5.3,15.5,-1,Expos. Moyenne NO2,,Exposition moyenne de la population au NO2 (en μg/m3)
+AIR06,Balises,Environnement,%,0.0,99.8,-1,Pop. Exposée NO2,,Part de la population exposée à des niveaux de NO2 supérieurs à 10 μg/m3
+AIR07,Balises,Environnement,μg/m3,-8.0,0.0,-1,Évol. Expos. moyenne NO2,évol. 2018 et 2023,Evolution de l'exposition moyenne de la population au NO2 entre 2018 et 2023 (en μg/m3)
+AIR08,Balises,Environnement,%,-40.0,0.0,-1,Taux Évol. NO2,évol. 2018 et 2023,Taux d'évolution de l'exposition moyenne de la population au NO2 entre 2018 et 2023
+AIR09,Balises,Environnement,Décès (nb),3.0,959.0,-1,"Mortalité Pollution (PM2,5)",,"Nombre de décès attribuables aux PM2,5"
+AIR10,Balises,Environnement,%,0.3,10.9,-1,"% Décès (PM2,5)",,"Part de décès attribuables aux PM2,5"
+AIR11,Balises,Environnement,Décès (nb),3.0,465.0,-1,Mortalité Pollution (NO2),,Nombre de décès attribuables au NO2
+AIR12,Balises,Environnement,%,1.0,5.3,-1,% Décès (NO2),,Part de décès attribuables au NO2
+BRUIT01,Balises,Environnement,%,64.9,100.0,-1,% Surface Calme,,Part de la surface soumise à un niveau de bruit inférieur ou égal à 60 Lden
+BRUIT02,Balises,Environnement,Habitants (nb),0.0,62463.0,-1,Hab. Exposés Bruit,,Nombre d'habitants exposés à un niveau de bruit supérieur à 70 Lden
+BRUIT03,Balises,Environnement,%,0.0,10.9,-1,Part Pop. Exposés Bruit,,Part de la population exposée à un niveau de bruit supérieur à 70 Lden
+BRUIT04,Balises,Environnement,Mois de vie (nb),0.0,8.0,-1,Mois de vie perdus à cause du bruit,,Nombre de mois de vie en bonne santé perdus imputables aux bruits des transports
+AIR_BRUIT01,Balises,Environnement,Habitants (nb),0.0,66603.0,-1,Expos. Moyenne PM2.5,,Nombre d'habitants vivant dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.
+AIR_BRUIT02,Balises,Environnement,%,0.0,5.0,-1,Pop. Exposée PM2.5,,Part de la population vivant dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.
+AIR_BRUIT03,Balises,Environnement,Établissements (nb),0.0,66603.0,-1,Évol. Expos. PM2.5,,Nombre d'établissements recevant du public vulnérable (ERPV) situés dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore
+AIR_BRUIT04,Balises,Environnement,%,0.0,5.0,-1,Taux Évol. PM2.5,,Part des établissements recevant du public vulnérable (ERPV) situés dans des zones très ou hautement dégradées par la pollution atmosphérique et sonore.
+POLLEN01,Balises,Environnement,Habitants (nb),273.0,154503.0,-1,Hab. Allergiques Ambroisie,,Nombre d'habitants potentiellement allergiques à l'ambroisie
+POLLEN02,Balises,Environnement,%,6.1,14.4,-1,Part Pop. Allergiques Ambroisie,,Part d'habitants potentiellement allergique à l'ambroisie
+EAU01,Balises,Environnement,Habitants (nb),3591.0,1422340.0,1,Hab. alimenté par de l'eau de qualité,,Nombre d'habitants alimentés par de l'eau de bonne qualité bactériologique
+EAU02,Balises,Environnement,%,67.0,100.0,1,Part pop alimenté par de l'eau de qualité,,Part de la population alimentée par de l'eau de bonne qualité bactériologique
+EAU03,Balises,Environnement,Habitants (nb),0.0,1418629.0,1,Hab. Eau Conforme Pesticides,,Nombre d'habitants alimentés par de l'eau respectant en permanence les limites de qualité pour les pesticides
+EAU04,Balises,Environnement,%,0.0,100.0,1,Part Pop Eau Conforme Pesticides,,Part de la population alimentée par de l'eau respectant en permanence les limites de qualité pour les pesticides
+EAU05,Balises,Environnement,Habitants (nb),3317.0,1422340.0,1,Hab. Eau Conforme Nitrates,,Nombre d'habitants alimentés par de l'eau respectant en permanence les limites de qualité pour les nitrates
+EAU06,Balises,Environnement,%,98.2,100.0,1,Part Pop Eau Conforme Nitrates,,Part de la population alimentée par de l'eau respectant en permanence les limites de qualité pour les nitrates
+SOLS01,Balises,Environnement,Sites (nb),25.0,10341.0,-1,Nb. Sites BASIAS,,Nombre d'anciens sites industriels et activités de service (BASIAS)
+SOLS02,Balises,Environnement,Sites (nb),0.0,324.0,-1,Sites Pollués,,Nombre de sites et sols pollués (ou potentiellement pollués) appelant une action des pouvoirs publics
+INDUSTRIE01,Balises,Environnement,%,0.0,30.5,-1,Part Pop. Proximité activité industrielle,,Part d'habitants résidant à moins d'1 km d'une activité industrielle soumise à la directive IED
+LOGEMENT01,Balises,Socioéco,Etablissements (nb),7.0,2511.0,-1,Nb. etab. recevant pop. Vulnerables,,Nombre d'établissements recevant des populations vulnérables (ERPV)
+LOGEMENT02,Balises,Socioéco,Résidences principales (nb),0.0,10149.0,-1,Logements Indignes,,Nombre de résidences principales potentiellement indignes (PPPI)
+LOGEMENT03,Balises,Socioéco,Résidences principales (nb),20.0,106993.0,-1,Nb. Logements Suroccupés,,Nombre de résidences principales suroccupées
+LOGEMENT04,Balises,Socioéco,%,0.8,16.0,-1,Part Logements Suroccupés,,Part des résidences principales suroccupées
+LOGEMENT05,Balises,Socioéco,Résidences principales (nb),98.0,64032.0,-1,Précarité énergetique (Nb),,Nombre de ménages en situation de précarité énergétique logement par niveau de vie
+LOGEMENT06,Balises,Socioéco,%,3.8,25.5,-1,Précarité énergetique (%),,Part des ménages en situation de précarité énergétique logement par niveau de vie
+AGRI01,Balises,Environnement,%,0.0,70.0,1,% Agric. Bio,,Part de la Surface Agricole Utile en bio (SAU)
+ADT01,Balises,Environnement,%,10.5,66.6,1,% Surface Arborée,,Pourcentage de surface arborée.
+ADT02,Balises,Environnement,%,55.8,100.0,1,Accès Espaces Verts (%),,Part de la population ayant accès à un espace arboré de plus de 5 000 m² à moins de 300 m de leur habitation.
+ADT03,Balises,Socioéco,Equipements (nb),40.0,3354.0,1,Nb. Équipements Sportifs,,Nombre d'équipements sportifs.
+ADT04,Balises,Socioéco,Equipements pour 10k hab.,18.0,325.0,1,Équipements Sportifs / 10k hab.,,Nombre d'équipements sportifs pour 10 000 habitants.
+ADT05,Balises,Socioéco,Equipements (nb),26.0,1158.0,1,Nb. Installations Sportives,,Nombre d'installations sportives.
+ADT06,Balises,Socioéco,pour 10k hab.,8.0,207.0,1,Installations Sportives / 10k hab.,,Nombre d'installations sportives pour 10 000 habitants.
+MOB01,Balises,Autre,%,44.1,91.6,0,Mobilité : Voiture (%),,Part des déplacements domicile/travail effectués avec un véhicule individuel motorisé.
+MOB02,Balises,Autre,%,1.9,24.9,0,Mobilité : Marche (%),,Part des déplacements domicile/travail effectués en marchant.
+MOB03,Balises,Autre,%,0.2,32.1,0,Transports en commun (%),,Part des déplacements domicile/travail effectués en utilisant les transports en commun.
+MOB04,Balises,Autre,%,0.3,12.5,0,Mobilité : Vélo (%),,Part des déplacements domicile/travail effectués à vélo.
+Degré de densité (3 postes),INSEE,Socioéco,Degrès de l'INSEE,1.0,3.0,0,Degré de densité (3 postes),,Dégrès de densité où la population est la plus importante.
+Libellé degré de densité (3 postes),INSEE,Socioéco,,,,0,Libellé degré de densité (3 postes),,Intitulé du degrès de densité où la population est la plus importante.
+Part population dans niveau 1,INSEE,Socioéco,%,0.0,83.33,0,Part population dans niveau 1,,Part de la population vivant dans des zones urbaines denses.
+Part population dans niveau 2,INSEE,Socioéco,%,0.0,91.42,0,Part population dans niveau 2,,Part de la population vivant dans des zones urbaines intermédiaires.
+Part population dans niveau 3,INSEE,Socioéco,%,0.9,100.0,0,Part population dans niveau 3,,Part de la population vivant dans des zones rurales.
+EDI_Moyen,Odissé,Socioéco,Indice F-EDI,-3.83,11.11,-1,Indice de défavorisation sociale,2021,Le calcul du French european deprivation index (F-EDI) par EPCI est fait en faisant la moyenne des communes.
+FDep_2021,Balises,Socioéco,Indice,1.0,5.0,-1,Indice défavorisation (FDep),2021,FDEP en 2021
+IR_D9_D1_SL,INSEE,Socioéco,Indice,2.5,7.2,-1,Inégalités (rapport D9/D1),,Rapport interdécile (D9/D1) du niveau de vie
+MED_SL,INSEE,Socioéco,€,18890.0,40320.0,1,Niveau de Vie Médian,,Médiane du niveau de vie
+PR_MD60,INSEE,Socioéco,%,5.0,26.3,-1,Tx Pauvreté (60%),,Taux de pauvreté au seuil de 60% du smic
+PCS_1,INSEE,Autre,Habitants (nb),29.18,2977.5,-1,Nb agriculteurs,,Nombre d'agriculteurs
+PCS_2,INSEE,Autre,Habitants (nb),199.53,69335.98,-1,Nb artisans/commercants,,Nombre d'artisans/commercants et chefs d’entreprise
+PCS_3,INSEE,Autre,Habitants (nb),240.87,392100.8,1,Nb cadres,,Nombre de cadres et professions intellectuelles supérieures
+PCS_4,INSEE,Autre,Habitants (nb),627.93,354925.18,1,Nb prof. Interm.,,Nombre de professions intermédiaires
+PCS_5,INSEE,Autre,Habitants (nb),1013.99,311664.61,-1,Nb employés,,Nombre d'employés
+PCS_6,INSEE,Autre,Habitants (nb),663.32,181373.52,-1,Nb ouvriers,,Nombre d'ouvriers
+PCS__T,INSEE,Autre,Habitants (nb),3901.8,1320889.53,0,,,PCS__T : total
+PCS_1_rate,INSEE,Socioéco,%,0.0,0.15,0,Part des agriculteurs,,PCS_1_rate
+PCS_2_rate,INSEE,Socioéco,%,0.04,0.19,0,Part des artisans/commercants,,PCS_2_rate
+PCS_3_rate,INSEE,Socioéco,%,0.04,0.3,0,Part des cadres,,PCS_3_rate
+PCS_4_rate,INSEE,Socioéco,%,0.1,0.37,0,Part des prof. Interm.,,PCS_4_rate
+PCS_5_rate,INSEE,Socioéco,%,0.17,0.31,0,Part des employés,,PCS_5_rate
+PCS_6_rate,INSEE,Socioéco,%,0.11,0.35,0,Part des ouvriers,,PCS_6_rate
+DIPLOME_001T100_RP,INSEE,Autre,Habitants (nb),208.76,102358.32,0,Nb. Sans Diplôme / Primaire,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est CAP, BEP ou diplôme de niveau équivalent."
+DIPLOME_200_RP,INSEE,Autre,Habitants (nb),241.28,62520.37,0,Nb. Niveau Brevet,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB"
+DIPLOME_300_RP,INSEE,Autre,Habitants (nb),758.74,122098.48,0,Nb. Niveau CAP/BEP,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB"
+DIPLOME_350T351_RP,INSEE,Autre,Habitants (nb),602.66,194463.73,0,Nb. Niveau Bac,,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est baccalauréat, brevet professionnel ou équivalent."
+DIPLOME_500_RP,INSEE,Autre,Habitants (nb),319.23,110091.38,0,Nb. Niveau Supérieur Court (Bac+2),,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est enseignement supérieur de cycle court : BTS, DUT, Deug, Deust, diplôme de la santé ou du social de niveau bac+2."
+DIPLOME_600_RP,INSEE,Autre,Habitants (nb),177.92,136047.3,0,Nb. Niveau Licence (Bac+3/4),,"Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est baccalauréat universitaire ou équivalent : Licence, licence pro, maîtrise, diplôme équivalent de niveau bac+3 ou bac+4."
+DIPLOME_700_RP,INSEE,Autre,Habitants (nb),117.99,212847.37,0,Nb. Niveau Master et + (Bac+5),,Nombre de personne dont le diplôme le plus élevé déclaré par l'individu est diplôme de niveau bac + 5 ou plus.
+DIPLOME__T,INSEE,Autre,Habitants (nb),5393.24,1880853.89,0,,,Total
+DIPLOME_001T100_RP_rate,INSEE,Socioéco,%,0.03,0.13,0,Part Sans Diplôme / Primaire,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est CAP, BEP ou diplôme de niveau équivalent."
+DIPLOME_200_RP_rate,INSEE,Socioéco,%,0.04,0.07,0,Part Niveau Brevet,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB"
+DIPLOME_300_RP_rate,INSEE,Socioéco,%,0.09,0.2,0,Part Niveau CAP/BEP,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est BEPC, brevet élémentaire, brevet des collèges, DNB"
+DIPLOME_350T351_RP_rate,INSEE,Socioéco,%,0.11,0.16,0,Part Niveau Bac,,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est baccalauréat, brevet professionnel ou équivalent."
+DIPLOME_500_RP_rate,INSEE,Socioéco,%,0.05,0.11,0,Part Niveau Supérieur Court (Bac+2),,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est enseignement supérieur de cycle court : BTS, DUT, Deug, Deust, diplôme de la santé ou du social de niveau bac+2."
+DIPLOME_600_RP_rate,INSEE,Socioéco,%,0.03,0.11,0,Part Niveau Licence (Bac+3/4),,"Part des personnes dont le diplôme le plus élevé déclaré par l'individu est baccalauréat universitaire ou équivalent : Licence, licence pro, maîtrise, diplôme équivalent de niveau bac+3 ou bac+4."
+DIPLOME_700_RP_rate,INSEE,Socioéco,%,0.02,0.17,0,Part Niveau Master et + (Bac+5),,Part des personnes dont le diplôme le plus élevé déclaré par l'individu est diplôme de niveau bac + 5 ou plus.
+Part de personnes isolées_General_Avg,INSEE,Socioéco,%,4.62,10.13,-1,Part de personnes isolées,,Part de personnes isolées_General_Avg
+Part de personnes isolées 60 ans et plus,INSEE,Socioéco,%,7.46,12.86,-1,Part de personnes isolées 60 ans & +,,Part de personnes isolées 60 ans et plus
+Taux de chomeurs_2022,INSEE,Socioéco,%,0.03,0.22,-1,Taux Chômage en 2022,2022,Taux de chomeurs en 2022
+Officines_2024,Balises,Offre de soins,Officines (nb),1.0,417.0,1,Effectif d'officines (2024),2024,"Effectif d'officines (lieu où le pharmacien vend, entrepose ses médicaments) en 2024"
+Officines_2025,Balises,Offre de soins,Officines (nb),1.0,406.0,1,Effectif d'officines (2025),2025,Effectif d'officines en 2025
+Centres_Sante_2024,Balises,Offre de soins,Centres de santé (nb),0.0,89.0,1,Effectif de centre de santé (2024),2024,Effectif de centres de santé en 2024
+Centres_Sante_2025,Balises,Offre de soins,Centres de santé (nb),0.0,84.0,1,Effectif de centre de santé (2025),2025,Effectif de centres de santé en 2025
+Maisons_Sante_2024,Balises,Offre de soins,Maisons de santé (nb),0.0,50.0,1,Effectif de maison de santé (2024),2024,Effectif de maisons de santé en 2024
+Maisons_Sante_2025,Balises,Offre de soins,Maisons de santé (nb),0.0,59.0,1,Effectif de maison de santé (2025),2025,Effectif de maisons de santé en 2025
+Pharmaciens_2021,Balises,Offre de soins,Pharmaciens (nb),0.0,1348.0,1,Effectif de pharmaciens (2021),2021,Effectif de pharmaciens en 2021
+Pharmaciens_2022,Balises,Offre de soins,Pharmaciens (nb),1.0,1330.0,1,Effectif de pharmaciens 2022),2022,Effectif de pharmaciens en 2022
+Pharmaciens_2023,Balises,Offre de soins,Pharmaciens (nb),0.0,1344.0,1,Effectif de pharmaciens (2023),2023,Effectif de pharmaciens en 2023
+Pharmaciens_2024,Balises,Offre de soins,Pharmaciens (nb),1.0,1365.0,1,Effectif de pharmaciens (2024),2024,Effectif de pharmaciens en 2024
+Pharmaciens_2025,Balises,Offre de soins,Pharmaciens (nb),7.0,9423.0,1,Effectif de pharmaciens (2025),2025,Effectif de pharmaciens en 2025
+APL-sages_femmes_2022,DRESS,Offre de soins,Indice APL,0.0,44.51,1,APL Sages-Femmes (2022),2022,APL sages-femmes en 2022
+APL-sages_femmes_2023,DRESS,Offre de soins,Indice APL,0.0,35.6,1,APL Sages-Femmes (2023),2023,APL sages-femmes en 2023
+APL-kine_2022,DRESS,Offre de soins,Indice APL,31.29,212.17,1,APL Kinés (2022),2022,APL kinésithérapeutes en 2022
+APL-kine_2023,DRESS,Offre de soins,Indice APL,31.42,210.91,1,APL Kinés (2023),2023,APL kinésithérapeutes en 2023
+APl-infirmieres_2022,DRESS,Offre de soins,Indice APL,33.39,219.71,1,APL Infirmiers (2022),2022,APL infirmiers en 2022
+APL-infirmieres_2023,DRESS,Offre de soins,Indice APL,26.32,221.0,1,APL Infirmiers (2023),2023,APL infirmières en 2023
+APL-chir_dent_2022,DRESS,Autre,Indice APL,8.05,83.89,1,APL Dentistes (2022),2022,APL chirurgiens-dentistes en 2022
+APL-chir_dent_2023,DRESS,Autre,Indice APL,7.84,87.13,1,APL Dentistes (2023),2023,APL chirurgiens-dentistes en 2023
+APL-med_general_2023,DRESS,Offre de soins,Indice APL,1.26,6.56,1,APL Généralistes (2023),2023,APL médecins généralistes en 2023
+APL-med_general_2022,DRESS,Offre de soins,Indice APL,1.66,5.83,1,APL Généralistes (2022),2022,APL médecins généralistes en 2022
