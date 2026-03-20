@@ -33,12 +33,8 @@ layout = dmc.Container(
     children=[
         # Page Header
         dmc.Group(
-            justify="space-between",
+            justify="flex-end",
             children=[
-                dmc.Stack(gap=0, children=[
-                    dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=2, c="#2c3e50"),
-                    dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et analysez le profil de vulnérabilité d'un EPCI avec le radar comparatif.", size="sm", c="dimmed"),
-                ]),
                 dmc.Button(
                     "Aide",
                     id="exploration-guide-btn",
@@ -48,7 +44,8 @@ layout = dmc.Container(
                     radius="md",
                     size="sm"
                 )
-            ]
+            ],
+            mb="md"
         ),
 
         # Main Interface
@@ -195,22 +192,7 @@ def update_sliders(social, offre, env, current_vals, current_ids):
                 )
             ]))
         
-        return [dmc.AccordionItem(
-            [
-                # Header remains small but clean
-                dmc.AccordionControl(
-                    f"Ajuster les indicateurs ({len(vars)})",
-                    icon=DashIconify(icon="solar:tuning-square-2-linear", width=14),
-                    style={"minHeight": "32px", "paddingTop": "2px", "paddingBottom": "2px"},
-                    styles={"label": {"fontSize": "12px", "fontWeight": 500}}
-                ),
-                dmc.AccordionPanel(
-                    dmc.Stack(gap=0, children=sliders, mt=0),
-                    styles={"content": {"paddingLeft": "1px", "paddingRight": "1px", "paddingTop": "5px"}}
-                )
-            ],
-            value="main"
-        )]
+        return sliders if sliders else []
 
     return make_category_item(social, "Socio-Économie"), \
            make_category_item(offre, "Offre de Soins"), \

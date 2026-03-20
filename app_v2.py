@@ -59,18 +59,21 @@ NAV_LINK_STYLE = {
 NAV_LINK_STYLE = {
     "root": {
         "borderRadius": "12px",
-        "marginBottom": "4px",
-        "padding": "12px 16px",
+        "marginBottom": "6px",
+        "padding": "10px 16px",
         "transition": "all 200ms ease",
         "backgroundColor": "transparent",
         "color": "#495057 !important", # Base text/icon color
+        "border": "1px solid #dee2e6", # Added thin border for non-active buttons
         "&[data-active]": {
             "backgroundColor": "#339af0 !important",
+            "borderColor": "#339af0 !important", # Match border with background
             "color": "white !important", # Force white text/icon when active
             "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
         },
         "&:hover": {
             "backgroundColor": "#f8f9fa",
+            "borderColor": "#dee2e6",
             "transform": "translateX(4px)",
             "color": "#339af0 !important"
         }
@@ -154,7 +157,7 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Accordion(id='slider-container-social', children=[], multiple=True, variant="default", chevronPosition="left", mb="md"),
+                            dmc.Stack(id='slider-container-social', gap="xs", mb="md", px=10),
 
                             # Offre de Soins group
                             dmc.Text("Offre de Soins", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
@@ -169,7 +172,7 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Accordion(id='slider-container-offre', children=[], multiple=True, variant="default", chevronPosition="left", mb="md"),
+                            dmc.Stack(id='slider-container-offre', gap="xs", mb="md", px=10),
 
                             # Environnement group
                             dmc.Text("Environnement", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
@@ -184,7 +187,7 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Accordion(id='slider-container-env', children=[], multiple=True, variant="default", chevronPosition="left", mb="md"),
+                            dmc.Stack(id='slider-container-env', gap="xs", mb="md", px=10),
 
                             dmc.Divider(my="lg"),
                             dmc.Text("Territoires", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
@@ -216,19 +219,21 @@ sidebar = dmc.AppShellNavbar(
 )
 
 header = dmc.AppShellHeader(
-    h=70,
+    h=130, # Hauteur augmentée pour accommoder le titre fixe sans surcharge
     px="xl",
-    style={"display": "flex", "alignItems": "center", "backgroundColor": "white", "borderBottom": "1px solid #e9ecef"},
+    style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "flexDirection": "column", "justifyContent": "center"},
     children=[
+        # Ligne 1 : Navigation & Logo
         dmc.Group(
-            gap="xl",
-            style={"flex": 1},
+            justify="space-between",
+            h=65,
             children=[
                 dmc.Group(
                     gap="xs",
                     children=[
                         DashIconify(icon="lucide:activity", width=28, color="#339af0"),
                         dmc.Title("SeniAURA", order=2, style={"color": "#2c3e50", "letterSpacing": "-0.5px"}),
+                        dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10),
                     ]
                 ),
                 dmc.Tabs(
@@ -237,6 +242,21 @@ header = dmc.AppShellHeader(
                     variant="pills",
                     radius="md",
                     className="header-nav-tabs",
+                    styles={
+                        "tab": {
+                            "border": "1px solid #dee2e6",
+                            "padding": "6px 16px",
+                            "fontWeight": 600,
+                            "transition": "all 200ms ease",
+                            "backgroundColor": "#f8f9fa",
+                            "color": "#495057",
+                        },
+                        "tab[data-active]": {
+                            "backgroundColor": "#339af0 !important",
+                            "borderColor": "#339af0 !important",
+                            "color": "white !important"
+                        }
+                    },
                     children=[
                         dmc.TabsList([
                             dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
@@ -247,7 +267,16 @@ header = dmc.AppShellHeader(
                 ),
             ]
         ),
-        dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="lg")
+        # Ligne 2 : Titre du Diagnostic (Fixé en haut)
+        dmc.Box(
+            style={"borderTop": "1px solid #f1f3f5", "paddingTop": "8px", "paddingBottom": "12px"},
+            children=[
+                dmc.Stack(gap=0, children=[
+                    dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
+                    dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et le radar comparatif.", size="sm", c="dimmed", lineClamp=1),
+                ])
+            ]
+        )
     ]
 )
 
@@ -257,13 +286,13 @@ app.layout = dmc.MantineProvider(
         dcc.Location(id='url', refresh=False),
         dmc.AppShell(
             id="app-shell",
-            header={"height": 70},
+            header={"height": 130}, # Match the new multi-line header
             navbar={"width": 300, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
             padding="md",
             children=[
                 header,
                 sidebar,
-                dmc.AppShellMain(children=[], id='page-content', style={'minHeight': 'calc(100vh - 70px)', 'backgroundColor': '#f8f9fa'})
+                dmc.AppShellMain(children=[], id='page-content', style={'minHeight': 'calc(100vh - 130px)', 'backgroundColor': '#f8f9fa'})
             ]
         )
     ]
