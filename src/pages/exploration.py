@@ -8,7 +8,7 @@ import pandas as pd
 from ..data import load_data
 
 # Load shared data
-gdf_merged, variable_dict, category_dict, sens_dict, _, unit_dict, gdf_deps, _ = load_data()
+gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict = load_data()
 
 # Ensure consistent projection and index for robust mapping
 if gdf_merged.crs is None:
@@ -39,31 +39,15 @@ layout = dmc.Container(
                     dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=2, c="#2c3e50"),
                     dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et analysez le profil de vulnérabilité d'un EPCI avec le radar comparatif.", size="sm", c="dimmed"),
                 ]),
-                dmc.Group(children=[
-                    dmc.Select(
-                        id='exploration-view-select',
-                        data=[
-                            {'label': 'Vue Combinée', 'value': 'both'},
-                            {'label': 'Carte Uniquement', 'value': 'map'},
-                            {'label': 'Radar Uniquement', 'value': 'radar'}
-                        ],
-                        value='both',
-                        radius="md",
-                        w=220,
-                        leftSection=DashIconify(icon="solar:layers-linear", width=18),
-                        comboboxProps={"withinPortal": True, "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
-                        styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
-                    ),
-                    dmc.Button(
-                        "Aide",
-                        id="exploration-guide-btn",
-                        leftSection=DashIconify(icon="akar-icons:question", width=20),
-                        variant="light",
-                        color="blue",
-                        radius="md",
-                        size="sm"
-                    )
-                ])
+                dmc.Button(
+                    "Aide",
+                    id="exploration-guide-btn",
+                    leftSection=DashIconify(icon="akar-icons:question", width=20),
+                    variant="light",
+                    color="blue",
+                    radius="md",
+                    size="sm"
+                )
             ]
         ),
 
@@ -76,42 +60,30 @@ layout = dmc.Container(
                 dmc.Paper(
                     id='container-map',
                     withBorder=True, shadow="sm", p="md", radius="md",
-                    style={"display": "flex", "flexDirection": "column", "minHeight": "65vh"},
+                    style={"display": "flex", "flexDirection": "column", "minHeight": "650px"},
                     children=[
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:map-linear", color="#339af0"),
                                 dmc.Text("Carte choroplèthe", id='map-dynamic-title', fw=700),
                             ]),
-                            dmc.Group(gap="xs", children=[
-                                dmc.Select(id='map-indic-select', data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Mortalité', 'value': 'MORT'},{'label': 'Prévalence', 'value': 'PREV'}], value='INCI', size="xs", w=100, radius="md", comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5}, styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}),
-                                dmc.Select(id='map-patho-select', data=[{'label': 'AVC', 'value': 'AVC'},{'label': 'Cardiopathies', 'value': 'CardIsch'},{'label': 'Insuffisance', 'value': 'InsuCard'}], value='AVC', size="xs", w=120, radius="md", comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5}, styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}),
-                                dmc.Switch(id='map-show-markers-switch', label="Afficher les ", checked=True, size="xs"),
-                            ])
                         ]),
                         dmc.Grid(
                             gutter="md",
                             children=[
                                 dmc.GridCol(
-                                    span=9,
+                                    span=12,
                                     children=[
                                         dcc.Graph(id='map-graph', style={'height': "550px", "width": "100%"}, config={'displayModeBar': False}),
-                                    ]
-                                ),
-                                dmc.GridCol(
-                                    span=3,
-                                    children=[
-                                        dmc.Stack(
-                                            gap="md",
+                                        # New horizontal stats box
+                                        dmc.Paper(
+                                            withBorder=True, p="md", radius="md", bg="#f8f9fa", mt="sm",
                                             children=[
-                                                dmc.Paper(
-                                                    withBorder=True, p="sm", radius="md", bg="#f8f9fa",
-                                                    children=[
-                                                        dmc.Text("Statistiques & Légende", size="xs", fw=700, tt="uppercase", c="dimmed", mb="sm"),
-                                                        html.Div(id='map-legend-stats-content'),
-                                                        html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray', 'marginTop': '10px'})
-                                                    ]
-                                                )
+                                                dmc.Group(justify="space-between", mb="xs", children=[
+                                                    dmc.Text("Détails des exclusions par variable", size="xs", fw=700, tt="uppercase", c="dimmed"),
+                                                    html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
+                                                ]),
+                                                html.Div(id='map-legend-stats-content'),
                                             ]
                                         )
                                     ]
@@ -125,7 +97,7 @@ layout = dmc.Container(
                 dmc.Paper(
                     id='container-radar',
                     withBorder=True, shadow="sm", p="md", radius="md",
-                    style={"display": "flex", "flexDirection": "column", "minHeight": "60vh"},
+                    style={"display": "flex", "flexDirection": "column", "minHeight": "600px"},
                     children=[
                         dmc.Group(gap="xs", mb="md", children=[
                             DashIconify(icon="solar:chart-2-linear", color="#339af0"),
@@ -245,17 +217,7 @@ def update_sliders(social, offre, env, current_vals, current_ids):
            make_category_item(env, "Environnement")
 
 # --- View Switching ---
-@callback(
-    [Output('container-map', 'style'),
-     Output('container-radar', 'style')],
-    Input('exploration-view-select', 'value')
-)
-def update_view_visibility(view):
-    base_map = {"display": "flex", "flexDirection": "column"}
-    base_radar = {"display": "flex", "flexDirection": "column"}
-    if view == 'map': return {**base_map, "minHeight": "80vh"}, {"display": "none"}
-    if view == 'radar': return {"display": "none"}, {**base_radar, "minHeight": "80vh"}
-    return {**base_map, "minHeight": "65vh"}, {**base_radar, "minHeight": "60vh"}
+# Visibility control removed as requested (Combined view is now the permanent default).
 
 # --- Map Click Selection ---
 @callback(
@@ -286,11 +248,10 @@ def select_epci_on_click(clickData, current_selection):
      Output('map-dynamic-title', 'children')],
     [Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input({'type': 'exploration-slider', 'index': ALL}, 'value'),
-     Input('sidebar-epci-radar', 'value'),
-     Input('map-show-markers-switch', 'checked')],
+     Input('sidebar-epci-radar', 'value')],
     State({'type': 'exploration-slider', 'index': ALL}, 'id')
 )
-def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids):
+def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
     try:
         # Dynamic Title logic
         indic_map = {'INCI': "de l'incidence", 'MORT': "de la mortalité", 'PREV': "de la prévalence"}
@@ -317,6 +278,7 @@ def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids
                 nan_n = gdf_merged[col].isna().sum()
                 bad_n = (~col_mask).sum() - nan_n
                 summaries.append({
+                    'id': col,
                     'label': variable_dict.get(col, col),
                     'color': MARKER_COLORS[i % len(MARKER_COLORS)],
                     'nan': int(nan_n),
@@ -368,24 +330,8 @@ def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids
             hoverinfo='skip'
         ))
 
-        # 4. Exclusion Markers
-        if show_markers and slider_vals:
-            for i, (val, id_dict) in enumerate(zip(slider_vals, slider_ids)):
-                col = id_dict['index']
-                bad_m = ~gdf_merged[col].between(val[0], val[1])
-                excluded = gdf_4326[bad_m].copy()
-                if not excluded.empty:
-                    centroids = excluded.geometry.centroid
-                    offset = (i - len(slider_vals)/2) * 0.045
-                    fig.add_trace(go.Scattergeo(
-                        lon=centroids.x + offset, lat=centroids.y,
-                        mode='markers',
-                        marker=dict(size=8, color=MARKER_COLORS[i % len(MARKER_COLORS)], opacity=0.85, line=dict(width=1, color='white')),
-                        hoverinfo='text',
-                        text=excluded['nom_EPCI'].apply(lambda x: f"Exclu par: {variable_dict.get(col, col)}<br>EPCI: {x}"),
-                        customdata=excluded['EPCI_CODE'],
-                        showlegend=False
-                    ))
+        # 4. Exclusion Markers - DELETED as requested.
+        # Markers for excluded territories are no longer displayed on the map.
 
         # 5. Highlight selection
         if epci_selection:
@@ -398,32 +344,58 @@ def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids
                     mode='markers',
                     marker=dict(size=18, color='#e03131', symbol='circle', line=dict(width=2, color='white')),
                     text=hl['nom_EPCI'], customdata=hl['EPCI_CODE'],
-                    showlegend=False, hoverinfo='text'
+                    showlegend=False, hoverinfo='text',
+                    name="Sélection"
                 ))
 
         fig.update_geos(fitbounds="locations", visible=False)
         fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor='white', clickmode='event+select')
         
-        # Stats UI
+        # Stats UI (Horizontal Layout beneath the map)
         total_excl = total_epci - len(df_focus)
         stats_header = dmc.Box(mb=10, children=[
             dmc.Text([
                 "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
                 dmc.Text(str(total_excl), fw=700, c="red", span=True), 
-                " ont été exclus par les plages des variables sélectionnées."
-            ], size="xs", c="dimmed", style={"lineHeight": 1.4})
+                " sont exclus par les filtres sélectionnés."
+            ], size="md", c="gray.8")
         ])
         
-        rows = [dmc.Group(gap=8, align="flex-start", mb=10, children=[
-            html.Div(style={"width": "12px", "height": "12px", "borderRadius": "50%", "backgroundColor": s['color'], "marginTop": "3px"}),
-            dmc.Stack(gap=0, style={"flex": 1}, children=[
-                dmc.Text(s['label'], size="xs", fw=700, style={"lineHeight": 1.1}),
-                dmc.Text(f"Cette variable écarte {s['out']} territoires en dehors des plages sélectionnées et {s['nan']} autres territoires pour cause de données manquantes.", size="10px", fs="italic", c="dimmed")
-            ])
-        ]) for s in summaries]
+        # Interpretation Guide Intro
+        interpretation_guide = dmc.Text(
+            "Cette section vous aide à comprendre pourquoi certains territoires sont grisés sur la carte. "
+            "Les filtres réglés dans la barre latérale écartent les zones ne répondant pas à vos critères.",
+            size="sm", c="gray.6", mb="md", fs="italic"
+        )
+
+        # Display each contributing variable with clear sentences (2 columns for better readability of phrases)
+        stats_grid = dmc.SimpleGrid(
+            cols=2, spacing="md", verticalSpacing="sm",
+            children=[
+                dmc.Paper(
+                    p="sm", withBorder=True, radius="sm", bg="white",
+                    children=[
+                        dmc.Text(s['label'], size="sm", fw=700, mb=6, c="blue.9"),
+                        dmc.Stack(gap=4, children=[
+                            dmc.Text(f"• {s['out']} territoires sont grisés car en dehors de la plage sélectionnée pour cette variable.", size="xs", c="gray.8"),
+                            dmc.Text(f"• {s['nan']} territoires sont grisés par manque de données.", size="xs", c="gray.8") if s['nan'] > 0 else None
+                        ])
+                    ]
+                ) for s in summaries
+            ]
+        )
         
-        content = dmc.Stack(gap="xs", children=[stats_header] + (rows or [dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed")]))
-        return fig, content, dmc.Text("Intensité : Valeur indicateur. Points : Raison exclusion.", size="xs", c="dimmed"), dynamic_title
+        content = dmc.Stack(gap=0, children=[interpretation_guide, stats_header, stats_grid]) if summaries else dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed")
+        
+        # Standard reading guide
+        guide = dmc.Group([
+            dmc.Group([html.Div(style={"width":8,"height":8,"backgroundColor":"#1971c2"}), dmc.Text("Risque Fort", size="10px")]),
+            dmc.Group([html.Div(style={"width":8,"height":8,"backgroundColor":"#e7f5ff"}), dmc.Text("Risque Faible", size="10px")]),
+            dmc.Divider(orientation="vertical"),
+            dmc.Text("Gris : Territoires ne répondant pas aux critères", size="xs", c="dimmed"),
+        ], gap="sm")
+        
+        return fig, content, guide, dynamic_title
         
     except Exception as e:
         import traceback

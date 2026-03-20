@@ -110,8 +110,34 @@ sidebar = dmc.AppShellNavbar(
                             dmc.Group(
                                 gap="xs", mb="md",
                                 children=[
+                                    DashIconify(icon="solar:health-diagnostics-linear", width=18, color="#339af0"),
+                                    dmc.Text("Choix de l'Indicateur", fw=700, size="sm", c="#2c3e50"),
+                                ]
+                            ),
+                            dmc.Stack(gap="xs", mb="xl", children=[
+                                dmc.Select(
+                                    id='map-indic-select', 
+                                    data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Mortalité', 'value': 'MORT'},{'label': 'Prévalence', 'value': 'PREV'}], 
+                                    value='INCI', size="sm", radius="md",
+                                    label="Type d'indicateur",
+                                    comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
+                                    styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
+                                ),
+                                dmc.Select(
+                                    id='map-patho-select', 
+                                    data=[{'label': 'AVC', 'value': 'AVC'},{'label': 'Cardiopathies', 'value': 'CardIsch'},{'label': 'Insuffisance Cardiaque', 'value': 'InsuCard'}], 
+                                    value='AVC', size="sm", radius="md",
+                                    label="Pathologie",
+                                    comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
+                                    styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
+                                ),
+                            ]),
+                            dmc.Divider(variant="solid", mb="md", c="gray.2"),
+                            dmc.Group(
+                                gap="xs", mb="md",
+                                children=[
                                     DashIconify(icon="solar:filter-linear", width=18, color="#339af0"),
-                                    dmc.Text("Paramètres d'analyse", fw=700, size="sm", c="#2c3e50"),
+                                    dmc.Text("Variables de Filtrage", fw=700, size="sm", c="#2c3e50"),
                                 ]
                             ),
 
