@@ -31,7 +31,7 @@ def calculate_regression(df, x_col, y_col):
 def main():
     print("Chargement des données...")
     try:
-        gdf, var_dict = load_data()
+        gdf, var_dict, _, _, _, _, _, _ = load_data()
     except Exception as e:
         print(f"Erreur lors du chargement des données : {e}")
         return

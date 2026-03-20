@@ -18,7 +18,7 @@ layout = dmc.Container(
     mt="xl",
     children=[
         dmc.Title(
-            "SeniAura : Diagnostic des maladies Cardio-Neuro-Vasculaires en Auvergne Rhône-Alpes",
+            "CardiAURA : Diagnostic des maladies Cardio-Neuro-Vasculaires en Auvergne Rhône-Alpes",
             order=1,
             ta="center",
             mb="xl",

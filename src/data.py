@@ -47,26 +47,28 @@ def load_data():
     sens_dict = {}
     description_dict = {}
     unit_dict = {}
+    source_dict = {}
+    classement_dict = {}
     
     # Path to the new CSV
     DICT_PATH = os.path.join(DATA_DIR_DASH, "dictionnaire_variables.csv")
     
     if os.path.exists(DICT_PATH):
         df_meta = pd.read_csv(DICT_PATH)
-        # Expecting columns: Variable, Source, Catégorie, Description, Sens
         for _, row in df_meta.iterrows():
             var_code = str(row['Variable']).strip()
             cat = str(row['Catégorie']).strip()
             
-            # Skip "autre" variables if requested? 
-            # The USER said: "On peut mettre 'autre' pour que la variable n'aille nulle part et ne soit pas disponible dans les sélections"
-            # So we do NOT add them to the dictionary if they are 'autre'.
-            # BUT we might need them for internal logic (like Code EPCI).
-            # Strategy: Add everything to internal DF, but filter variable_dict for dropdowns.
-            # Here we are building variable_dict which feeds dropdowns.
-            if cat.lower() in ('autre', 'identification'):
-                continue
-                
+            if 'Classement' in row and pd.notna(row['Classement']):
+                try:
+                    cls_val = str(int(float(row['Classement'])))
+                except:
+                    cls_val = str(row['Classement']).strip()
+            else:
+                cls_val = ""
+            
+            classement_dict[var_code] = cls_val
+            
             # Prefer Nom_Court, then Description, then Code
             if 'Nom_Court' in row and pd.notna(row['Nom_Court']):
                 label = str(row['Nom_Court']).strip()
@@ -97,6 +99,14 @@ def load_data():
                 unit_dict[var_code] = str(row[col_unite]).strip()
             else:
                 unit_dict[var_code] = ""
+                
+            # Sources (Detailed)
+            if 'Sources' in row and pd.notna(row['Sources']):
+                source_dict[var_code] = str(row['Sources']).strip()
+            elif 'Source' in row and pd.notna(row['Source']):
+                source_dict[var_code] = str(row['Source']).strip()
+            else:
+                source_dict[var_code] = ""
             
     # Fallback/Overrides for critical variables if missing in CSV or strictly needed
     overrides = {
@@ -121,6 +131,10 @@ def load_data():
                  description_dict[k] = v
              if k not in unit_dict:
                  unit_dict[k] = ""
+             if k not in source_dict:
+                 source_dict[k] = ""
+             if k not in classement_dict:
+                 classement_dict[k] = ""
 
     # 4. Processing
     # Ensure numeric for known plotting variables
@@ -131,6 +145,9 @@ def load_data():
                  df[col] = pd.to_numeric(df[col], errors='coerce')
             else:
                  df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    # De-fragment the dataframe as per user suggestion
+    df = df.copy()
 
     # Calculate Taux_CNR if missing
     if 'Taux_CNR' not in df.columns:
@@ -143,6 +160,7 @@ def load_data():
             sens_dict['Taux_CNR'] = -1
             description_dict['Taux_CNR'] = "Incidence Globale CNR (Somme des taux)"
             unit_dict['Taux_CNR'] = "taux"
+            source_dict['Taux_CNR'] = ""
     
     # Merge
     gdf_merged = gdf_epci.merge(df, left_on='EPCI_CODE', right_on='CODE_EPCI', how='left')
@@ -151,4 +169,4 @@ def load_data():
     # Dissolve by department name to get department shapes
     gdf_deps = gdf_epci.dissolve(by='DEPARTEMEN')
     
-    return gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps
+    return gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict

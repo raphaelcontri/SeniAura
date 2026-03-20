@@ -459,17 +459,48 @@ label {
 
 /* Mantine 7 Specific Overrides for Sidebar NavLinks */
 .app-sidebar .mantine-NavLink-root {
-    transition: background-color 0.2s ease;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    transition: background-color 200ms ease, border-color 200ms ease;
+    margin-bottom: 6px;
 }
+
+/* Fix purple visited-link color from dcc.Link */
+.app-sidebar a,
+.app-sidebar a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
 
 .app-sidebar .mantine-NavLink-root:hover {
-    background-color: #3d566e !important;
-    /* Lighter blue-gray on hover */
+    background-color: #f1f3f5;
+    border-color: #339af0;
+    /* No box-shadow / no 3D effect */
 }
 
-/* Force label color to stay white even on hover */
+/* Active state — blue background, no 3D effect */
+.app-sidebar .mantine-NavLink-root[data-active] {
+    background-color: #339af0 !important;
+    border-color: #1c7ed6 !important;
+    /* No box-shadow */
+}
+
+/* Default label — near black */
 .app-sidebar .mantine-NavLink-label {
+    color: #2c3e50 !important;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/* Active label — white */
+.app-sidebar .mantine-NavLink-root[data-active] .mantine-NavLink-label {
     color: white !important;
+}
+
+/* Hover label — keep black (no color change on hover) */
+.app-sidebar .mantine-NavLink-root:hover .mantine-NavLink-label {
+    color: #2c3e50 !important;
 }
 
 /* Dropdown (MultiSelect) Styling */
@@ -493,7 +524,89 @@ label {
     color: white !important;
 }
 
-/* Ensure icons in sidebar are always white */
-.app-sidebar .mantine-NavLink-icon {
+/* Default icon — near black, same as label */
+.app-sidebar .mantine-NavLink-icon,
+.app-sidebar .mantine-NavLink-leftSection {
+    color: #2c3e50 !important;
+}
+
+/* Active icon — white */
+.app-sidebar .mantine-NavLink-root[data-active] .mantine-NavLink-icon,
+.app-sidebar .mantine-NavLink-root[data-active] .mantine-NavLink-leftSection {
     color: white !important;
+}
+
+/* Hover icon — keep same color as default (no color change) */
+.app-sidebar .mantine-NavLink-root:hover .mantine-NavLink-icon,
+.app-sidebar .mantine-NavLink-root:hover .mantine-NavLink-leftSection {
+    color: #2c3e50 !important;
+}
+
+/* ---- Methodology Tabs (mirror sidebar button style) ---- */
+#methodo-tabs .mantine-Tabs-tab {
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+#methodo-tabs .mantine-Tabs-tab:hover {
+    background-color: #f1f3f5 !important;
+    border-color: #339af0 !important;
+    color: #2c3e50 !important;
+}
+
+/* ---- Header Navigation Tabs ---- */
+.header-nav-tabs .mantine-Tabs-tab {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    color: #2c3e50 !important;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 8px 16px;
+    transition: all 200ms ease;
+}
+
+.header-nav-tabs .mantine-Tabs-tab:hover {
+    background-color: #f8f9fa !important;
+    border-color: #e9ecef !important;
+    color: #339af0 !important;
+}
+
+.header-nav-tabs .mantine-Tabs-tab[data-active] {
+    background-color: #339af0 !important;
+    color: white !important;
+    border-color: #1c7ed6 !important;
+}
+
+#methodo-tabs .mantine-Tabs-tab[data-active] {
+    background-color: #339af0 !important;
+    border-color: #1c7ed6 !important;
+    color: white !important;
+}
+
+/* Fix dcc.RangeSlider percentile marks (5% / 95%) */
+.rc-slider-mark {
+    display: block !important;
+}
+
+.rc-slider-mark-text {
+    font-size: 8px !important;
+    color: #adb5bd !important;
+    font-weight: 500 !important;
+}
+
+.rc-slider-dot {
+    display: block !important;
+    border: 1px solid #adb5bd !important;
+    width: 6px !important;
+    height: 6px !important;
+    background-color: #f1f3f5 !important;
+    top: -2px !important;
+}
+.rc-slider {
+    margin-top: 25px !important;
+    margin-bottom: 25px !important;
 }

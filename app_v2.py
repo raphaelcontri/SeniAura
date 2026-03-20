@@ -1,16 +1,16 @@
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, State, no_update
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 import os
 import pandas as pd
 
 # Import layouts from pages
-from src.pages import home, map, radar, methodology, clustering
+from src.pages import home, methodology, exploration
 from src.data import load_data
 
 # Load data for filter options
-gdf_merged, variable_dict, category_dict, _, _, _, _ = load_data()
+gdf_merged, variable_dict, category_dict, _, _, _, _, _, classement_dict = load_data()
 
 def get_options(target_cats):
     options = []
@@ -18,14 +18,77 @@ def get_options(target_cats):
         if col not in gdf_merged.columns: continue
         cat = str(category_dict.get(col, "")).lower()
         if cat in target_cats:
-            options.append({'label': label, 'value': col})
-    return sorted(options, key=lambda x: x['label'])
+            rank = str(classement_dict.get(col, ""))
+            # Exclude variables with Classement 0, 1, 2, 3
+            if rank in ['0', '1', '2', '3']:
+                continue
+            is_priority = (rank == '67')
+            options.append({'label': label, 'value': col, 'priority': is_priority})
+            
+    # Sort by priority (True first) then alphabetical
+    sorted_options = sorted(options, key=lambda x: (not x['priority'], x['label']))
+    return [{'label': x['label'], 'value': x['value']} for x in sorted_options]
 
 social_options = get_options(['socioéco'])
 offre_options = get_options(['offre de soins'])
 env_options = get_options(['environnement'])
 
 epci_radar_options = [{'label': n, 'value': c} for n, c in zip(gdf_merged['nom_EPCI'], gdf_merged['EPCI_CODE']) if pd.notnull(n)]
+
+NAV_LINK_STYLE = {
+    "root": {
+        "borderRadius": "12px",
+        "marginBottom": "4px",
+        "padding": "12px 16px",
+        "transition": "all 200ms ease",
+        "backgroundColor": "transparent",
+        "&[data-active]": {
+            "backgroundColor": "#339af0 !important",
+            "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
+        },
+        "&:hover": {
+            "backgroundColor": "#f8f9fa",
+            "transform": "translateX(4px)"
+        }
+    },
+    "label": {
+        "fontSize": "15px", 
+        "fontWeight": 600,
+        "color": "#495057",
+        ".app-sidebar &[data-active] &": { "color": "white !important" }, # This is complex, let's simplify
+    },
+    "icon": {
+        "marginRight": "12px",
+        "color": "#495057"
+    }
+}
+
+# Simplified approach: Use CSS selectors directly in root for all parts
+NAV_LINK_STYLE = {
+    "root": {
+        "borderRadius": "12px",
+        "marginBottom": "6px",
+        "padding": "10px 16px",
+        "transition": "all 200ms ease",
+        "backgroundColor": "transparent",
+        "color": "#495057 !important", # Base text/icon color
+        "border": "1px solid #dee2e6", # Added thin border for non-active buttons
+        "&[data-active]": {
+            "backgroundColor": "#339af0 !important",
+            "borderColor": "#339af0 !important", # Match border with background
+            "color": "white !important", # Force white text/icon when active
+            "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
+        },
+        "&:hover": {
+            "backgroundColor": "#f8f9fa",
+            "borderColor": "#dee2e6",
+            "transform": "translateX(4px)",
+            "color": "#339af0 !important"
+        }
+    },
+    "label": {"fontSize": "15px", "fontWeight": 600, "color": "inherit"},
+    "icon": {"marginRight": "12px", "color": "inherit"}
+}
 
 # --- App Setup ---
 external_stylesheets = [
@@ -35,141 +98,233 @@ external_stylesheets = [
     'https://unpkg.com/@mantine/dates@7/styles.css',
     'https://unpkg.com/@mantine/charts@7/styles.css',
 ]
-app = dash.Dash(__name__, title="SeniAURA - Accueil", suppress_callback_exceptions=True, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, title="CardiAURA - Accueil", suppress_callback_exceptions=True, external_stylesheets=external_stylesheets)
 server = app.server
 
 sidebar = dmc.AppShellNavbar(
     p="md",
     className="app-sidebar",
-    style={"backgroundColor": "#2c3e50"}, # keeping the dark theme for the sidebar
+    style={"backgroundColor": "#ffffff", "borderRight": "1px solid #e9ecef"},
     children=[
-        dmc.Stack(
-            justify="space-between",
-            h="100%",
+        dmc.ScrollArea(
+            h="calc(100vh - 150px)", # Ajusté pour laisser de la place au footer éventuel ou padding
+            type="always",
+            scrollbarSize=10,
             children=[
                 dmc.Stack(
-                    gap="sm",
+                    gap="xs",
+                    px="md",
                     children=[
-                        dmc.Title("SeniAURA", order=2, ta="center", mb="lg", style={"color": "white", "cursor": "pointer"}),
-                        
-                        dcc.Link(href='/', style={'textDecoration': 'none'}, children=[
-                            dmc.NavLink(
-                                label="Accueil",
-                                leftSection=DashIconify(icon="akar-icons:home", width=20, color="white"),
-                                variant="subtle",
-                                color="blue",
-                                styles={
-                                    "label": {"color": "white", "fontWeight": 500},
-                                    "root": {
-                                        "&:hover": {
-                                            "backgroundColor": "#1a252f", # Darker hover background
-                                            "color": "white"
-                                        }
-                                    },
-                                    "icon": {"color": "white"}
-                                }
-                            )
-                        ]),
-                        dcc.Link(href='/carte', style={'textDecoration': 'none'}, children=[
-                            dmc.NavLink(
-                                label="Carte Interactive",
-                                leftSection=DashIconify(icon="lucide:map", width=20, color="white"),
-                                variant="subtle",
-                                color="blue",
-                                styles={
-                                    "label": {"color": "white", "fontWeight": 500},
-                                    "root": {
-                                        "&:hover": {
-                                            "backgroundColor": "#1a252f",
-                                            "color": "white"
-                                        }
-                                    },
-                                    "icon": {"color": "white"}
-                                }
-                            )
-                        ]),
-                        dcc.Link(href='/radar', style={'textDecoration': 'none'}, children=[
-                            dmc.NavLink(
-                                label="Radar Comparatif",
-                                leftSection=DashIconify(icon="lucide:radar", width=20, color="white"),
-                                variant="subtle",
-                                color="blue",
-                                styles={
-                                    "label": {"color": "white", "fontWeight": 500},
-                                    "root": {
-                                        "&:hover": {
-                                            "backgroundColor": "#1a252f",
-                                            "color": "white"
-                                        }
-                                    },
-                                    "icon": {"color": "white"}
-                                }
-                            )
-                        ]),
-                        dcc.Link(href='/methodologie', style={'textDecoration': 'none'}, children=[
-                            dmc.NavLink(
-                                label="Méthodologie",
-                                leftSection=DashIconify(icon="lucide:book-open", width=20, color="white"),
-                                variant="subtle",
-                                color="blue",
-                                styles={
-                                    "label": {"color": "white", "fontWeight": 500},
-                                    "root": {
-                                        "&:hover": {
-                                            "backgroundColor": "#1a252f",
-                                            "color": "white"
-                                        }
-                                    },
-                                    "icon": {"color": "white"}
-                                }
-                            )
-                        ]),
-                        
-                        # --- Shared Filters (always in DOM) ---
-                        html.Div(id='sidebar-filters', style={'display': 'none'}, children=[
-                            dmc.Divider(variant="solid", my="md", color="gray.6"),
-                            dmc.Text("Filtres partagés", size="sm", fw=700, tt="uppercase", lts=1, c="gray.3", mb="sm"),
+                        # Section titre des filtres
+                        dmc.Divider(variant="solid", mb="md", c="gray.2"),
+                        # --- Filter Section (Hidden on Home/Methodology) ---
+                        html.Div(id='sidebar-filters-section', children=[
+                            dmc.Group(
+                                gap="xs", mb=5, align="center",
+                                children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:heart-pulse-bold", width=20),
+                                        variant="light", radius="md", size="md"
+                                    ),
+                                    dmc.Text("Choix de l'indicateur de santé", fw=700, size="sm", c="#2c3e50"),
+                                ]
+                            ),
+                            dmc.Text("Sélectionnez l'indicateur de santé. La carte et le radar comparatif s'adapteront à votre sélection.", size="xs", c="dimmed", mb="md"),
+                            dmc.Stack(gap="md", mb="xl", children=[
+                                dmc.Box([
+                                    dmc.Text("Type d'indicateur", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                                    dmc.Select(
+                                        id='map-indic-select', 
+                                        data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Mortalité', 'value': 'MORT'},{'label': 'Prévalence', 'value': 'PREV'}], 
+                                        value='INCI', size="sm", radius="md",
+                                        comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
+                                        styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
+                                    ),
+                                ]),
+                                dmc.Box([
+                                    dmc.Text("Pathologie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                                    dmc.Select(
+                                        id='map-patho-select', 
+                                        data=[{'label': 'AVC', 'value': 'AVC'},{'label': 'Cardiopathie Ischémique', 'value': 'CardIsch'},{'label': 'Insuffisance Cardiaque', 'value': 'InsuCard'}], 
+                                        value='AVC', size="sm", radius="md",
+                                        comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
+                                        styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
+                                    ),
+                                ]),
+                            ]),
+                            dmc.Divider(variant="solid", mb="md", c="gray.2"),
+                            dmc.Group(
+                                gap="xs", mb=5, align="center",
+                                children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:filter-bold", width=20),
+                                        variant="light", radius="md", size="md", color="indigo"
+                                    ),
+                                    dmc.Text("Choix des variables de filtrage", fw=700, size="sm", c="#2c3e50"),
+                                ]
+                            ),
+                            dmc.Text("Vous pouvez sélectionner des variables de filtre dans les différentes catégories. Ces variables agissent comme des filtres pour la cartographie et des axes d'analyse pour le radar comparatif.", size="xs", c="dimmed", mb="md"),
 
-                            # EPCI Select (by code, for Radar)
-                            html.Div(style={'padding': '5px 0px'}, children=[
-                                dmc.MultiSelect(
-                                    id='sidebar-epci-radar',
-                                    label="EPCI (Multi)",
-                                    data=epci_radar_options,
-                                    placeholder="Choisir des EPCI...",
-                                    searchable=True,
-                                    clearable=True,
-                                    mb="sm",
-                                    styles={
-                                        "label": {"color": "white"},
-                                        "option": {"borderBottom": "2px solid #dee2e6", "padding": "12px", "color": "#2c3e50"}, # Darker text and thicker border
-                                        "dropdown": {"borderRadius": "8px", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}
-                                    }
-                                )
-                            ]),
+                            # Socio-Économie group
+                            dmc.Text("Socio-Économie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                            dmc.MultiSelect(
+                                id='sidebar-filter-social', 
+                                data=social_options, 
+                                placeholder="Sélectionner...", 
+                                clearable=True, 
+                                searchable=True, 
+                                radius="md", 
+                                mb=5, 
+                                comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                            ),
+                            dmc.Text("Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.", size="10px", c="dimmed", fs="italic", mb="md"),
+                            dmc.Stack(id='slider-container-social', gap="xs", mb="md", px=10),
 
-                            # Variable Filters
-                            html.Div(style={'padding': '5px 0px'}, children=[
-                                dmc.MultiSelect(id='sidebar-filter-social', label="Socio-Eco", data=social_options, placeholder="Sélectionner...", clearable=True, searchable=True, styles={"label": {"color": "white"}, "option": {"borderBottom": "2px solid #dee2e6", "padding": "12px", "color": "#2c3e50"}}),
-                            ]),
-                            html.Div(style={'padding': '5px 0px', 'marginTop': '5px'}, children=[
-                                dmc.MultiSelect(id='sidebar-filter-offre', label="Offre de Soins", data=offre_options, placeholder="Sélectionner...", clearable=True, searchable=True, styles={"label": {"color": "white"}, "option": {"borderBottom": "2px solid #dee2e6", "padding": "12px", "color": "#2c3e50"}}),
-                            ]),
-                            html.Div(style={'padding': '5px 0px', 'marginTop': '5px'}, children=[
-                                dmc.MultiSelect(id='sidebar-filter-env', label="Environnement", data=env_options, placeholder="Sélectionner...", clearable=True, searchable=True, styles={"label": {"color": "white"}, "option": {"borderBottom": "2px solid #dee2e6", "padding": "12px", "color": "#2c3e50"}}),
-                            ]),
+                            # Offre de Soins group
+                            dmc.Text("Offre de Soins", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                            dmc.MultiSelect(
+                                id='sidebar-filter-offre', 
+                                data=offre_options, 
+                                placeholder="Sélectionner...", 
+                                clearable=True, 
+                                searchable=True, 
+                                radius="md", 
+                                mb=5, 
+                                comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                            ),
+                            dmc.Text("Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.", size="10px", c="dimmed", fs="italic", mb="md"),
+                            dmc.Stack(id='slider-container-offre', gap="xs", mb="md", px=10),
+
+                            # Environnement group
+                            dmc.Text("Environnement", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                            dmc.MultiSelect(
+                                id='sidebar-filter-env', 
+                                data=env_options, 
+                                placeholder="Sélectionner...", 
+                                clearable=True, 
+                                searchable=True, 
+                                radius="md", 
+                                mb=5, 
+                                comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                            ),
+                            dmc.Text("Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.", size="10px", c="dimmed", fs="italic", mb="md"),
+                            dmc.Stack(id='slider-container-env', gap="xs", mb="md", px=10),
+
+                            dmc.Divider(my="lg"),
+                            dmc.Group(
+                                gap="xs", mb=5, align="center",
+                                children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:map-point-bold", width=20),
+                                        variant="light", radius="md", size="md", color="teal"
+                                    ),
+                                    dmc.Text("CardiAURA", fw=800, size="xl", c="blue.8", style={"letterSpacing": "1px"}),
+                                ]
+                            ),
+                            dmc.Text("Sélectionnez des EPCI via le menu \"Choisir EPCI\" ou en cliquant directement sur la carte. Ils s'ajouteront alors au radar comparatif.", size="xs", c="dimmed", mb="md"),
+                            dmc.MultiSelect(
+                                id='sidebar-epci-radar',
+                                data=epci_radar_options,
+                                placeholder="Choisir EPCI...",
+                                searchable=True,
+                                clearable=True,
+                                radius="md",
+                                mb="sm",
+                                comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                            ),
                         ]),
                     ]
                 ),
-                dmc.Center(
-                    dmc.Stack(
-                        gap=5,
-                        align="center",
-                        children=[
-                            dmc.Text("HEC Capstone Project", size="xs", c="gray.4"),
-                            dmc.Text("v2.1 - 2026", size="xs", c="gray.4")
-                        ]
-                    )
+            ]
+        ),
+        # Footer (toujours visible si désiré, ou mis dans le ScrollArea)
+        dmc.Paper(
+            p="sm", radius="md", bg="#f8f9fa", withBorder=True, mx="sm", mb="sm",
+            children=[
+                dmc.Text("HEC Capstone Project", size="xs", fw=500, ta="center", c="dimmed"),
+                dmc.Text("v3.0 - 2026", size="xs", ta="center", c="dimmed", mt=2)
+            ]
+        )
+    ]
+)
+
+header = dmc.AppShellHeader(
+    h=130, # Hauteur augmentée pour accommoder le titre fixe sans surcharge
+    px="xl",
+    style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "flexDirection": "column", "justifyContent": "center"},
+    children=[
+        # Ligne 1 : Logo & Navigation (Alignés à gauche)
+        dmc.Group(
+            justify="flex-start",
+            h=65,
+            gap=100, # Espace généreux entre Logo et Tabs
+            children=[
+                dmc.Group(
+                    gap="xs",
+                    children=[
+                        DashIconify(icon="lucide:activity", width=28, color="#339af0"),
+                        dmc.Title("CardiAURA", order=2, style={"color": "#339af0", "letterSpacing": "1px", "fontWeight": 900}),
+                        dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10),
+                    ]
+                ),
+                dmc.Tabs(
+                    id="nav-tabs",
+                    value="/",
+                    variant="pills",
+                    radius="md",
+                    className="header-nav-tabs",
+                    styles={
+                        "tab": {
+                            "border": "1px solid #dee2e6",
+                            "padding": "6px 16px",
+                            "fontWeight": 600,
+                            "transition": "all 200ms ease",
+                            "backgroundColor": "#f8f9fa",
+                            "color": "#495057",
+                        },
+                        "tab[data-active]": {
+                            "backgroundColor": "#339af0 !important",
+                            "borderColor": "#339af0 !important",
+                            "color": "white !important"
+                        }
+                    },
+                    children=[
+                        dmc.TabsList([
+                            dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
+                            dmc.TabsTab("Exploration", value="/exploration", leftSection=DashIconify(icon="solar:map-linear", width=18)),
+                            dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
+                        ])
+                    ]
+                ),
+            ]
+        ),
+        # Ligne 2 : Titre du Diagnostic & Bouton Aide (Fixé en haut)
+        dmc.Box(
+            style={"borderTop": "1px solid #f1f3f5", "paddingTop": "8px", "paddingBottom": "12px"},
+            children=[
+                dmc.Group(
+                    justify="space-between",
+                    align="flex-start",
+                    children=[
+                        dmc.Stack(gap=0, children=[
+                            dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
+                            dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et le radar comparatif.", size="sm", c="dimmed", lineClamp=1),
+                        ]),
+                        dmc.Button(
+                            "Afficher l'aide",
+                            id="exploration-guide-btn",
+                            leftSection=DashIconify(icon="akar-icons:question", width=18),
+                            variant="light",
+                            color="blue",
+                            radius="md",
+                            size="sm",
+                            mt=5
+                        )
+                    ]
                 )
             ]
         )
@@ -177,40 +332,139 @@ sidebar = dmc.AppShellNavbar(
 )
 
 app.layout = dmc.MantineProvider(
-    theme={"primaryColor": "blue"},
+    theme={"primaryColor": "blue", "fontFamily": "'Inter', sans-serif"},
     children=[
         dcc.Location(id='url', refresh=False),
+        dcc.Store(id='aside-opened-store', data=False), # Store pour l'état du panneau latéral
         dmc.AppShell(
-            navbar={"width": 300, "breakpoint": "sm"},
+            id="app-shell",
+            header={"height": 130},
+            navbar={"width": 300, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
+            aside={"width": 350, "breakpoint": "md", "collapsed": {"desktop": True, "mobile": True}}, # Aside configuré mais masqué
             padding="md",
             children=[
+                header,
                 sidebar,
-                dmc.AppShellMain(children=[], id='page-content', style={'height': '100vh', 'overflow': 'auto', 'backgroundColor': '#f4f6f8'})
+                dmc.AppShellMain(
+                    children=[
+                        dmc.ScrollArea(
+                            h="calc(100vh - 130px)",
+                            type="always",
+                            scrollbarSize=10,
+                            offsetScrollbars=True,
+                            children=[
+                                html.Div(id='page-content', style={'padding': '20px'})
+                            ]
+                        )
+                    ],
+                    style={'backgroundColor': '#f8f9fa'}
+                ),
+                dmc.AppShellAside(
+                    p="md",
+                    children=[
+                        dmc.Group(justify="space-between", mb="md", children=[
+                            dmc.Title("Aide & Guide", order=4, style={"color": "#2c3e50"}),
+                            dmc.ActionIcon(
+                                DashIconify(icon="lucide:x", width=20),
+                                id="close-aside-btn",
+                                variant="subtle",
+                                color="gray"
+                            )
+                        ]),
+                        dmc.ScrollArea(
+                            h="calc(100vh - 180px)",
+                            children=[
+                                html.Div(id='aside-content') # Point d'injection pour le guide d'aide
+                            ]
+                        )
+                    ],
+                    style={"backgroundColor": "white", "borderLeft": "1px solid #e9ecef"}
+                )
             ]
         )
     ]
 )
 
-# --- Routing Callback ---
-@app.callback(Output('page-content', 'children'), Input('url', 'pathname'))
+# --- Navigation Callbacks ---
+
+@app.callback(
+    [Output('nav-tabs', 'value'),
+     Output('url', 'pathname'),
+     Output('app-shell', 'navbar')],
+    [Input('url', 'pathname'),
+     Input('nav-tabs', 'value')],
+    [State('app-shell', 'navbar')]
+)
+def unified_navigation(url_path, tab_val, current_navbar):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        # Initial load
+        is_explor = url_path in ['/exploration', '/carte', '/radar']
+        current_navbar["collapsed"] = {"desktop": not is_explor, "mobile": True}
+        return url_path if url_path in ['/', '/exploration', '/methodologie'] else '/', dash.no_update, current_navbar
+
+    trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    if trigger_id == 'url':
+        # URL changed (back button or link)
+        target_tab = '/exploration' if url_path in ['/carte', '/radar'] else url_path
+        if target_tab not in ['/', '/exploration', '/methodologie']: target_tab = '/'
+        
+        is_explor = target_tab == '/exploration'
+        current_navbar["collapsed"] = {"desktop": not is_explor, "mobile": True}
+        return target_tab, dash.no_update, current_navbar
+        
+    elif trigger_id == 'nav-tabs':
+        # Tab clicked
+        is_explor = tab_val == '/exploration'
+        current_navbar["collapsed"] = {"desktop": not is_explor, "mobile": True}
+        return dash.no_update, tab_val, current_navbar
+
+    return dash.no_update, dash.no_update, dash.no_update
+
+@app.callback(
+    Output('page-content', 'children'),
+    Input('url', 'pathname')
+)
 def display_page(pathname):
-    if pathname == '/carte':
-        return map.layout
-    elif pathname == '/radar':
-        return radar.layout
+    if pathname == '/':
+        return home.layout
+    elif pathname in ['/exploration', '/carte', '/radar']:
+        return exploration.layout
     elif pathname == '/methodologie':
         return methodology.layout
-    elif pathname == '/clustering':
-        return clustering.layout
     else:
-        return home.layout
+        return dmc.Center(dmc.Title("404 - Page non trouvée", order=1))
 
-# --- Show/Hide Filters based on page ---
-@app.callback(Output('sidebar-filters', 'style'), Input('url', 'pathname'))
-def toggle_filters(pathname):
-    if pathname in ['/carte', '/radar']:
-        return {'display': 'block'}
-    return {'display': 'none'}
+# --- Aside Toggle Callbacks ---
+
+@app.callback(
+    Output('aside-opened-store', 'data'),
+    Input('exploration-guide-btn', 'n_clicks'),
+    State('aside-opened-store', 'data'),
+    prevent_initial_call=True
+)
+def toggle_aside_store(n, opened):
+    return not opened
+
+@app.callback(
+    Output('app-shell', 'aside'),
+    Input('aside-opened-store', 'data'),
+    State('app-shell', 'aside')
+)
+def sync_aside_state(opened, current_aside):
+    if not current_aside:
+        current_aside = {"width": 350, "breakpoint": "md"}
+    current_aside["collapsed"] = {"desktop": not opened, "mobile": not opened}
+    return current_aside
+
+@app.callback(
+    Output('aside-opened-store', 'data', allow_duplicate=True),
+    Input('close-aside-btn', 'n_clicks'),
+    prevent_initial_call=True
+)
+def close_aside(n):
+    return False
 
 if __name__ == '__main__':
     app.run(debug=True, port=8050)
