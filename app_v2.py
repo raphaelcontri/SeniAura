@@ -98,13 +98,14 @@ sidebar = dmc.AppShellNavbar(
     className="app-sidebar",
     style={"backgroundColor": "#ffffff", "borderRight": "1px solid #e9ecef"},
     children=[
-        dmc.Stack(
-            justify="space-between",
-            h="100%",
-            style={"overflowY": "auto", "flex": 1},
+        dmc.ScrollArea(
+            h="calc(100vh - 150px)", # Ajusté pour laisser de la place au footer éventuel ou padding
+            type="always",
+            scrollbarSize=10,
             children=[
                 dmc.Stack(
                     gap="xs",
+                    px="md",
                     children=[
                         # Section titre des filtres
                         dmc.Divider(variant="solid", mb="md", c="gray.2"),
@@ -136,7 +137,7 @@ sidebar = dmc.AppShellNavbar(
                                     dmc.Text("Pathologie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
                                     dmc.Select(
                                         id='map-patho-select', 
-                                        data=[{'label': 'AVC', 'value': 'AVC'},{'label': 'Cardiopathies', 'value': 'CardIsch'},{'label': 'Insuffisance Cardiaque', 'value': 'InsuCard'}], 
+                                        data=[{'label': 'AVC', 'value': 'AVC'},{'label': 'Cardiopathie Ischémique', 'value': 'CardIsch'},{'label': 'Insuffisance Cardiaque', 'value': 'InsuCard'}], 
                                         value='AVC', size="sm", radius="md",
                                         comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
                                         styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
@@ -230,14 +231,14 @@ sidebar = dmc.AppShellNavbar(
                         ]),
                     ]
                 ),
-                # Footer
-                dmc.Paper(
-                    p="sm", radius="md", bg="#f8f9fa", withBorder=True, mx="sm", mb="sm",
-                    children=[
-                        dmc.Text("HEC Capstone Project", size="xs", fw=500, ta="center", c="dimmed"),
-                        dmc.Text("v3.0 - 2026", size="xs", ta="center", c="dimmed", mt=2)
-                    ]
-                )
+            ]
+        ),
+        # Footer (toujours visible si désiré, ou mis dans le ScrollArea)
+        dmc.Paper(
+            p="sm", radius="md", bg="#f8f9fa", withBorder=True, mx="sm", mb="sm",
+            children=[
+                dmc.Text("HEC Capstone Project", size="xs", fw=500, ta="center", c="dimmed"),
+                dmc.Text("v3.0 - 2026", size="xs", ta="center", c="dimmed", mt=2)
             ]
         )
     ]
@@ -336,7 +337,20 @@ app.layout = dmc.MantineProvider(
             children=[
                 header,
                 sidebar,
-                dmc.AppShellMain(children=[], id='page-content', style={'minHeight': 'calc(100vh - 130px)', 'backgroundColor': '#f8f9fa'}),
+                dmc.AppShellMain(
+                    children=[
+                        dmc.ScrollArea(
+                            h="calc(100vh - 130px)",
+                            type="always",
+                            scrollbarSize=10,
+                            offsetScrollbars=True,
+                            children=[
+                                html.Div(id='page-content', style={'padding': '20px'})
+                            ]
+                        )
+                    ],
+                    style={'backgroundColor': '#f8f9fa'}
+                ),
                 dmc.AppShellAside(
                     p="md",
                     children=[

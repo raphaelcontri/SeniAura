@@ -221,11 +221,11 @@ def select_epci_on_click(clickData, current_selection):
 def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
     try:
         # Dynamic Title logic
-        indic_map = {'INCI': "de l'incidence", 'MORT': "de la mortalité", 'PREV': "de la prévalence"}
-        patho_map = {'AVC': "l'AVC", 'CardIsch': "des cardiopathies", 'InsuCard': "l'insuffisance cardiaque"}
+        indic_map = {'INCI': "l'incidence", 'MORT': "la mortalité", 'PREV': "la prévalence"}
+        patho_map = {'AVC': "de l'AVC", 'CardIsch': "de la Cardiopathie Ischémique", 'InsuCard': "de l'insuffisance cardiaque"}
         i_str = indic_map.get(ind, ind)
         p_str = patho_map.get(patho, patho)
-        dynamic_title = f"Carte choroplèthe {i_str} {p_str} en Auvergne-Rhône-Alpes selon les variables sélectionnées"
+        dynamic_title = f"Carte choroplèthe de {i_str} {p_str} en Auvergne-Rhône-Alpes selon les variables sélectionnées"
 
         target = f"{ind}_{patho}"
         if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
