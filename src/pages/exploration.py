@@ -368,9 +368,13 @@ def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids
         fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor='white', clickmode='event+select')
         
         # Stats UI
-        stats_header = dmc.Group(justify="space-between", mb=10, children=[
-            dmc.Badge(f"{len(df_focus)} EPCI", color="blue", variant="filled"),
-            dmc.Badge(f"{total_epci - len(df_focus)} exclus", color="red", variant="light")
+        total_excl = total_epci - len(df_focus)
+        stats_header = dmc.Box(mb=10, children=[
+            dmc.Text([
+                "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
+                dmc.Text(str(total_excl), fw=700, c="red", span=True), 
+                " ont été exclus par les plages des variables sélectionnées."
+            ], size="xs", c="dimmed", style={"lineHeight": 1.4})
         ])
         
         rows = [dmc.Group(gap=8, align="flex-start", mb=10, children=[
@@ -381,7 +385,7 @@ def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids
             ])
         ]) for s in summaries]
         
-        content = dmc.Stack(gap="xs", children=[stats_header] + (rows or [dmc.Text("Aucun filtre actif", size="xs", italic=True, c="dimmed")]))
+        content = dmc.Stack(gap="xs", children=[stats_header] + (rows or [dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed")]))
         return fig, content, dmc.Text("Intensité : Valeur indicateur. Points : Raison exclusion.", size="xs", c="dimmed")
         
     except Exception as e:
