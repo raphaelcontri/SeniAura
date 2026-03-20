@@ -102,36 +102,36 @@ layout = dmc.Container(
                 )
             ]
         ),
-
-        # Guide Drawer
-        dmc.Drawer(
-            id="exploration-guide-drawer",
-            title=dmc.Title("Mode d'emploi - Exploration", order=3),
-            opened=False, p="md", position="right", size="md",
-            children=[
-                dmc.Stack(gap="md", children=[
-                    dmc.Text("La vue exploration combine la carte régionale et le radar comparatif.", size="sm"),
-                    dmc.Divider(),
-                    dmc.Title("Carte", order=5),
-                    dmc.Text("- Utilisez les curseurs à gauche pour filtrer. Les territoires hors limites restent grisés avec un point de couleur.", size="sm"),
-                    dmc.Text("- Cliquez sur n'importe quel zone pour l'ajouter/retirer du comparateur.", size="sm"),
-                    dmc.Title("Défilement", order=5),
-                    dmc.Text("- Faites défiler la page pour accéder au radar chart situé sous la carte.", size="sm"),
-                ])
-            ]
-        )
     ]
 )
 
-# --- Guide Drawer Callback ---
+# --- Guide Content Callback ---
 @callback(
-    Output("exploration-guide-drawer", "opened"),
-    Input("exploration-guide-btn", "n_clicks"),
-    State("exploration-guide-drawer", "opened"),
-    prevent_initial_call=True,
+    Output("aside-content", "children"),
+    Input("url", "pathname")
 )
-def toggle_drawer(n, opened):
-    return not opened
+def update_aside_content(pathname):
+    if pathname in ['/exploration', '/carte', '/radar']:
+        return dmc.Stack(gap="md", children=[
+            dmc.Title("Mode d'emploi - Exploration", order=3, c="#2c3e50"),
+            dmc.Text("La vue exploration combine la carte régionale et le radar comparatif.", size="sm"),
+            dmc.Divider(),
+            dmc.Title("Carte", order=5),
+            dmc.Text("- Utilisez les curseurs à gauche pour filtrer. Les territoires hors limites restent grisés.", size="sm"),
+            dmc.Text("- Cliquez sur n'importe quel zone pour l'ajouter/retirer du comparateur.", size="sm"),
+            dmc.Title("Radar Chart", order=5),
+            dmc.Text("- Le radar affiche les indicateurs pour l'EPCI sélectionné par rapport à la moyenne régionale (zone bleue).", size="sm"),
+            dmc.Text("- Faites défiler pour voir le radar sous la carte.", size="sm"),
+            dmc.Divider(),
+            dmc.Alert(
+                "Le panneau de filtrage à gauche s'adapte à vos choix d'indicateur de santé.",
+                title="Astuce",
+                color="blue",
+                variant="light",
+                radius="md"
+            )
+        ])
+    return dmc.Text("Aucune aide spécifique pour cette page.", c="dimmed", fs="italic")
 
 # --- Sliders Management ---
 @callback(
