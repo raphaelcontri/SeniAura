@@ -7,7 +7,7 @@ import os
 from ..data import load_data, PROJECT_ROOT
 
 # Load data
-gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _, source_dict = load_data()
+gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _, source_dict, _ = load_data()
 
 
 
@@ -78,7 +78,7 @@ layout = dmc.Container(
     children=[
         dmc.Title("Liste des variables et méthodologie", order=1, mb="xs", style={"color": "#2c3e50"}),
         dmc.Text(
-            "Explorez les indicateurs pilotant les analyses de SeniAURA ainsi que la rigueur méthodologique du projet.", 
+            "Explorez les indicateurs pilotant les analyses de CardiAURA ainsi que la rigueur méthodologique du projet.", 
             c="dimmed", size="lg", mb="xl"
         ),
         
@@ -177,7 +177,7 @@ layout = dmc.Container(
                                                 ])
                                             ),
                                             dmc.AccordionPanel([
-                                                dmc.Text("SeniAURA agrège des données hétérogènes issues de multiples sources institutionnelles :", mb="md"),
+                                                dmc.Text("CardiAURA agrège des données hétérogènes issues de multiples sources institutionnelles :", mb="md"),
                                                 dmc.List(
                                                     spacing="sm",
                                                     icon=dmc.ThemeIcon(DashIconify(icon="akar-icons:check", width=12), radius="xl", color="blue", size=20),

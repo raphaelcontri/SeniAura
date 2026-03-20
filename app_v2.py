@@ -10,7 +10,7 @@ from src.pages import home, methodology, exploration
 from src.data import load_data
 
 # Load data for filter options
-gdf_merged, variable_dict, category_dict, _, _, _, _, _ = load_data()
+gdf_merged, variable_dict, category_dict, _, _, _, _, _, classement_dict = load_data()
 
 def get_options(target_cats):
     options = []
@@ -18,8 +18,16 @@ def get_options(target_cats):
         if col not in gdf_merged.columns: continue
         cat = str(category_dict.get(col, "")).lower()
         if cat in target_cats:
-            options.append({'label': label, 'value': col})
-    return sorted(options, key=lambda x: x['label'])
+            rank = str(classement_dict.get(col, ""))
+            # Exclude variables with Classement 0, 1, 2, 3
+            if rank in ['0', '1', '2', '3']:
+                continue
+            is_priority = (rank == '67')
+            options.append({'label': label, 'value': col, 'priority': is_priority})
+            
+    # Sort by priority (True first) then alphabetical
+    sorted_options = sorted(options, key=lambda x: (not x['priority'], x['label']))
+    return [{'label': x['label'], 'value': x['value']} for x in sorted_options]
 
 social_options = get_options(['socioéco'])
 offre_options = get_options(['offre de soins'])
@@ -90,7 +98,7 @@ external_stylesheets = [
     'https://unpkg.com/@mantine/dates@7/styles.css',
     'https://unpkg.com/@mantine/charts@7/styles.css',
 ]
-app = dash.Dash(__name__, title="SeniAURA - Accueil", suppress_callback_exceptions=True, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, title="CardiAURA - Accueil", suppress_callback_exceptions=True, external_stylesheets=external_stylesheets)
 server = app.server
 
 sidebar = dmc.AppShellNavbar(
@@ -213,7 +221,7 @@ sidebar = dmc.AppShellNavbar(
                                         DashIconify(icon="solar:map-point-bold", width=20),
                                         variant="light", radius="md", size="md", color="teal"
                                     ),
-                                    dmc.Text("Territoires", fw=700, size="sm", c="#2c3e50"),
+                                    dmc.Text("CardiAURA", fw=800, size="xl", c="blue.8", style={"letterSpacing": "1px"}),
                                 ]
                             ),
                             dmc.Text("Sélectionnez des EPCI via le menu \"Choisir EPCI\" ou en cliquant directement sur la carte. Ils s'ajouteront alors au radar comparatif.", size="xs", c="dimmed", mb="md"),
@@ -259,7 +267,7 @@ header = dmc.AppShellHeader(
                     gap="xs",
                     children=[
                         DashIconify(icon="lucide:activity", width=28, color="#339af0"),
-                        dmc.Title("SeniAURA", order=2, style={"color": "#2c3e50", "letterSpacing": "-0.5px"}),
+                        dmc.Title("CardiAURA", order=2, style={"color": "#339af0", "letterSpacing": "1px", "fontWeight": 900}),
                         dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10),
                     ]
                 ),

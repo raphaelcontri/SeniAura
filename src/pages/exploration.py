@@ -5,10 +5,17 @@ from dash_iconify import DashIconify
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
+import random
 from ..data import load_data
 
+CONNECTORS = [
+    " associé à ", " combiné à ", " couplé à ", " ainsi qu'un(e) ", 
+    " avec également un(e) ", " conjointement à ", " en complément de ",
+    " lié à ", " accompagné de ", " doublé d'un(e) "
+]
+
 # Load shared data
-gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict = load_data()
+gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict = load_data()
 
 # Ensure consistent projection and index for robust mapping
 if gdf_merged.crs is None:
@@ -258,7 +265,8 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
                     'label': variable_dict.get(col, col),
                     'color': MARKER_COLORS[i % len(MARKER_COLORS)],
                     'nan': int(nan_n),
-                    'out': int(bad_n)
+                    'out': int(bad_n),
+                    'val': val # [min, max]
                 })
 
         df_focus = gdf_merged[mask].copy()
@@ -335,41 +343,56 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
             dragmode=False # Désactive le panoramique et le zoom par glissement
         )
         
-        # Stats UI (Horizontal Layout beneath the map)
-        total_excl = total_epci - len(df_focus)
+        # Narrative Sentence Generation (with Bold info)
+        narrative_children = []
+        if summaries:
+            # We want different connectors if there are multiple parts
+            available_connectors = random.sample(CONNECTORS, len(CONNECTORS))
+            
+            narrative_children = [dmc.Text("Les territoires colorés ont ", span=True)]
+            for i, s in enumerate(summaries):
+                unit = unit_dict.get(s['id'], "")
+                if i > 0:
+                    # Pick a random connector from our shuffled list (cycle if needed)
+                    connector = available_connectors[(i-1) % len(available_connectors)]
+                    narrative_children.append(dmc.Text(connector, fw=700, c="blue.7", span=True))
+                
+                narrative_children.extend([
+                    dmc.Text(s['label'], fw=800, span=True),
+                    dmc.Text(" compris entre ", span=True),
+                    dmc.Text(f"{s['val'][0]:.1f}", fw=800, c="blue.9", span=True),
+                    dmc.Text(" et ", span=True),
+                    dmc.Text(f"{s['val'][1]:.1f}", fw=800, c="blue.9", span=True),
+                    dmc.Text(f" {unit}", span=True),
+                ])
+            narrative_children.append(dmc.Text(".", span=True))
+        
+        # Stats UI (Updated Format)
+        inclus = len(df_focus)
+        exclus = total_epci - inclus
+        
         stats_header = dmc.Box(mb=10, children=[
             dmc.Text([
                 "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
-                dmc.Text(str(total_excl), fw=700, c="red", span=True), 
-                " sont exclus par les filtres sélectionnés."
+                dmc.Text(str(inclus), fw=700, c="blue", span=True), " sont inclus par filtres sélectionnés et ",
+                dmc.Text(str(exclus), fw=700, c="red", span=True), " sont exclus."
             ], size="md", c="gray.8")
         ])
         
-        # Interpretation Guide Intro
-        interpretation_guide = dmc.Text(
-            "Cette section vous aide à comprendre pourquoi certains territoires sont grisés sur la carte. "
-            "Les filtres réglés dans la barre latérale écartent les zones ne répondant pas à vos critères.",
-            size="sm", c="gray.6", mb="md", fs="italic"
-        )
-
-        # Display each contributing variable with clear sentences (2 columns for better readability of phrases)
-        stats_grid = dmc.SimpleGrid(
-            cols=2, spacing="md", verticalSpacing="sm",
+        # Narrative paper
+        narrative_paper = dmc.Paper(
+            p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
             children=[
-                dmc.Paper(
-                    p="sm", withBorder=True, radius="sm", bg="white",
-                    children=[
-                        dmc.Text(s['label'], size="sm", fw=700, mb=6, c="blue.9"),
-                        dmc.Stack(gap=4, children=[
-                            dmc.Text(f"• {s['out']} territoires sont grisés car en dehors de la plage sélectionnée pour cette variable.", size="xs", c="gray.8"),
-                            dmc.Text(f"• {s['nan']} territoires sont grisés par manque de données.", size="xs", c="gray.8") if s['nan'] > 0 else None
-                        ])
-                    ]
-                ) for s in summaries
+                dmc.Text(narrative_children, size="md", fw=400, c="gray.9", style={"lineHeight": "1.7"})
             ]
-        )
+        ) if narrative_children else None
+
+        stats_container = dmc.Stack(gap="xs", children=[
+            stats_header,
+            narrative_paper
+        ])
         
-        content = dmc.Stack(gap=0, children=[interpretation_guide, stats_header, stats_grid]) if summaries else dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed")
+        content = stats_container if summaries else dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed")
         
         # Standard reading guide
         guide = dmc.Group([
@@ -447,4 +470,67 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
         height=700, 
         legend=dict(orientation="h", y=-0.05, x=0.5, xanchor="center")
     )
-    return fig, {'display': 'block', 'flex': 1}, {'display': 'none'}, dmc.Alert("Zone ombrée : moyenne ± écart-type.", color="gray", variant="light"), dynamic_title
+    # Dynamic Narrative Guide (Advanced Analysis)
+    narrative_sections = []
+    
+    if epci_codes and selected_vars:
+        for code in epci_codes:
+            row = gdf_merged[gdf_merged['EPCI_CODE'] == code]
+            if row.empty: continue
+            
+            epci_name = row['nom_EPCI'].values[0]
+            epci_highlights = []
+            
+            for v, label in zip(selected_vars, labels):
+                val = row[v].values[0]
+                m = gdf_merged[v].mean()
+                s = gdf_merged[v].std()
+                z = (val - m) / s if s > 0 else 0
+                
+                # Natural language qualifiers
+                if abs(z) < 0.5: 
+                    qual = "proche de la moyenne"
+                elif z >= 1.5: 
+                    qual = "nettement au-dessus"
+                elif z >= 0.5:
+                    qual = "légèrement au-dessus"
+                elif z <= -1.5:
+                    qual = "nettement en dessous"
+                else: # z <= -0.5
+                    qual = "légèrement en dessous"
+                
+                epci_highlights.append(dmc.Text([
+                    dmc.Text(label, fw=700, span=True), " est ", dmc.Text(qual, fw=700, c="blue.7", span=True)
+                ], span=True))
+            
+            # Combine highlights for this EPCI
+            epci_narrative = [dmc.Text("Pour ", span=True), dmc.Text(epci_name, fw=800, c="blue.9", span=True), " : "]
+            for i, h in enumerate(epci_highlights):
+                if i > 0:
+                    epci_narrative.append(dmc.Text(random.choice(CONNECTORS), span=True))
+                epci_narrative.append(h)
+            epci_narrative.append(dmc.Text(". ", span=True))
+            narrative_sections.append(dmc.Box(epci_narrative, mb=4))
+    else:
+        narrative_sections = [dmc.Text("Sélectionnez des territoires et des variables pour voir l'analyse.", fs="italic", c="dimmed")]
+
+    guide = dmc.Stack(gap="xs", children=[
+        dmc.Group([
+            dmc.Group([
+                html.Div(style={"width":12,"height":12,"backgroundColor":"rgba(200,200,200,0.5)","border":"1px dashed #ced4da"}), 
+                dmc.Text("Zone Grisée : Normale régionale (± 1 σ)", size="xs", fw=500)
+            ]),
+            dmc.Group([
+                html.Div(style={"width":12,"height":0,"borderTop":"2px dashed #868e96"}), 
+                dmc.Text("Ligne Pointillée : Moyenne Régionale", size="xs", fw=500)
+            ]),
+        ], gap="xl"),
+        dmc.Paper(
+            p="md", withBorder=True, radius="md", bg="blue.0",
+            children=[
+                dmc.Stack(gap=4, children=narrative_sections)
+            ]
+        )
+    ])
+
+    return fig, {'display': 'block', 'flex': 1}, {'display': 'none'}, guide, dynamic_title
