@@ -114,7 +114,7 @@ sidebar = dmc.AppShellNavbar(
                                 gap="xs", mb="md",
                                 children=[
                                     DashIconify(icon="solar:health-diagnostics-linear", width=18, color="#339af0"),
-                                    dmc.Text("Choix de l'Indicateur", fw=700, size="sm", c="#2c3e50"),
+                                    dmc.Text("Choix de l'indicateur de santé", fw=700, size="sm", c="#2c3e50"),
                                 ]
                             ),
                             dmc.Stack(gap="xs", mb="xl", children=[
@@ -140,7 +140,7 @@ sidebar = dmc.AppShellNavbar(
                                 gap="xs", mb="md",
                                 children=[
                                     DashIconify(icon="solar:filter-linear", width=18, color="#339af0"),
-                                    dmc.Text("Variables de Filtrage", fw=700, size="sm", c="#2c3e50"),
+                                    dmc.Text("Choix des variables de filtrage", fw=700, size="sm", c="#2c3e50"),
                                 ]
                             ),
 
@@ -267,14 +267,30 @@ header = dmc.AppShellHeader(
                 ),
             ]
         ),
-        # Ligne 2 : Titre du Diagnostic (Fixé en haut)
+        # Ligne 2 : Titre du Diagnostic & Bouton Aide (Fixé en haut)
         dmc.Box(
             style={"borderTop": "1px solid #f1f3f5", "paddingTop": "8px", "paddingBottom": "12px"},
             children=[
-                dmc.Stack(gap=0, children=[
-                    dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
-                    dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et le radar comparatif.", size="sm", c="dimmed", lineClamp=1),
-                ])
+                dmc.Group(
+                    justify="space-between",
+                    align="flex-start",
+                    children=[
+                        dmc.Stack(gap=0, children=[
+                            dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
+                            dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et le radar comparatif.", size="sm", c="dimmed", lineClamp=1),
+                        ]),
+                        dmc.Button(
+                            "Afficher l'aide",
+                            id="exploration-guide-btn",
+                            leftSection=DashIconify(icon="akar-icons:question", width=18),
+                            variant="light",
+                            color="blue",
+                            radius="md",
+                            size="sm",
+                            mt=5
+                        )
+                    ]
+                )
             ]
         )
     ]

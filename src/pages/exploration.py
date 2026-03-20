@@ -31,22 +31,7 @@ layout = dmc.Container(
     p="md",
     style={"display": "flex", "flexDirection": "column", "gap": "15px"},
     children=[
-        # Page Header
-        dmc.Group(
-            justify="flex-end",
-            children=[
-                dmc.Button(
-                    "Aide",
-                    id="exploration-guide-btn",
-                    leftSection=DashIconify(icon="akar-icons:question", width=20),
-                    variant="light",
-                    color="blue",
-                    radius="md",
-                    size="sm"
-                )
-            ],
-            mb="md"
-        ),
+        # (Le titre et le bouton Aide sont désormais fixés dans le Header global)
 
         # Main Interface
         html.Div(
