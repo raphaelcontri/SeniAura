@@ -56,7 +56,16 @@ layout = dmc.Container(
                                 dmc.GridCol(
                                     span=12,
                                     children=[
-                                        dcc.Graph(id='map-graph', style={'height': "550px", "width": "100%"}, config={'displayModeBar': False}),
+                                        dcc.Graph(
+                                            id='map-graph',
+                                            style={'height': "550px", "width": "100%"}, 
+                                            config={
+                                                'displayModeBar': False, 
+                                                'scrollZoom': False,
+                                                'doubleClick': 'reset+autosize',
+                                                'showTips': False
+                                            }
+                                        ),
                                         # New horizontal stats box
                                         dmc.Paper(
                                             withBorder=True, p="md", radius="md", bg="#f8f9fa", mt="sm",
@@ -301,22 +310,30 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
         # Markers for excluded territories are no longer displayed on the map.
 
         # 5. Highlight selection
+        selection_alert = None
         if epci_selection:
             sel = epci_selection if isinstance(epci_selection, list) else [epci_selection]
-            hl = gdf_4326[gdf_4326['EPCI_CODE'].isin(sel)]
+            hl = gdf_merged[gdf_merged['EPCI_CODE'].isin(sel)]
             if not hl.empty:
-                centroids = hl.geometry.centroid
-                fig.add_trace(go.Scattergeo(
-                    lon=centroids.x, lat=centroids.y,
-                    mode='markers',
-                    marker=dict(size=18, color='#e03131', symbol='circle', line=dict(width=2, color='white')),
-                    text=hl['nom_EPCI'], customdata=hl['EPCI_CODE'],
-                    showlegend=False, hoverinfo='text',
+                fig.add_trace(go.Choropleth(
+                    geojson=geojson_data,
+                    locations=hl.index.astype(str),
+                    z=[1] * len(hl),
+                    colorscale=[[0, 'rgba(224, 49, 49, 0.05)'], [1, 'rgba(224, 49, 49, 0.05)']],
+                    showscale=False,
+                    marker_line_width=2.5,
+                    marker_line_color='#e03131',
+                    hoverinfo='skip',
                     name="Sélection"
                 ))
 
         fig.update_geos(fitbounds="locations", visible=False)
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor='white', clickmode='event+select')
+        fig.update_layout(
+            margin={"r":0, "t":0, "l":0, "b":0},
+            paper_bgcolor='white', 
+            clickmode='event+select',
+            dragmode=False # Désactive le panoramique et le zoom par glissement
+        )
         
         # Stats UI (Horizontal Layout beneath the map)
         total_excl = total_epci - len(df_focus)
@@ -378,11 +395,22 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
      Output('radar-placeholder', 'style'),
      Output('radar-reading-guide', 'children'),
      Output('radar-dynamic-title', 'children')],
-    [Input('sidebar-filter-social', 'value'), Input('sidebar-filter-offre', 'value'), Input('sidebar-filter-env', 'value'),
-     Input('sidebar-epci-radar', 'value')]
+    [Input('sidebar-filter-social', 'value'), 
+     Input('sidebar-filter-offre', 'value'), 
+     Input('sidebar-filter-env', 'value'),
+     Input('sidebar-epci-radar', 'value'),
+     Input('map-indic-select', 'value'), Input('map-patho-select', 'value')]
 )
-def update_radar(social, offre, env, epci_codes):
-    selected_vars = (social or []) + (offre or []) + (env or [])
+def update_radar(social, offre, env, epci_codes, ind, patho):
+    target = f"{ind}_{patho}"
+    # Consistency with map logic for CNR
+    if target not in gdf_merged.columns and target == 'INCI_CNR' and 'Taux_CNR' in gdf_merged.columns: target = 'Taux_CNR'
+    
+    # Always include health indicator as first axis
+    selected_vars = [target] + (social or []) + (offre or []) + (env or [])
+    # Unique values only while preserving order if possible
+    seen = set()
+    selected_vars = [x for x in selected_vars if not (x in seen or seen.add(x))]
     
     names_str = ""
     if epci_codes:
@@ -392,7 +420,7 @@ def update_radar(social, offre, env, epci_codes):
     
     dynamic_title = f"Radar comparatif{names_str} par rapport à la moyenne régionale des variables sélectionnées"
 
-    if len(selected_vars) < 3: 
+    if not selected_vars: 
         return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, "", dynamic_title
     
     fig = go.Figure()
