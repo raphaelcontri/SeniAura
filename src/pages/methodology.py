@@ -41,7 +41,6 @@ def make_var_table(vars_list):
                 dmc.TableTd(dmc.Text(item['desc'], size="sm", c="dimmed")),
                 dmc.TableTd(dmc.Text(item['unit'], size="sm", c="dimmed")),
                 dmc.TableTd(dmc.Text(item['source'], size="xs", c="dimmed")),
-                dmc.TableTd(dmc.Code(item['code'])),
             ])
         )
     
@@ -51,7 +50,6 @@ def make_var_table(vars_list):
             dmc.TableTh("Description", style={"width": "400px"}),
             dmc.TableTh("Unité", style={"width": "100px"}),
             dmc.TableTh("Source", style={"width": "250px"}),
-            dmc.TableTh("Code", style={"width": "120px"}),
         ])
     )
     
@@ -64,7 +62,7 @@ def make_var_table(vars_list):
         withTableBorder=True, 
         withColumnBorders=True,
         layout="fixed",
-        style={"width": "1070px"}
+        style={"width": "950px"}
     )
 
 socioeco_vars = get_vars_by_category('Socioéco')
@@ -127,7 +125,7 @@ layout = dmc.Container(
                     dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                         dmc.Title("Variables socio-économiques", order=3, mb="xs", c="#2c3e50"),
                         dmc.Text("Population, emploi, revenus et logement.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(socioeco_vars), h=600)
+                        dmc.ScrollArea(children=make_var_table(socioeco_vars))
                     ])
                 ]),
                 
@@ -135,7 +133,7 @@ layout = dmc.Container(
                     dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                         dmc.Title("Variables offre de soins", order=3, mb="xs", c="#2c3e50"),
                         dmc.Text("Densité et accessibilité des professionnels de santé.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(offre_vars), h=600)
+                        dmc.ScrollArea(children=make_var_table(offre_vars))
                     ])
                 ]),
                 
@@ -143,7 +141,7 @@ layout = dmc.Container(
                     dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                         dmc.Title("Variables environnement", order=3, mb="xs", c="#2c3e50"),
                         dmc.Text("Qualité de l'air, bruit et risques environnementaux.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(env_vars), h=600)
+                        dmc.ScrollArea(children=make_var_table(env_vars))
                     ])
                 ]),
                 
@@ -151,7 +149,7 @@ layout = dmc.Container(
                     dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                         dmc.Title("Variables de santé", order=3, mb="xs", c="#2c3e50"),
                         dmc.Text("Indicateurs cardiovasculaires (incidences et prévalences).", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(sante_vars), h=600)
+                        dmc.ScrollArea(children=make_var_table(sante_vars))
                     ])
                 ]),
 
