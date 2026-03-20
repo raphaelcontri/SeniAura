@@ -76,7 +76,7 @@ layout = dmc.Container(
     fluid=True,
     p="xl",
     children=[
-        dmc.Title("Variables et méthodologie", order=1, mb="xs", style={"color": "#2c3e50"}),
+        dmc.Title("Liste des variables et méthodologie", order=1, mb="xs", style={"color": "#2c3e50"}),
         dmc.Text(
             "Explorez les indicateurs pilotant les analyses de SeniAURA ainsi que la rigueur méthodologique du projet.", 
             c="dimmed", size="lg", mb="xl"

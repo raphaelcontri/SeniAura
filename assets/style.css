@@ -586,3 +586,27 @@ label {
     border-color: #1c7ed6 !important;
     color: white !important;
 }
+
+/* Fix dcc.RangeSlider percentile marks (5% / 95%) */
+.rc-slider-mark {
+    display: block !important;
+}
+
+.rc-slider-mark-text {
+    font-size: 8px !important;
+    color: #adb5bd !important;
+    font-weight: 500 !important;
+}
+
+.rc-slider-dot {
+    display: block !important;
+    border: 1px solid #adb5bd !important;
+    width: 6px !important;
+    height: 6px !important;
+    background-color: #f1f3f5 !important;
+    top: -2px !important;
+}
+.rc-slider {
+    margin-top: 25px !important;
+    margin-bottom: 25px !important;
+}

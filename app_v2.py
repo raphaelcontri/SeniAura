@@ -128,7 +128,7 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Box(id='slider-container-social', mb="xl"),
+                            dmc.Accordion(id='slider-container-social', children=[], multiple=True, variant="default", chevronPosition="left", mb="md"),
 
                             # Offre de Soins group
                             dmc.Text("Offre de Soins", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
@@ -143,7 +143,7 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Box(id='slider-container-offre', mb="xl"),
+                            dmc.Accordion(id='slider-container-offre', children=[], multiple=True, variant="default", chevronPosition="left", mb="md"),
 
                             # Environnement group
                             dmc.Text("Environnement", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
@@ -158,7 +158,7 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Box(id='slider-container-env', mb="xl"),
+                            dmc.Accordion(id='slider-container-env', children=[], multiple=True, variant="default", chevronPosition="left", mb="md"),
 
                             dmc.Divider(my="lg"),
                             dmc.Text("Territoires", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
@@ -215,7 +215,7 @@ header = dmc.AppShellHeader(
                         dmc.TabsList([
                             dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
                             dmc.TabsTab("Exploration", value="/exploration", leftSection=DashIconify(icon="solar:map-linear", width=18)),
-                            dmc.TabsTab("Méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
+                            dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
                         ])
                     ]
                 ),

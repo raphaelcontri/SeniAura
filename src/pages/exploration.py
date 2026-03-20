@@ -36,8 +36,8 @@ layout = dmc.Container(
             justify="space-between",
             children=[
                 dmc.Stack(gap=0, children=[
-                    dmc.Title("Exploration du Territoire", order=2, c="#2c3e50"),
-                    dmc.Text("Analysez la répartition spatiale et comparez les profils territoriaux.", size="sm", c="dimmed"),
+                    dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=2, c="#2c3e50"),
+                    dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et analysez le profil de vulnérabilité d'un EPCI avec le radar comparatif.", size="sm", c="dimmed"),
                 ]),
                 dmc.Group(children=[
                     dmc.Select(
@@ -54,13 +54,14 @@ layout = dmc.Container(
                         comboboxProps={"withinPortal": True, "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                         styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                     ),
-                    dmc.ActionIcon(
-                        DashIconify(icon="akar-icons:question", width=20),
+                    dmc.Button(
+                        "Aide",
                         id="exploration-guide-btn",
-                        size="lg",
+                        leftSection=DashIconify(icon="akar-icons:question", width=20),
                         variant="light",
                         color="blue",
-                        radius="md"
+                        radius="md",
+                        size="sm"
                     )
                 ])
             ]
@@ -80,12 +81,12 @@ layout = dmc.Container(
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:map-linear", color="#339af0"),
-                                dmc.Text("Analyse Spatiale", fw=700),
+                                dmc.Text("Carte choroplèthe", id='map-dynamic-title', fw=700),
                             ]),
                             dmc.Group(gap="xs", children=[
                                 dmc.Select(id='map-indic-select', data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Mortalité', 'value': 'MORT'},{'label': 'Prévalence', 'value': 'PREV'}], value='INCI', size="xs", w=100, radius="md", comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5}, styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}),
                                 dmc.Select(id='map-patho-select', data=[{'label': 'AVC', 'value': 'AVC'},{'label': 'Cardiopathies', 'value': 'CardIsch'},{'label': 'Insuffisance', 'value': 'InsuCard'}], value='AVC', size="xs", w=120, radius="md", comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5}, styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}),
-                                dmc.Switch(id='map-show-markers-switch', label="Points/Exclusions", checked=True, size="xs"),
+                                dmc.Switch(id='map-show-markers-switch', label="Afficher les ", checked=True, size="xs"),
                             ])
                         ]),
                         dmc.Grid(
@@ -128,7 +129,7 @@ layout = dmc.Container(
                     children=[
                         dmc.Group(gap="xs", mb="md", children=[
                             DashIconify(icon="solar:chart-2-linear", color="#339af0"),
-                            dmc.Text("Profil Comparatif", fw=700),
+                            dmc.Text("Profil Comparatif", id='radar-dynamic-title', fw=700),
                         ]),
                         html.Div(
                             id='radar-placeholder',
@@ -141,7 +142,7 @@ layout = dmc.Container(
                                 ])
                             )
                         ),
-                        dcc.Graph(id='radar-chart', style={'display': 'none', 'flex': 1, 'minHeight': "450px"}, config={'displayModeBar': False}),
+                        dcc.Graph(id='radar-chart', style={'display': 'none', 'flex': 1, 'minHeight': "750px"}, config={'displayModeBar': False}),
                         html.Div(id='radar-reading-guide', style={'fontSize': '12px', 'marginTop': '10px'})
                     ]
                 )
@@ -192,28 +193,56 @@ def toggle_drawer(n, opened):
 def update_sliders(social, offre, env, current_vals, current_ids):
     val_map = {id_dict['index']: val for val, id_dict in zip(current_vals, current_ids)}
     
-    def make_slider(var):
-        if var not in gdf_merged.columns: return None
-        mn, mx = gdf_merged[var].min(), gdf_merged[var].max()
-        initial_val = val_map.get(var, [mn, mx])
-        fmt = lambda val: f"{val:.0f}" if abs(val) >= 10 else f"{val:.2f}"
-        label = variable_dict.get(var, var)
-        unit = unit_dict.get(var, "")
-        if unit: label += f" ({unit})"
+    def make_category_item(vars, label_cat):
+        if not vars: return []
         
-        return dmc.Box(mb="md", children=[
-            dmc.Text(label, size="xs", fw=600, mb=5),
-            dcc.RangeSlider(
-                id={'type': 'exploration-slider', 'index': var},
-                min=mn, max=mx, value=initial_val,
-                marks={mn: fmt(mn), mx: fmt(mx)},
-                tooltip={"always_visible": True, "placement": "bottom"}
-            )
-        ])
+        sliders = []
+        for var in vars:
+            if var not in gdf_merged.columns: continue
+            mn, mx = gdf_merged[var].min(), gdf_merged[var].max()
+            initial_val = val_map.get(var, [mn, mx])
+            fmt = lambda val: f"{val:.0f}" if abs(val) >= 10 else f"{val:.2f}"
+            label_var = variable_dict.get(var, var)
+            unit = unit_dict.get(var, "")
+            label_full = f"{label_var} ({unit})" if unit else label_var
+            mn_rounded = round(mn, 3 if (mx-mn) < 10 else 1)
+            mx_rounded = round(mx, 3 if (mx-mn) < 10 else 1)
+            initial_val_rounded = [round(v, 3 if (mx-mn) < 10 else 1) for v in initial_val]
+            q05 = round(gdf_merged[var].quantile(0.05), 3 if (mx-mn) < 10 else 1)
+            q95 = round(gdf_merged[var].quantile(0.95), 3 if (mx-mn) < 10 else 1)
+            
+            sliders.append(dmc.Box(mb=8, px=0, children=[
+                dmc.Text(label_full, size="10px", fw=600, mb=2, c="dimmed"),
+                dcc.RangeSlider(
+                    id={'type': 'exploration-slider', 'index': var},
+                    min=mn_rounded, max=mx_rounded, value=initial_val_rounded,
+                    marks={q05: {"label": "5%", "style": {"fontSize": "8px", "marginTop": "-15px"}}, 
+                           q95: {"label": "95%", "style": {"fontSize": "8px", "marginTop": "-15px"}}},
+                    step=round((mx-mn)/100, 3 if (mx-mn) < 10 else 1),
+                    tooltip={"always_visible": True, "placement": "bottom"}
+                )
+            ]))
+        
+        return [dmc.AccordionItem(
+            [
+                # Header remains small but clean
+                dmc.AccordionControl(
+                    f"Ajuster les indicateurs ({len(vars)})",
+                    icon=DashIconify(icon="solar:tuning-square-2-linear", width=14),
+                    style={"minHeight": "32px", "paddingTop": "2px", "paddingBottom": "2px"},
+                    styles={"label": {"fontSize": "12px", "fontWeight": 500}}
+                ),
+                dmc.AccordionPanel(
+                    dmc.Stack(gap=0, children=sliders, mt=0),
+                    styles={"content": {"paddingLeft": "1px", "paddingRight": "1px", "paddingTop": "5px"}}
+                )
+            ],
+            value="main"
+        )]
 
-    return [make_slider(v) for v in (social or [])], \
-           [make_slider(v) for v in (offre or [])], \
-           [make_slider(v) for v in (env or [])]
+    return make_category_item(social, "Socio-Économie"), \
+           make_category_item(offre, "Offre de Soins"), \
+           make_category_item(env, "Environnement")
 
 # --- View Switching ---
 @callback(
@@ -253,7 +282,8 @@ def select_epci_on_click(clickData, current_selection):
 @callback(
     [Output('map-graph', 'figure'),
      Output('map-legend-stats-content', 'children'),
-     Output('map-reading-guide', 'children')],
+     Output('map-reading-guide', 'children'),
+     Output('map-dynamic-title', 'children')],
     [Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input({'type': 'exploration-slider', 'index': ALL}, 'value'),
      Input('sidebar-epci-radar', 'value'),
@@ -262,9 +292,16 @@ def select_epci_on_click(clickData, current_selection):
 )
 def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids):
     try:
+        # Dynamic Title logic
+        indic_map = {'INCI': "de l'incidence", 'MORT': "de la mortalité", 'PREV': "de la prévalence"}
+        patho_map = {'AVC': "l'AVC", 'CardIsch': "des cardiopathies", 'InsuCard': "l'insuffisance cardiaque"}
+        i_str = indic_map.get(ind, ind)
+        p_str = patho_map.get(patho, patho)
+        dynamic_title = f"Carte choroplèthe {i_str} {p_str} en Auvergne-Rhône-Alpes selon les variables sélectionnées"
+
         target = f"{ind}_{patho}"
         if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
-        if target not in gdf_merged.columns: return go.Figure(), "Indicateur non trouvé", ""
+        if target not in gdf_merged.columns: return go.Figure(), "Indicateur non trouvé", "", dynamic_title
 
         total_epci = len(gdf_merged)
         mask = pd.Series([True] * total_epci)
@@ -381,32 +418,43 @@ def update_map(ind, patho, slider_vals, epci_selection, show_markers, slider_ids
             html.Div(style={"width": "12px", "height": "12px", "borderRadius": "50%", "backgroundColor": s['color'], "marginTop": "3px"}),
             dmc.Stack(gap=0, style={"flex": 1}, children=[
                 dmc.Text(s['label'], size="xs", fw=700, style={"lineHeight": 1.1}),
-                dmc.Text(f"Élimine : {s['out']} (lim) | {s['nan']} (man)", size="10px", c="dimmed")
+                dmc.Text(f"Cette variable écarte {s['out']} territoires en dehors des plages sélectionnées et {s['nan']} autres territoires pour cause de données manquantes.", size="10px", fs="italic", c="dimmed")
             ])
         ]) for s in summaries]
         
         content = dmc.Stack(gap="xs", children=[stats_header] + (rows or [dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed")]))
-        return fig, content, dmc.Text("Intensité : Valeur indicateur. Points : Raison exclusion.", size="xs", c="dimmed")
+        return fig, content, dmc.Text("Intensité : Valeur indicateur. Points : Raison exclusion.", size="xs", c="dimmed"), dynamic_title
         
     except Exception as e:
         import traceback
         err = f"Crash Traceback:\n{traceback.format_exc()}"
         print(err)
         # Return a visible error in the stats area for debugging if needed
-        return go.Figure(), dmc.Alert(f"Erreur de rendu : {str(e)}", color="red"), "Erreur technique"
+        return go.Figure(), dmc.Alert(f"Erreur de rendu : {str(e)}", color="red"), "Erreur technique", "Erreur"
 
 # --- Radar Callback ---
 @callback(
     [Output('radar-chart', 'figure'),
      Output('radar-chart', 'style'),
      Output('radar-placeholder', 'style'),
-     Output('radar-reading-guide', 'children')],
+     Output('radar-reading-guide', 'children'),
+     Output('radar-dynamic-title', 'children')],
     [Input('sidebar-filter-social', 'value'), Input('sidebar-filter-offre', 'value'), Input('sidebar-filter-env', 'value'),
      Input('sidebar-epci-radar', 'value')]
 )
 def update_radar(social, offre, env, epci_codes):
     selected_vars = (social or []) + (offre or []) + (env or [])
-    if len(selected_vars) < 3: return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, ""
+    
+    names_str = ""
+    if epci_codes:
+        # Get names from EPCI codes
+        names = gdf_merged[gdf_merged['EPCI_CODE'].isin(epci_codes)]['nom_EPCI'].tolist()
+        names_str = f" des territoires ({', '.join(names)})"
+    
+    dynamic_title = f"Radar comparatif{names_str} par rapport à la moyenne régionale des variables sélectionnées"
+
+    if len(selected_vars) < 3: 
+        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, "", dynamic_title
     
     fig = go.Figure()
     means = [gdf_merged[v].mean() for v in selected_vars]
@@ -414,7 +462,7 @@ def update_radar(social, offre, env, epci_codes):
     labels = [variable_dict.get(v, v) for v in selected_vars]
     
     # Zone d'acceptation
-    fig.add_trace(go.Scatterpolar(r=[m+s for m,s in zip(means,stds)], theta=labels, fill='toself', fillcolor='rgba(200,200,200,0.3)', line=dict(color='rgba(0,0,0,0)'), name="Normalité (±1σ)"))
+    fig.add_trace(go.Scatterpolar(r=[m+s for m,s in zip(means,stds)], theta=labels, fill='toself', fillcolor='rgba(200,200,200,0.3)', line=dict(color='rgba(0,0,0,0)'), name="Zone d'acceptabilité (écart type)"))
     fig.add_trace(go.Scatterpolar(r=[max(0,m-s) for m,s in zip(means,stds)], theta=labels, fill='toself', fillcolor='white', line=dict(color='rgba(0,0,0,0)'), showlegend=False))
     fig.add_trace(go.Scatterpolar(r=means, theta=labels, name="Moyenne Région", line=dict(dash='dash', color='#868e96')))
 
@@ -426,5 +474,10 @@ def update_radar(social, offre, env, epci_codes):
                 r_vals = [row[v].values[0] for v in selected_vars]
                 fig.add_trace(go.Scatterpolar(r=r_vals, theta=labels, fill='toself', name=row['nom_EPCI'].values[0], line=dict(color=C[i%len(C)])))
     
-    fig.update_layout(polar=dict(radialaxis=dict(visible=True), angularaxis=dict(gridcolor="#e9ecef")), margin={"t":60,"b":40,"l":100,"r":100}, legend=dict(orientation="h", y=-0.15, x=0.5, xanchor="center"))
-    return fig, {'display': 'block', 'flex': 1}, {'display': 'none'}, dmc.Alert("Zone ombrée : moyenne ± écart-type.", color="gray", variant="light")
+    fig.update_layout(
+        polar=dict(radialaxis=dict(visible=True, gridcolor="#e9ecef", gridwidth=1), angularaxis=dict(gridcolor="#e9ecef")), 
+        margin={"t":40,"b":40,"l":40,"r":40}, 
+        height=700, 
+        legend=dict(orientation="h", y=-0.05, x=0.5, xanchor="center")
+    )
+    return fig, {'display': 'block', 'flex': 1}, {'display': 'none'}, dmc.Alert("Zone ombrée : moyenne ± écart-type.", color="gray", variant="light"), dynamic_title
