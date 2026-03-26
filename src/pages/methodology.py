@@ -7,7 +7,7 @@ import os
 from ..data import load_data, PROJECT_ROOT
 
 # Load data
-gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _, source_dict, _ = load_data()
+gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _, source_dict, classement_dict = load_data()
 
 
 
@@ -18,6 +18,13 @@ def get_vars_by_category(target_cat):
     for var_code, label in variable_dict.items():
         cat = str(category_dict.get(var_code, 'Autre')).lower()
         if cat == target_cat.lower():
+            # Filter variables to match dashboard availability
+            # Dashboard sidebar excludes 0, 1, 2, 3. 
+            # We exclude 0, 1, 2 for analysis categories but keep 3 for Santé (indicators).
+            rank = str(classement_dict.get(var_code, ""))
+            if rank in ['0', '1', '2'] or (rank == '3' and cat != 'santé'):
+                continue
+                
             desc = description_dict.get(var_code, "")
             unit = unit_dict.get(var_code, "-")
             if not unit:
@@ -117,7 +124,7 @@ layout = dmc.Container(
                     dmc.TabsTab("Offre de soins", value="offre"),
                     dmc.TabsTab("Environnement", value="env"),
                     dmc.TabsTab("Santé", value="sante"),
-                    dmc.TabsTab("Construction et méthodologie", value="construction"),
+                    dmc.TabsTab("Construction et méthodologie", value="construction", style={"marginLeft": "auto", "backgroundColor": "#f3f0ff", "borderColor": "#845ef7", "color": "#6741d9"}),
                 ]),
                 
                 # --- Variables Panels ---

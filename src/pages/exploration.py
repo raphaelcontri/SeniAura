@@ -447,25 +447,97 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
         return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, "", dynamic_title
     
     fig = go.Figure()
-    means = [gdf_merged[v].mean() for v in selected_vars]
-    stds = [gdf_merged[v].std() for v in selected_vars]
-    labels = [variable_dict.get(v, v) for v in selected_vars]
     
-    # Zone d'acceptation
-    fig.add_trace(go.Scatterpolar(r=[m+s for m,s in zip(means,stds)], theta=labels, fill='toself', fillcolor='rgba(200,200,200,0.3)', line=dict(color='rgba(0,0,0,0)'), name="Zone d'acceptabilité (écart type)"))
-    fig.add_trace(go.Scatterpolar(r=[max(0,m-s) for m,s in zip(means,stds)], theta=labels, fill='toself', fillcolor='white', line=dict(color='rgba(0,0,0,0)'), showlegend=False))
-    fig.add_trace(go.Scatterpolar(r=means, theta=labels, name="Moyenne Région", line=dict(dash='dash', color='#868e96')))
+    # Pre-calculate ranges and normalized stats
+    norm_means = []
+    norm_plus_std = []
+    norm_minus_std = []
+    labels = []
+    
+    for v in selected_vars:
+        mn, mx = gdf_merged[v].min(), gdf_merged[v].max()
+        denom = mx - mn if mx != mn else 1
+        
+        m = gdf_merged[v].mean()
+        s = gdf_merged[v].std()
+        
+        norm_m = (m - mn) / denom
+        norm_s = s / denom # ratio of std to range
+        
+        norm_means.append(norm_m)
+        norm_plus_std.append(min(1, norm_m + norm_s))
+        norm_minus_std.append(max(0, norm_m - norm_s))
+        
+        unit = unit_dict.get(v, "")
+        label = variable_dict.get(v, v)
+        labels.append(f"{label} ({unit})" if unit else label)
+
+    # Zone d'acceptation (Normalisée)
+    fig.add_trace(go.Scatterpolar(
+        r=norm_plus_std, 
+        theta=labels, 
+        fill='toself', 
+        fillcolor='rgba(200,200,200,0.3)', 
+        line=dict(color='rgba(0,0,0,0)'), 
+        name="Zone d'acceptabilité (écart type)",
+        hoverinfo='skip' # On ne veut pas survoler la zone d'écart type
+    ))
+    fig.add_trace(go.Scatterpolar(
+        r=norm_minus_std, 
+        theta=labels, 
+        fill='toself', 
+        fillcolor='white', 
+        line=dict(color='rgba(0,0,0,0)'), 
+        showlegend=False,
+        hoverinfo='skip'
+    ))
+    
+    # Moyenne Région (Normalisée)
+    fig.add_trace(go.Scatterpolar(
+        r=norm_means, 
+        theta=labels, 
+        name="Moyenne Région", 
+        line=dict(dash='dash', color='#868e96'),
+        customdata=[gdf_merged[v].mean() for v in selected_vars],
+        hovertemplate="Moyenne régionale: %{customdata:.2f}<extra></extra>"
+    ))
 
     if epci_codes:
         C = ['#339af0', '#51cf66', '#fcc419', '#ff922b', '#ae3ec9', '#15aabf']
         for i, code in enumerate(epci_codes):
             row = gdf_merged[gdf_merged['EPCI_CODE'] == code]
             if not row.empty:
-                r_vals = [row[v].values[0] for v in selected_vars]
-                fig.add_trace(go.Scatterpolar(r=r_vals, theta=labels, fill='toself', name=row['nom_EPCI'].values[0], line=dict(color=C[i%len(C)])))
+                r_vals_norm = []
+                r_vals_raw = []
+                for v in selected_vars:
+                    val = row[v].values[0]
+                    mn, mx = gdf_merged[v].min(), gdf_merged[v].max()
+                    denom = mx - mn if mx != mn else 1
+                    r_vals_norm.append((val - mn) / denom)
+                    r_vals_raw.append(val)
+                
+                fig.add_trace(go.Scatterpolar(
+                    r=r_vals_norm, 
+                    theta=labels, 
+                    fill='toself', 
+                    name=row['nom_EPCI'].values[0], 
+                    line=dict(color=C[i%len(C)]),
+                    customdata=r_vals_raw,
+                    hovertemplate="Valeur: %{customdata:.2f}<extra></extra>"
+                ))
     
     fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, gridcolor="#e9ecef", gridwidth=1), angularaxis=dict(gridcolor="#e9ecef")), 
+        polar=dict(
+            radialaxis=dict(
+                visible=True, 
+                range=[0, 1], 
+                gridcolor="#e9ecef", 
+                gridwidth=1,
+                tickvals=[0, 0.2, 0.4, 0.6, 0.8, 1.0],
+                ticktext=["Min", "20%", "40%", "60%", "80%", "Max"]
+            ), 
+            angularaxis=dict(gridcolor="#e9ecef")
+        ), 
         margin={"t":40,"b":40,"l":40,"r":40}, 
         height=700, 
         legend=dict(orientation="h", y=-0.05, x=0.5, xanchor="center")

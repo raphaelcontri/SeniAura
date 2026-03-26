@@ -127,9 +127,13 @@ sidebar = dmc.AppShellNavbar(
                                         variant="light", radius="md", size="md"
                                     ),
                                     dmc.Text("Choix de l'indicateur de santé", fw=700, size="sm", c="#2c3e50"),
+                                    dmc.Tooltip(
+                                        multiline=True, w=250, withArrow=True,
+                                        label="Sélectionnez l'indicateur de santé. La carte et le radar comparatif s'adapteront à votre sélection.",
+                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                    )
                                 ]
                             ),
-                            dmc.Text("Sélectionnez l'indicateur de santé. La carte et le radar comparatif s'adapteront à votre sélection.", size="xs", c="dimmed", mb="md"),
                             dmc.Stack(gap="md", mb="xl", children=[
                                 dmc.Box([
                                     dmc.Text("Type d'indicateur", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
@@ -154,19 +158,33 @@ sidebar = dmc.AppShellNavbar(
                             ]),
                             dmc.Divider(variant="solid", mb="md", c="gray.2"),
                             dmc.Group(
-                                gap="xs", mb=5, align="center",
+                                gap="xs", mb=5, align="center", wrap="nowrap",
                                 children=[
                                     dmc.ThemeIcon(
                                         DashIconify(icon="solar:filter-bold", width=20),
                                         variant="light", radius="md", size="md", color="indigo"
                                     ),
-                                    dmc.Text("Choix des variables de filtrage", fw=700, size="sm", c="#2c3e50"),
+                                    dmc.Text("Choix des variables de filtrage", fw=700, size="sm", c="#2c3e50", style={"whiteSpace": "nowrap"}),
+                                    dmc.Tooltip(
+                                        multiline=True, w=250, withArrow=True,
+                                        label="Vous pouvez sélectionner des variables de filtre dans les différentes catégories. Ces variables agissent comme des filtres pour la cartographie et des axes d'analyse pour le radar comparatif.",
+                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                    )
                                 ]
                             ),
-                            dmc.Text("Vous pouvez sélectionner des variables de filtre dans les différentes catégories. Ces variables agissent comme des filtres pour la cartographie et des axes d'analyse pour le radar comparatif.", size="xs", c="dimmed", mb="md"),
 
                             # Socio-Économie group
-                            dmc.Text("Socio-Économie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                            dmc.Group(
+                                gap="xs", align="center", mb=5, wrap="nowrap",
+                                children=[
+                                    dmc.Text("Socio-Économie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
+                                    dmc.Tooltip(
+                                        multiline=True, w=220, withArrow=True,
+                                        label="Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
+                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                    )
+                                ]
+                            ),
                             dmc.MultiSelect(
                                 id='sidebar-filter-social', 
                                 data=social_options, 
@@ -178,11 +196,20 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Text("Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.", size="10px", c="dimmed", fs="italic", mb="md"),
                             dmc.Stack(id='slider-container-social', gap="xs", mb="md", px=10),
 
                             # Offre de Soins group
-                            dmc.Text("Offre de Soins", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                            dmc.Group(
+                                gap="xs", align="center", mb=5, wrap="nowrap",
+                                children=[
+                                    dmc.Text("Offre de Soins", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
+                                    dmc.Tooltip(
+                                        multiline=True, w=220, withArrow=True,
+                                        label="Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
+                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                    )
+                                ]
+                            ),
                             dmc.MultiSelect(
                                 id='sidebar-filter-offre', 
                                 data=offre_options, 
@@ -194,11 +221,20 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Text("Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.", size="10px", c="dimmed", fs="italic", mb="md"),
                             dmc.Stack(id='slider-container-offre', gap="xs", mb="md", px=10),
 
                             # Environnement group
-                            dmc.Text("Environnement", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                            dmc.Group(
+                                gap="xs", align="center", mb=5, wrap="nowrap",
+                                children=[
+                                    dmc.Text("Environnement", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
+                                    dmc.Tooltip(
+                                        multiline=True, w=220, withArrow=True,
+                                        label="Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
+                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                    )
+                                ]
+                            ),
                             dmc.MultiSelect(
                                 id='sidebar-filter-env', 
                                 data=env_options, 
@@ -210,21 +246,23 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Text("Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.", size="10px", c="dimmed", fs="italic", mb="md"),
                             dmc.Stack(id='slider-container-env', gap="xs", mb="md", px=10),
 
-                            dmc.Divider(my="lg"),
                             dmc.Group(
-                                gap="xs", mb=5, align="center",
+                                gap="xs", mb=5, align="center", wrap="nowrap",
                                 children=[
                                     dmc.ThemeIcon(
                                         DashIconify(icon="solar:map-point-bold", width=20),
                                         variant="light", radius="md", size="md", color="teal"
                                     ),
-                                    dmc.Text("CardiAURA", fw=800, size="xl", c="blue.8", style={"letterSpacing": "1px"}),
+                                    dmc.Text("EPCI à comparer", fw=700, size="sm", c="#2c3e50", style={"letterSpacing": "0.5px"}),
+                                    dmc.Tooltip(
+                                        multiline=True, w=250, withArrow=True,
+                                        label="Sélectionnez des EPCI via le menu \"Choisir EPCI\" ou en cliquant directement sur la carte. Ils s'ajouteront alors au radar comparatif.",
+                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                    )
                                 ]
                             ),
-                            dmc.Text("Sélectionnez des EPCI via le menu \"Choisir EPCI\" ou en cliquant directement sur la carte. Ils s'ajouteront alors au radar comparatif.", size="xs", c="dimmed", mb="md"),
                             dmc.MultiSelect(
                                 id='sidebar-epci-radar',
                                 data=epci_radar_options,
@@ -312,17 +350,25 @@ header = dmc.AppShellHeader(
                     children=[
                         dmc.Stack(gap=0, children=[
                             dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
-                            dmc.Text("Analysez la répartition spatiale des maladies CNV selon différentes variables avec la carte interactive et le radar comparatif.", size="sm", c="dimmed", lineClamp=1),
+                            dmc.Text("Améliorez les politiques de prévention en effectuant un diagnostic visuel des principaux indicateurs de la santé cardio-neuro-vasculaire et des déterminants sociaux, en Auvergne Rhone-Alpes à l'échelle EPCI.", size="sm", c="dimmed", lineClamp=1),
                         ]),
                         dmc.Button(
                             "Afficher l'aide",
                             id="exploration-guide-btn",
                             leftSection=DashIconify(icon="akar-icons:question", width=18),
-                            variant="light",
-                            color="blue",
                             radius="md",
                             size="sm",
-                            mt=5
+                            mt=5,
+                            style={
+                                "display": "none", 
+                                "backgroundColor": "#f3f0ff", 
+                                "borderColor": "#845ef7", 
+                                "color": "#6741d9",
+                                "border": "1px solid #845ef7",
+                                "fontWeight": 700,
+                                "paddingLeft": "15px",
+                                "paddingRight": "15px"
+                            }
                         )
                     ]
                 )
@@ -339,7 +385,7 @@ app.layout = dmc.MantineProvider(
         dmc.AppShell(
             id="app-shell",
             header={"height": 130},
-            navbar={"width": 300, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
+            navbar={"width": 350, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
             aside={"width": 350, "breakpoint": "md", "collapsed": {"desktop": True, "mobile": True}}, # Aside configuré mais masqué
             padding="md",
             children=[
@@ -435,6 +481,28 @@ def display_page(pathname):
         return methodology.layout
     else:
         return dmc.Center(dmc.Title("404 - Page non trouvée", order=1))
+
+@app.callback(
+    Output('exploration-guide-btn', 'style'),
+    Input('url', 'pathname')
+)
+def toggle_guide_button(pathname):
+    is_explor = pathname in ['/exploration', '/carte', '/radar']
+    base_style = {
+        "backgroundColor": "#f3f0ff", 
+        "borderColor": "#845ef7", 
+        "color": "#6741d9",
+        "border": "1px solid #845ef7",
+        "borderRadius": "12px",
+        "fontWeight": 700,
+        "paddingLeft": "15px",
+        "paddingRight": "15px"
+    }
+    if is_explor:
+        base_style["display"] = "block"
+    else:
+        base_style["display"] = "none"
+    return base_style
 
 # --- Aside Toggle Callbacks ---
 
