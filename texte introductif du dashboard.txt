@@ -1,8 +1,15 @@
-Cet outil a pour objectif d'établir un diagnostic de l'état de santé de la population d'Auvergne-Rhône-Alpes pour identifier des leviers d'actions concrets et guider les politiques publiques à une échelle fine (EPCI).
+Cet outil a pour objectif d'**établir un diagnostic de l'état de santé de la population d'Auvergne-Rhône-Alpes** pour guider l'identification de **leviers d'actions concrets** et guider les politiques publiques à une échelle fine (EPCI).
 Le diagnostic porte sur les maladies cardio-neuro-vasculaires (CNV), car elles sont fortement liées à des déterminants sociaux et environnementaux, ainsi qu'aux disparités d'accès aux soins.
 Elle s'organise autour de deux outils principaux (accessible sur l'onglet exploration) :
 - une carte interactive
 - un radar comparatif
+
+
+> Quel est l'objectif de ce dashboard ? 
+Le présent site internet se veut être un outil pour les décideurs politiques de la région Auvergne-Rhône-Alpes, permettant :
+- D'identifier les forces et faiblesses des EPCI en termes de vulnérabilité sanitaire, socio-économique et environnementale.
+- De déterminer des leviers d'actions pour guider le déploiement de politiques publiques de prévention spécifiques aux caractéristiques des territoires.
+- De répondre au constat de P. Peretti-Watel et J.-P. Moatti dans *Le Principe de Prévention* (2009), en évitant une approche "descendante" et uniforme qui ignorerait les spécificités sociales et territoriales des populations, risquant ainsi d'accroître les inégalités de santé au lieu de les réduire.
 
 > Prise en main
 **1. Explorez la carte (dans le menu *Exploration*)**
@@ -13,20 +20,17 @@ Elle s'organise autour de deux outils principaux (accessible sur l'onglet explor
 - Vous pouvez **cliquer sur un EPCI** pour le sélectionner et l'**ajouter au radar**.
 
 **2. Analysez le radar comparatif** (défiler en bas dans la page exploration)
-- Les **variables que vous avez sélectionné** pour la carte sont **gardées en mémoire**.
+- Les **variables que vous avez sélectionnées** pour la carte sont **gardées en mémoire**.
 - Le **radar s'active** dès qu'au moins **un territoire est sélectionné** et **trois variables choisies**. 
 - Il permet de **comparer un ou plusieurs territoires** entre eux, à la **moyenne régionale** et à une **zone d'acceptabilité (écart-type)**.
 
 
-> Quel est l'objctif de ce dashboard ? 
-Le présent site internet se veut être un outil pour les décideurs politiques de la région Auvergne-Rhône-Alpes, permettant :
-- D'identifier les forces et faiblesses des EPCI en termes de vulnérabilité sanitaire, socio-économique et environnementale.
-- De déterminer des leviers d'actions pour guider le déploiement de politiques publiques de prévention spécifiques aux caractéristiques des territoires.
-- De répondre au constat de P. Peretti-Watel et J.-P. Moatti dans *Le Principe de Prévention* (2009), en évitant une approche "descendante" et uniforme qui ignorerait les spécificités sociales et territoriales des populations, risquant ainsi d'accroître les inégalités de santé au lieu de les réduire.
+
 
 > Qu'est-ce qu'un EPCI ?
 Un EPCI (Établissement Public de Coopération Intercommunale) est un regroupement de communes qui travaillent ensemble sur des compétences communes (aménagement, santé, environnement, etc.).
-C'est l'échelle territoriale utilisée ici pour analyser et comparer les données.
+Ils peuvent être des Communautés de Communes (CC) ou des Communautés d'Agglomération (CA).
+C’est l’échelle territoriale utilisée ici pour analyser et comparer les données.
 
 > Pour quels destinataires ?
 - **Élus et décideurs (EPCI)** : Disposer d'un outil de « diagnostic flash » pour situer le territoire par rapport aux moyennes régionales et justifier les investissements (ex : structures de santé, urbanisme).
@@ -35,7 +39,7 @@ C'est l'échelle territoriale utilisée ici pour analyser et comparer les donné
 - **Délégations de l'ARS** : Bénéficier d'un référentiel objectif commun pour piloter le dialogue avec les élus et objectiver les besoins de santé locaux.
 
 > Qu'est ce qu'une maladie cardio-neuro-vasculaire ?
-Section complétée prochainnement...
+Section complétée prochainement...
 
 > Qui sommes-nous ?
 Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).

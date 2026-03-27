@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://seniaura.onrender.com/sitemap.xml
