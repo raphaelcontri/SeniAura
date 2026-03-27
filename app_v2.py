@@ -98,7 +98,7 @@ external_stylesheets = [
     'https://unpkg.com/@mantine/dates@7/styles.css',
     'https://unpkg.com/@mantine/charts@7/styles.css',
 ]
-from flask import send_from_directory
+from flask import send_from_directory, Response
 
 app = dash.Dash(
     __name__, 
@@ -120,7 +120,23 @@ server = app.server
 
 @server.route('/robots.txt')
 def serve_robots():
-    return send_from_directory(os.path.join(os.getcwd(), 'assets'), 'robots.txt')
+    # Attempt to get host from request or use placeholder
+    from flask import request
+    host = request.host_url.rstrip('/')
+    content = f"User-agent: *\nAllow: /\nSitemap: {host}/sitemap.xml"
+    return Response(content, mimetype='text/plain')
+
+@server.route('/sitemap.xml')
+def serve_sitemap():
+    from flask import request
+    host = request.host_url.rstrip('/')
+    content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>{host}/</loc><priority>1.0</priority></url>
+  <url><loc>{host}/exploration</loc><priority>0.8</priority></url>
+  <url><loc>{host}/methodologie</loc><priority>0.5</priority></url>
+</urlset>"""
+    return Response(content, mimetype='application/xml')
 
 sidebar = dmc.AppShellNavbar(
     p="md",
