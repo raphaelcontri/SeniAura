@@ -98,7 +98,18 @@ external_stylesheets = [
     'https://unpkg.com/@mantine/dates@7/styles.css',
     'https://unpkg.com/@mantine/charts@7/styles.css',
 ]
-app = dash.Dash(__name__, title="CardiAURA - Accueil", suppress_callback_exceptions=True, external_stylesheets=external_stylesheets)
+app = dash.Dash(
+    __name__, 
+    title="CardiAURA - Accueil", 
+    suppress_callback_exceptions=True, 
+    external_stylesheets=external_stylesheets,
+    meta_tags=[
+        {
+            "name": "viewport", 
+            "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2"
+        }
+    ]
+)
 server = app.server
 
 sidebar = dmc.AppShellNavbar(
@@ -295,14 +306,15 @@ header = dmc.AppShellHeader(
     px="xl",
     style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "flexDirection": "column", "justifyContent": "center"},
     children=[
-        # Ligne 1 : Logo & Navigation (Alignés à gauche)
+        # Ligne 1 : Logo & Navigation
         dmc.Group(
-            justify="flex-start",
+            justify="space-between",
+            wrap="nowrap",
             h=65,
-            gap=100, # Espace généreux entre Logo et Tabs
             children=[
                 dmc.Group(
                     gap="xs",
+                    wrap="nowrap",
                     children=[
                         DashIconify(icon="lucide:activity", width=28, color="#339af0"),
                         dmc.Title("CardiAURA", order=2, style={"color": "#339af0", "letterSpacing": "1px", "fontWeight": 900}),
@@ -318,16 +330,19 @@ header = dmc.AppShellHeader(
                     styles={
                         "tab": {
                             "border": "1px solid #dee2e6",
-                            "padding": "6px 16px",
-                            "fontWeight": 600,
+                            "padding": "10px 24px",
+                            "fontWeight": 800,
+                            "fontSize": "15px",
                             "transition": "all 200ms ease",
-                            "backgroundColor": "#f8f9fa",
+                            "backgroundColor": "#ffffff",
                             "color": "#495057",
+                            "borderRadius": "12px",
                         },
                         "tab[data-active]": {
                             "backgroundColor": "#339af0 !important",
                             "borderColor": "#339af0 !important",
-                            "color": "white !important"
+                            "color": "white !important",
+                            "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
                         }
                     },
                     children=[
@@ -346,11 +361,11 @@ header = dmc.AppShellHeader(
             children=[
                 dmc.Group(
                     justify="space-between",
-                    align="flex-start",
+                    align="center",
+                    wrap="nowrap",
                     children=[
-                        dmc.Stack(gap=0, children=[
-                            dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
-                            dmc.Text("Améliorez les politiques de prévention en effectuant un diagnostic visuel des principaux indicateurs de la santé cardio-neuro-vasculaire et des déterminants sociaux, en Auvergne Rhone-Alpes à l'échelle EPCI.", size="sm", c="dimmed", lineClamp=1),
+                        dmc.Stack(gap=0, style={"flex": 1, "minWidth": 0, "marginRight": "15px"}, children=[
+                            dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700})
                         ]),
                         dmc.Button(
                             "Afficher l'aide",
@@ -358,7 +373,6 @@ header = dmc.AppShellHeader(
                             leftSection=DashIconify(icon="akar-icons:question", width=18),
                             radius="md",
                             size="sm",
-                            mt=5,
                             style={
                                 "display": "none", 
                                 "backgroundColor": "#f3f0ff", 
@@ -386,7 +400,7 @@ app.layout = dmc.MantineProvider(
             id="app-shell",
             header={"height": 130},
             navbar={"width": 350, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
-            aside={"width": 350, "breakpoint": "md", "collapsed": {"desktop": True, "mobile": True}}, # Aside configuré mais masqué
+            aside={"width": 450, "breakpoint": "md", "collapsed": {"desktop": True, "mobile": True}}, # Aside configuré mais masqué
             padding="md",
             children=[
                 header,
@@ -399,7 +413,14 @@ app.layout = dmc.MantineProvider(
                             scrollbarSize=10,
                             offsetScrollbars=True,
                             children=[
-                                html.Div(id='page-content', style={'padding': '20px'})
+                                dmc.Container(
+                                    size="2000px", # Wide enough for dashboard, but limits infinite stretch
+                                    fluid=False,
+                                    px=0,
+                                    children=[
+                                        html.Div(id='page-content', style={'padding': '20px'})
+                                    ]
+                                )
                             ]
                         )
                     ],
@@ -409,7 +430,7 @@ app.layout = dmc.MantineProvider(
                     p="md",
                     children=[
                         dmc.Group(justify="space-between", mb="md", children=[
-                            dmc.Title("Aide & Guide", order=4, style={"color": "#2c3e50"}),
+                            dmc.Title("Aide & Mode d'emploi", order=4, style={"color": "#2c3e50"}),
                             dmc.ActionIcon(
                                 DashIconify(icon="lucide:x", width=20),
                                 id="close-aside-btn",
@@ -522,7 +543,7 @@ def toggle_aside_store(n, opened):
 )
 def sync_aside_state(opened, current_aside):
     if not current_aside:
-        current_aside = {"width": 350, "breakpoint": "md"}
+        current_aside = {"width": 450, "breakpoint": "md"}
     current_aside["collapsed"] = {"desktop": not opened, "mobile": not opened}
     return current_aside
 

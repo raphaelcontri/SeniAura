@@ -54,7 +54,7 @@ layout = dmc.Container(
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:map-linear", color="#339af0"),
-                                dmc.Text("Carte choroplèthe", id='map-dynamic-title', fw=700),
+                                dmc.Text("Carte ", id='map-dynamic-title', fw=700),
                             ]),
                         ]),
                         dmc.Grid(
@@ -136,12 +136,31 @@ layout = dmc.Container(
                         ]),
                         html.Div(
                             id='radar-placeholder',
-                            style={'flex': 1, 'display': 'flex', 'minHeight': '300px'},
+                            style={'flex': 1, 'display': 'flex', 'minHeight': '350px'},
                             children=dmc.Center(
                                 style={"width": "100%"},
-                                children=dmc.Stack(align="center", gap="xs", children=[
-                                    DashIconify(icon="solar:chart-2-bold-duotone", width=60, color="#ced4da"),
-                                    dmc.Text("Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut", size="sm", c="dimmed"),
+                                children=dmc.Stack(align="center", gap="xl", children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
+                                        size=140, radius=100, variant="light", color="blue"
+                                    ),
+                                    dmc.Paper(
+                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
+                                        shadow="sm", maw=600,
+                                        style={"border": "2px dashed #339af0"},
+                                        children=[
+                                            dmc.Text(
+                                                "Action Requise", 
+                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
+                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                            ),
+                                            dmc.Text(
+                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
+                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                style={"lineHeight": "1.6"}
+                                            )
+                                        ]
+                                    )
                                 ])
                             )
                         ),
@@ -161,25 +180,16 @@ layout = dmc.Container(
 )
 def update_aside_content(pathname):
     if pathname in ['/exploration', '/carte', '/radar']:
-        return dmc.Stack(gap="md", children=[
-            dmc.Title("Mode d'emploi - Exploration", order=3, c="#2c3e50"),
-            dmc.Text("La vue exploration combine la carte régionale et le radar comparatif.", size="sm"),
-            dmc.Divider(),
-            dmc.Title("Carte", order=5),
-            dmc.Text("- Utilisez les curseurs à gauche pour filtrer. Les territoires hors limites restent grisés.", size="sm"),
-            dmc.Text("- Cliquez sur n'importe quel zone pour l'ajouter/retirer du comparateur.", size="sm"),
-            dmc.Title("Radar Chart", order=5),
-            dmc.Text("- Le radar affiche les indicateurs pour l'EPCI sélectionné par rapport à la moyenne régionale (zone bleue).", size="sm"),
-            dmc.Text("- Faites défiler pour voir le radar sous la carte.", size="sm"),
-            dmc.Divider(),
-            dmc.Alert(
-                "Le panneau de filtrage à gauche s'adapte à vos choix d'indicateur de santé.",
-                title="Astuce",
-                color="blue",
-                variant="light",
-                radius="md"
-            )
-        ])
+        try:
+            # Try to read Aide.txt (usually in the project root)
+            with open("Aide.txt", "r", encoding="utf-8") as f:
+                content = f.read()
+            return dmc.Stack(gap="md", children=[
+                dcc.Markdown(content, style={"fontSize": "14px", "lineHeight": "1.6"})
+            ])
+        except Exception:
+            # Fallback if file not found
+            return dmc.Text("Guide d'aide non disponible.", c="dimmed", fs="italic")
     return dmc.Text("Aucune aide spécifique pour cette page.", c="dimmed", fs="italic")
 
 # --- Sliders Management ---
@@ -686,7 +696,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                 
                 unit = unit_dict.get(v, "")
                 label_name = variable_dict.get(v, v)
-                indice_str = f" (indice : {unit})" if unit else ""
+                indice_str = f" (unité : {unit})" if unit else ""
                 
                 epci_highlights.append(dmc.Text([
                     "la variable ", dmc.Text(label_name, fw=800, span=True), 
@@ -698,7 +708,10 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             epci_narrative = [dmc.Text("Pour l'EPCI ", span=True), dmc.Text(epci_name, fw=800, c="blue.9", span=True), " : "]
             for i, h in enumerate(epci_highlights):
                 if i > 0:
-                    epci_narrative.append(dmc.Text(" et ", span=True))
+                    epci_narrative.append(dmc.Text(". ", span=True))
+                
+                # Capitalize first word of highlight
+                h.children[0] = h.children[0].capitalize()
                 epci_narrative.append(h)
             epci_narrative.append(dmc.Text(". ", span=True))
             narrative_sections.append(dmc.Box(epci_narrative, mb=4))
@@ -711,7 +724,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             dmc.Group(gap="xs", children=[
                 dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
                 dmc.Tooltip(
-                    label="L'interprétation des variables ci-dessous est évaluée selon l'écart-type : 'proche de la moyenne régionale' < 0.5 écart type, 'légèrement au dessus / en dessous de la moyenne régionale' de 0.5 écart type à 1.5 écart type, et 'nettement au dessus / en dessous de la moyenne régionale' > 1.5 écart type.",
+                    label="Sur ceradar comparatif, les variables sont standardisées entre 0 et 100%. L'interprétation des variables ci-dessous est évaluée selon l'écart-type : 'proche de la moyenne régionale' < 0.5 écart type, 'légèrement au dessus / en dessous de la moyenne régionale' de 0.5 écart type à 1.5 écart type, et 'nettement au dessus / en dessous de la moyenne régionale' > 1.5 écart type.",
                     w=300, multiline=True, withArrow=True,
                     children=dmc.ActionIcon(
                         DashIconify(icon="solar:question-circle-linear"),
