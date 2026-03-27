@@ -54,7 +54,7 @@ layout = dmc.Container(
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:map-linear", color="#339af0"),
-                                dmc.Text("Carte choroplèthe", id='map-dynamic-title', fw=700),
+                                dmc.Text("Carte ", id='map-dynamic-title', fw=700),
                             ]),
                         ]),
                         dmc.Grid(
@@ -74,14 +74,47 @@ layout = dmc.Container(
                                             }
                                         ),
                                         # New horizontal stats box
-                                        dmc.Paper(
-                                            withBorder=True, p="md", radius="md", bg="#f8f9fa", mt="sm",
+                                        dmc.Group(
+                                            align="stretch", gap="md", mt="sm",
                                             children=[
-                                                dmc.Group(justify="space-between", mb="xs", children=[
-                                                    dmc.Text("Détails des exclusions par variable", size="xs", fw=700, tt="uppercase", c="dimmed"),
-                                                    html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
-                                                ]),
-                                                html.Div(id='map-legend-stats-content'),
+                                                dmc.Paper(
+                                                    withBorder=True, p="md", radius="md", bg="#f8f9fa",
+                                                    style={'flex': 1},
+                                                    children=[
+                                                        dmc.Group(justify="space-between", mb="xs", children=[
+                                                            dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
+                                                            html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
+                                                        ]),
+                                                        html.Div(id='map-stats-header-content'),
+                                                        html.Div(id='map-narrative-content')
+                                                    ]
+                                                ),
+                                                dmc.Paper(
+                                                    withBorder=True, p="md", radius="md", bg="white",
+                                                    style={"width": "300px", "display": "none"},
+                                                    children=[
+                                                        dmc.Stack(gap="xs", children=[
+                                                            dmc.Group(gap="xs", children=[
+                                                                dmc.Text("Afficher les EPCI grisés par :", size="xs", fw=600),
+                                                                dmc.Tooltip(
+                                                                    label="Vous pouvez visualiser quels EPCI ont été grisés par une certaine variable. En effet, quand vous sélectionnez plusieurs variables de filtres, un EPCI peut être grisé par une variable mais pas l'autre.",
+                                                                    w=300, multiline=True, withArrow=True,
+                                                                    children=dmc.ActionIcon(
+                                                                        DashIconify(icon="solar:question-circle-linear"),
+                                                                        variant="subtle", color="gray", size="sm"
+                                                                    )
+                                                                )
+                                                            ]),
+                                                            dmc.Select(
+                                                                id='highlight-variable-select',
+                                                                size="xs",
+                                                                placeholder="Choisir une variable",
+                                                                data=[],
+                                                                clearable=True,
+                                                            )
+                                                        ])
+                                                    ]
+                                                )
                                             ]
                                         )
                                     ]
@@ -108,11 +141,11 @@ layout = dmc.Container(
                                 style={"width": "100%"},
                                 children=dmc.Stack(align="center", gap="xs", children=[
                                     DashIconify(icon="solar:chart-2-bold-duotone", width=60, color="#ced4da"),
-                                    dmc.Text("Sélectionnez >2 variables et un territoire pour activer le radar", size="sm", c="dimmed"),
+                                    dmc.Text("Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut", size="sm", c="dimmed"),
                                 ])
                             )
                         ),
-                        dcc.Graph(id='radar-chart', style={'display': 'none', 'flex': 1, 'minHeight': "750px"}, config={'displayModeBar': False}),
+                        dcc.Graph(id='radar-chart', style={'display': 'none', 'flex': 1, 'minHeight': "750px"}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
                         html.Div(id='radar-reading-guide', style={'fontSize': '12px', 'marginTop': '10px'})
                     ]
                 )
@@ -128,25 +161,16 @@ layout = dmc.Container(
 )
 def update_aside_content(pathname):
     if pathname in ['/exploration', '/carte', '/radar']:
-        return dmc.Stack(gap="md", children=[
-            dmc.Title("Mode d'emploi - Exploration", order=3, c="#2c3e50"),
-            dmc.Text("La vue exploration combine la carte régionale et le radar comparatif.", size="sm"),
-            dmc.Divider(),
-            dmc.Title("Carte", order=5),
-            dmc.Text("- Utilisez les curseurs à gauche pour filtrer. Les territoires hors limites restent grisés.", size="sm"),
-            dmc.Text("- Cliquez sur n'importe quel zone pour l'ajouter/retirer du comparateur.", size="sm"),
-            dmc.Title("Radar Chart", order=5),
-            dmc.Text("- Le radar affiche les indicateurs pour l'EPCI sélectionné par rapport à la moyenne régionale (zone bleue).", size="sm"),
-            dmc.Text("- Faites défiler pour voir le radar sous la carte.", size="sm"),
-            dmc.Divider(),
-            dmc.Alert(
-                "Le panneau de filtrage à gauche s'adapte à vos choix d'indicateur de santé.",
-                title="Astuce",
-                color="blue",
-                variant="light",
-                radius="md"
-            )
-        ])
+        try:
+            # Try to read Aide.txt (usually in the project root)
+            with open("Aide.txt", "r", encoding="utf-8") as f:
+                content = f.read()
+            return dmc.Stack(gap="md", children=[
+                dcc.Markdown(content, style={"fontSize": "14px", "lineHeight": "1.6"})
+            ])
+        except Exception:
+            # Fallback if file not found
+            return dmc.Text("Guide d'aide non disponible.", c="dimmed", fs="italic")
     return dmc.Text("Aucune aide spécifique pour cette page.", c="dimmed", fs="italic")
 
 # --- Sliders Management ---
@@ -223,18 +247,32 @@ def select_epci_on_click(clickData, current_selection):
     else: selection.append(epci_code)
     return selection
 
+# --- Highlight Select Options Management ---
+@callback(
+    Output('highlight-variable-select', 'data'),
+    [Input('sidebar-filter-social', 'value'),
+     Input('sidebar-filter-offre', 'value'),
+     Input('sidebar-filter-env', 'value')]
+)
+def update_highlight_options(social, offre, env):
+    all_vars = (social or []) + (offre or []) + (env or [])
+    if not all_vars: return []
+    return [{'label': variable_dict.get(v, v), 'value': v} for v in all_vars if v in variable_dict]
+
 # --- Map Callback ---
 @callback(
     [Output('map-graph', 'figure'),
-     Output('map-legend-stats-content', 'children'),
+     Output('map-stats-header-content', 'children'),
+     Output('map-narrative-content', 'children'),
      Output('map-reading-guide', 'children'),
      Output('map-dynamic-title', 'children')],
     [Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input({'type': 'exploration-slider', 'index': ALL}, 'value'),
-     Input('sidebar-epci-radar', 'value')],
+     Input('sidebar-epci-radar', 'value'),
+     Input('highlight-variable-select', 'value')],
     State({'type': 'exploration-slider', 'index': ALL}, 'id')
 )
-def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
+def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_ids):
     try:
         # Dynamic Title logic
         indic_map = {'INCI': "l'incidence", 'MORT': "la mortalité", 'PREV': "la prévalence"}
@@ -245,10 +283,11 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
 
         target = f"{ind}_{patho}"
         if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
-        if target not in gdf_merged.columns: return go.Figure(), "Indicateur non trouvé", "", dynamic_title
+        if target not in gdf_merged.columns: return go.Figure(), "Indicateur non trouvé", "", "", dynamic_title
 
         total_epci = len(gdf_merged)
-        mask = pd.Series([True] * total_epci)
+        mask = pd.Series([True] * total_epci, index=gdf_merged.index)
+        exclusion_reasons = pd.Series([""] * total_epci, index=gdf_merged.index)
         summaries = []
         
         if slider_vals:
@@ -256,6 +295,11 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
                 col = id_dict['index']
                 col_mask = gdf_merged[col].between(val[0], val[1])
                 mask &= col_mask
+                
+                # Update exclusion reasons
+                fail_mask = ~col_mask
+                var_name = variable_dict.get(col, col)
+                exclusion_reasons.loc[fail_mask] += f"<br>- {var_name}"
                 
                 # Stats
                 nan_n = gdf_merged[col].isna().sum()
@@ -272,6 +316,14 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
         df_focus = gdf_merged[mask].copy()
         fig = go.Figure()
 
+        click_instruction = "<i>Cliquez sur cet EPCI pour l'ajouter au radar chart</i><br><br>"
+        
+        # Build text for background layer
+        bg_text = click_instruction + "<b>" + gdf_merged['nom_EPCI'] + "</b>"
+        has_exclusion = exclusion_reasons != ""
+        bg_text_with_reasons = bg_text.copy()
+        bg_text_with_reasons.loc[has_exclusion] += "<br><span style='font-size: 11px; color: #e03131'>Grisé par :</span>" + exclusion_reasons.loc[has_exclusion]
+
         # 1. Background layer (All territories) - Using ID for robust mapping
         fig.add_trace(go.Choropleth(
             geojson=geojson_data,
@@ -281,8 +333,8 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
             showscale=False,
             marker_line_width=0.5,
             marker_line_color='rgba(0,0,0,0.1)',
-            hoverinfo='text',
-            text=gdf_merged['nom_EPCI'],
+            hovertemplate="%{text}<extra></extra>",
+            text=bg_text_with_reasons,
             customdata=gdf_merged['EPCI_CODE'],
             name="Région"
         ))
@@ -297,7 +349,7 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
                 marker_line_width=0.5,
                 marker_line_color="rgba(255,255,255,0.8)",
                 colorbar=dict(thickness=15, len=0.8, y=0.5, x=0.01, xanchor="left", title=unit_dict.get(target, "")),
-                hovertemplate="<b>%{text}</b><br>" + variable_dict.get(target, target) + ": %{z:.2f}<extra></extra>",
+                hovertemplate=click_instruction + "<b>%{text}</b><br>" + variable_dict.get(target, target) + ": %{z:.2f}<extra></extra>",
                 text=df_focus['nom_EPCI'],
                 customdata=df_focus['EPCI_CODE']
             ))
@@ -314,8 +366,33 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
             hoverinfo='skip'
         ))
 
-        # 4. Exclusion Markers - DELETED as requested.
-        # Markers for excluded territories are no longer displayed on the map.
+        # 4. Highlight Exclusion (Specific Variable)
+        if highlight_var:
+            # Find the slider value for highlight_var
+            slider_indices = [i for i, d in enumerate(slider_ids) if d['index'] == highlight_var]
+            if slider_indices:
+                idx = slider_indices[0]
+                val = slider_vals[idx]
+                
+                # EPCIs specifically excluded by this variable
+                # mask is already computed in the loop above, but we need the specific one here
+                excluded_by_var = ~gdf_merged[highlight_var].between(val[0], val[1])
+                # We only show them if they are in the background (already gray)
+                df_excl_highlight = gdf_merged[excluded_by_var].copy()
+                
+                if not df_excl_highlight.empty:
+                    fig.add_trace(go.Choropleth(
+                        geojson=geojson_data,
+                        locations=df_excl_highlight.index.astype(str),
+                        z=[1] * len(df_excl_highlight),
+                        colorscale=[[0, '#adb5bd'], [1, '#adb5bd']], # Medium gray
+                        showscale=False,
+                        marker_line_width=1,
+                        marker_line_color='rgba(0,0,0,0.3)',
+                        hovertemplate=click_instruction + "<b>%{text}</b><br>Grisé par : " + variable_dict.get(highlight_var, highlight_var) + "<extra></extra>",
+                        text=df_excl_highlight['nom_EPCI'],
+                        name=f"Exclu par {highlight_var}"
+                    ))
 
         # 5. Highlight selection
         selection_alert = None
@@ -346,24 +423,19 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
         # Narrative Sentence Generation (with Bold info)
         narrative_children = []
         if summaries:
-            # We want different connectors if there are multiple parts
-            available_connectors = random.sample(CONNECTORS, len(CONNECTORS))
-            
-            narrative_children = [dmc.Text("Les territoires colorés ont ", span=True)]
+            narrative_children = [dmc.Text("Les territoires qui correspondent à vos filtres sont ceux dont : ", span=True)]
             for i, s in enumerate(summaries):
                 unit = unit_dict.get(s['id'], "")
                 if i > 0:
-                    # Pick a random connector from our shuffled list (cycle if needed)
-                    connector = available_connectors[(i-1) % len(available_connectors)]
-                    narrative_children.append(dmc.Text(connector, fw=700, c="blue.7", span=True))
+                    narrative_children.append(dmc.Text(" et ", fw=700, c="blue.7", span=True))
                 
                 narrative_children.extend([
-                    dmc.Text(s['label'], fw=800, span=True),
-                    dmc.Text(" compris entre ", span=True),
+                    dmc.Text(f" la variable {s['label']} ", fw=800, span=True),
+                    dmc.Text(" est entre ", span=True),
                     dmc.Text(f"{s['val'][0]:.1f}", fw=800, c="blue.9", span=True),
                     dmc.Text(" et ", span=True),
                     dmc.Text(f"{s['val'][1]:.1f}", fw=800, c="blue.9", span=True),
-                    dmc.Text(f" {unit}", span=True),
+                    dmc.Text(f" (unité : {unit})" if unit else "", span=True),
                 ])
             narrative_children.append(dmc.Text(".", span=True))
         
@@ -371,13 +443,16 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
         inclus = len(df_focus)
         exclus = total_epci - inclus
         
-        stats_header = dmc.Box(mb=10, children=[
-            dmc.Text([
-                "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
-                dmc.Text(str(inclus), fw=700, c="blue", span=True), " sont inclus par filtres sélectionnés et ",
-                dmc.Text(str(exclus), fw=700, c="red", span=True), " sont exclus."
-            ], size="md", c="gray.8")
-        ])
+        stats_header = dmc.Paper(
+            p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
+            children=[
+                dmc.Text([
+                    "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
+                    dmc.Text(str(inclus), fw=700, c="blue", span=True), " sont inclus par filtres sélectionnés et ",
+                    dmc.Text(str(exclus), fw=700, c="red", span=True), " sont exclus."
+                ], size="md", c="gray.9")
+            ]
+        )
         
         # Narrative paper
         narrative_paper = dmc.Paper(
@@ -387,22 +462,41 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
             ]
         ) if narrative_children else None
 
-        stats_container = dmc.Stack(gap="xs", children=[
-            stats_header,
-            narrative_paper
-        ])
+        # Descriptions des variables
+        desc_children = []
+        if target:
+            ind_desc = description_dict.get(target, "")
+            if not ind_desc:
+                ind_desc = "Description non disponible."
+            desc_children.append(dmc.Text([dmc.Text(f"{variable_dict.get(target, target)} (Indicateur Santé) : ", fw=700, span=True), ind_desc], size="sm"))
+                
+        for s in summaries:
+            var_desc = description_dict.get(s['id'], "")
+            if not var_desc:
+                var_desc = "Description non disponible."
+            desc_children.append(dmc.Text([dmc.Text(f"{s['label']} : ", fw=700, span=True), var_desc], size="sm"))
+                
+        desc_paper = dmc.Paper(
+            p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
+            children=[
+                dmc.Text("Descriptions des variables", fw=700, mb="xs"),
+                dmc.Stack(gap="xs", children=desc_children)
+            ]
+        ) if desc_children else None
+
+        if summaries:
+            content = dmc.Stack(gap="xs", children=[
+                stats_header,
+                narrative_paper,
+                desc_paper
+            ])
+        else:
+            content = dmc.Stack(gap="xs", children=[
+                dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed", mb="xs"),
+                desc_paper
+            ])
         
-        content = stats_container if summaries else dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed")
-        
-        # Standard reading guide
-        guide = dmc.Group([
-            dmc.Group([html.Div(style={"width":8,"height":8,"backgroundColor":"#1971c2"}), dmc.Text("Risque Fort", size="10px")]),
-            dmc.Group([html.Div(style={"width":8,"height":8,"backgroundColor":"#e7f5ff"}), dmc.Text("Risque Faible", size="10px")]),
-            dmc.Divider(orientation="vertical"),
-            dmc.Text("Gris : Territoires ne répondant pas aux critères", size="xs", c="dimmed"),
-        ], gap="sm")
-        
-        return fig, content, guide, dynamic_title
+        return fig, content, "", "", dynamic_title
         
     except Exception as e:
         import traceback
@@ -433,7 +527,13 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     selected_vars = [target] + (social or []) + (offre or []) + (env or [])
     # Unique values only while preserving order if possible
     seen = set()
-    selected_vars = [x for x in selected_vars if not (x in seen or seen.add(x))]
+    selected_vars_unique = [x for x in selected_vars if not (x in seen or seen.add(x))]
+    
+    # Revert to original: only show if at least 3 variables are selected
+    if len(selected_vars_unique) < 3:
+        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées"
+    
+    selected_vars = selected_vars_unique
     
     names_str = ""
     if epci_codes:
@@ -447,25 +547,101 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
         return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, "", dynamic_title
     
     fig = go.Figure()
-    means = [gdf_merged[v].mean() for v in selected_vars]
-    stds = [gdf_merged[v].std() for v in selected_vars]
-    labels = [variable_dict.get(v, v) for v in selected_vars]
     
-    # Zone d'acceptation
-    fig.add_trace(go.Scatterpolar(r=[m+s for m,s in zip(means,stds)], theta=labels, fill='toself', fillcolor='rgba(200,200,200,0.3)', line=dict(color='rgba(0,0,0,0)'), name="Zone d'acceptabilité (écart type)"))
-    fig.add_trace(go.Scatterpolar(r=[max(0,m-s) for m,s in zip(means,stds)], theta=labels, fill='toself', fillcolor='white', line=dict(color='rgba(0,0,0,0)'), showlegend=False))
-    fig.add_trace(go.Scatterpolar(r=means, theta=labels, name="Moyenne Région", line=dict(dash='dash', color='#868e96')))
+    # Pre-calculate ranges and normalized stats
+    norm_means = []
+    norm_plus_std = []
+    norm_minus_std = []
+    labels = []
+    for i, v in enumerate(selected_vars):
+        mn, mx = gdf_merged[v].min(), gdf_merged[v].max()
+        denom = mx - mn if mx != mn else 1
+        
+        m = gdf_merged[v].mean()
+        s = gdf_merged[v].std()
+        
+        norm_m = (m - mn) / denom
+        norm_s = s / denom # ratio of std to range
+        
+        norm_means.append(norm_m)
+        norm_plus_std.append(min(1, norm_m + norm_s))
+        norm_minus_std.append(max(0, norm_m - norm_s))
+        
+        unit = unit_dict.get(v, "")
+        label = variable_dict.get(v, v)
+        base_label = f"{label} ({unit})" if unit else label
+        
+        # Avoid duplicate labels by adding trailing spaces
+        occurrences = selected_vars[:len(labels)].count(v)
+        labels.append(base_label + (" " * occurrences))
+
+    # Zone d'acceptation (Normalisée)
+    fig.add_trace(go.Scatterpolar(
+        r=norm_plus_std, 
+        theta=labels, 
+        fill='toself', 
+        fillcolor='rgba(200,200,200,0.3)', 
+        line=dict(color='rgba(0,0,0,0)'), 
+        name="Zone d'acceptabilité (écart type)",
+        hoverinfo='skip' # On ne veut pas survoler la zone d'écart type
+    ))
+    fig.add_trace(go.Scatterpolar(
+        r=norm_minus_std, 
+        theta=labels, 
+        fill='toself', 
+        fillcolor='white', 
+        line=dict(color='rgba(0,0,0,0)'), 
+        showlegend=False,
+        hoverinfo='skip'
+    ))
+    
+    # Moyenne Région (Normalisée)
+    fig.add_trace(go.Scatterpolar(
+        r=norm_means, 
+        theta=labels, 
+        name="Moyenne Région", 
+        line=dict(dash='solid', color='#868e96'),
+        customdata=[gdf_merged[v].mean() for v in selected_vars],
+        hovertemplate="Moyenne régionale: %{customdata:.2f}<extra></extra>"
+    ))
 
     if epci_codes:
         C = ['#339af0', '#51cf66', '#fcc419', '#ff922b', '#ae3ec9', '#15aabf']
         for i, code in enumerate(epci_codes):
             row = gdf_merged[gdf_merged['EPCI_CODE'] == code]
             if not row.empty:
-                r_vals = [row[v].values[0] for v in selected_vars]
-                fig.add_trace(go.Scatterpolar(r=r_vals, theta=labels, fill='toself', name=row['nom_EPCI'].values[0], line=dict(color=C[i%len(C)])))
+                r_vals_norm = []
+                r_vals_raw = []
+                for v in selected_vars:
+                    val = row[v].values[0]
+                    mn, mx = gdf_merged[v].min(), gdf_merged[v].max()
+                    denom = mx - mn if mx != mn else 1
+                    r_vals_norm.append((val - mn) / denom)
+                    r_vals_raw.append(val)
+                
+                fig.add_trace(go.Scatterpolar(
+                    r=r_vals_norm, 
+                    theta=labels, 
+                    fill='toself', 
+                    name=row['nom_EPCI'].values[0], 
+                    line=dict(color=C[i%len(C)]),
+                    customdata=r_vals_raw,
+                    hovertemplate="Valeur: %{customdata:.2f}<extra></extra>"
+                ))
     
     fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, gridcolor="#e9ecef", gridwidth=1), angularaxis=dict(gridcolor="#e9ecef")), 
+        dragmode=False,
+        polar=dict(
+            radialaxis=dict(
+                visible=True, 
+                range=[0, 1], 
+                gridcolor="#e9ecef", 
+                gridwidth=1,
+                tickvals=[0, 0.2, 0.4, 0.6, 0.8, 1.0],
+                ticktext=["Min", "20%", "40%", "60%", "80%", "Max"]
+            ), 
+            angularaxis=dict(showgrid=True, gridcolor="#e9ecef")
+        ), 
         margin={"t":40,"b":40,"l":40,"r":40}, 
         height=700, 
         legend=dict(orientation="h", y=-0.05, x=0.5, xanchor="center")
@@ -481,7 +657,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             epci_name = row['nom_EPCI'].values[0]
             epci_highlights = []
             
-            for v, label in zip(selected_vars, labels):
+            for v in selected_vars_unique:
                 val = row[v].values[0]
                 m = gdf_merged[v].mean()
                 s = gdf_merged[v].std()
@@ -489,25 +665,34 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                 
                 # Natural language qualifiers
                 if abs(z) < 0.5: 
-                    qual = "proche de la moyenne"
+                    qual = "proche de la moyenne régionale"
                 elif z >= 1.5: 
-                    qual = "nettement au-dessus"
+                    qual = "nettement au-dessus de la moyenne régionale"
                 elif z >= 0.5:
-                    qual = "légèrement au-dessus"
+                    qual = "légèrement au-dessus de la moyenne régionale"
                 elif z <= -1.5:
-                    qual = "nettement en dessous"
+                    qual = "nettement en dessous de la moyenne régionale"
                 else: # z <= -0.5
-                    qual = "légèrement en dessous"
+                    qual = "légèrement en dessous de la moyenne régionale"
+                
+                unit = unit_dict.get(v, "")
+                label_name = variable_dict.get(v, v)
+                indice_str = f" (unité : {unit})" if unit else ""
                 
                 epci_highlights.append(dmc.Text([
-                    dmc.Text(label, fw=700, span=True), " est ", dmc.Text(qual, fw=700, c="blue.7", span=True)
+                    "la variable ", dmc.Text(label_name, fw=800, span=True), 
+                    dmc.Text(indice_str, span=True),
+                    " est ", dmc.Text(qual, fw=700, c="blue.7", span=True)
                 ], span=True))
             
             # Combine highlights for this EPCI
-            epci_narrative = [dmc.Text("Pour ", span=True), dmc.Text(epci_name, fw=800, c="blue.9", span=True), " : "]
+            epci_narrative = [dmc.Text("Pour l'EPCI ", span=True), dmc.Text(epci_name, fw=800, c="blue.9", span=True), " : "]
             for i, h in enumerate(epci_highlights):
                 if i > 0:
-                    epci_narrative.append(dmc.Text(random.choice(CONNECTORS), span=True))
+                    epci_narrative.append(dmc.Text(". ", span=True))
+                
+                # Capitalize first word of highlight
+                h.children[0] = h.children[0].capitalize()
                 epci_narrative.append(h)
             epci_narrative.append(dmc.Text(". ", span=True))
             narrative_sections.append(dmc.Box(epci_narrative, mb=4))
@@ -515,16 +700,20 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
         narrative_sections = [dmc.Text("Sélectionnez des territoires et des variables pour voir l'analyse.", fs="italic", c="dimmed")]
 
     guide = dmc.Stack(gap="xs", children=[
-        dmc.Group([
-            dmc.Group([
-                html.Div(style={"width":12,"height":12,"backgroundColor":"rgba(200,200,200,0.5)","border":"1px dashed #ced4da"}), 
-                dmc.Text("Zone Grisée : Normale régionale (± 1 σ)", size="xs", fw=500)
-            ]),
-            dmc.Group([
-                html.Div(style={"width":12,"height":0,"borderTop":"2px dashed #868e96"}), 
-                dmc.Text("Ligne Pointillée : Moyenne Régionale", size="xs", fw=500)
-            ]),
-        ], gap="xl"),
+        
+        dmc.Group(justify="space-between", mb="xs", mt="sm", children=[
+            dmc.Group(gap="xs", children=[
+                dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
+                dmc.Tooltip(
+                    label="Sur ceradar comparatif, les variables sont standardisées entre 0 et 100%. L'interprétation des variables ci-dessous est évaluée selon l'écart-type : 'proche de la moyenne régionale' < 0.5 écart type, 'légèrement au dessus / en dessous de la moyenne régionale' de 0.5 écart type à 1.5 écart type, et 'nettement au dessus / en dessous de la moyenne régionale' > 1.5 écart type.",
+                    w=300, multiline=True, withArrow=True,
+                    children=dmc.ActionIcon(
+                        DashIconify(icon="solar:question-circle-linear"),
+                        variant="subtle", color="gray", size="sm"
+                    )
+                )
+            ])
+        ]),
         dmc.Paper(
             p="md", withBorder=True, radius="md", bg="blue.0",
             children=[

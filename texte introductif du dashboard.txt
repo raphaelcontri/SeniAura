@@ -1,45 +1,47 @@
-# Préambule
+Cet outil a pour objectif d'établir un diagnostic de l'état de santé de la population d'Auvergne-Rhône-Alpes pour identifier des leviers d'actions concrets et guider les politiques publiques à une échelle fine (EPCI).
+Le diagnostic porte sur les maladies cardio-neuro-vasculaires (CNV), car elles sont fortement liées à des déterminants sociaux et environnementaux, ainsi qu'aux disparités d'accès aux soins.
+Elle s'organise autour de deux outils principaux (accessible sur l'onglet exploration) :
+- une carte interactive
+- un radar comparatif
 
-Cet outil a pour objectif d’établir un **diagnostic de l'état de santé de la population d’Auvergne-Rhône-Alpes** pour identifier des **leviers d’actions concrets** et guider les politiques publiques à une échelle fine (EPCI). 
-
-Le diagnostic porte sur les **maladies cardio-neuro-vasculaires (MCNV)**, car elles sont fortement liées à des déterminants sociaux et environnementaux, ainsi qu’aux disparités d’accès aux soins.
-
-## Objectifs
-
+> Objectif de ce dashboard
 Le présent site internet se veut être un outil pour les décideurs politiques de la région Auvergne-Rhône-Alpes, permettant :
-- D'identifier les **forces et faiblesses** des EPCI en terme de **vulnérabilité sanitaire, socio-économique et environnementale**.
-- De déterminer des **leviers d'actions** pour guider le déploiement de politiques publiques de prévention efficaces.
+- D'identifier les forces et faiblesses des EPCI en termes de vulnérabilité sanitaire, socio-économique et environnementale.
+- De déterminer des leviers d'actions pour guider le déploiement de politiques publiques de prévention spécifiques aux caractéristiques des territoires.
+- Répondre au constat de Peretti-Wattel : une politique de prévention pas adaptée aux classes de la population cible est inefficace.
 
----
+> Qu'est-ce qu'un EPCI ?
+Un EPCI (Établissement Public de Coopération Intercommunale) est un regroupement de communes qui travaillent ensemble sur des compétences communes (aménagement, santé, environnement, etc.).
+C'est l'échelle territoriale utilisée ici pour analyser et comparer les données.
 
-## Nos Destinataires
-
-- **Élus et décideurs (EPCI)** : Disposer d’un outil de « diagnostic flash » pour situer le territoire par rapport aux moyennes régionales et justifier les investissements (ex : structures de santé, urbanisme).
+> Pour quels destinataires ?
+- **Élus et décideurs (EPCI)** : Disposer d'un outil de « diagnostic flash » pour situer le territoire par rapport aux moyennes régionales et justifier les investissements (ex : structures de santé, urbanisme).
 - **Techniciens et coordinateurs territoriaux (CLS, etc.)** : Accéder à des données granulaires et croisées pour fonder les demandes de subventions et cibler prioritairement les interventions.
 - **Professionnels de santé (CPTS)** : Appuyer le diagnostic territorial obligatoire et dimensionner les parcours de soins en intégrant les déterminants sociaux et environnementaux de la patientèle.
-- **Délégations de l’ARS** : Bénéficier d’un référentiel objectif commun pour piloter le dialogue avec les élus et objectiver les besoins de santé locaux.
+- **Délégations de l'ARS** : Bénéficier d'un référentiel objectif commun pour piloter le dialogue avec les élus et objectiver les besoins de santé locaux.
 
----
+> Qu'est ce que les maladies cardio-neurovasculaires sont ?
+À compléter...
 
-## Explorer notre démarche
+> Qui sommes-nous ?
+Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).
 
-Notre analyse s'articule autour de deux piliers fondamentaux :
+*(Une photo de nous)*
+*(Nos linkedin)*
 
-### 1. Carte Interactive
-Une cartographie interactive pour visualiser les indicateurs de santé (Incidence, Mortalité, Prévalence) et filtrer les territoires selon des critères socio-économiques, d'offre de soins et environnementaux.
+> Prise en main
+**1. Explorez la carte**
+Sur le menu de gauche : Sélectionnez d'abord le type d'indicateur (mortalité, incidence ou prévalence) et la pathologie (AVC, cardiopathies ou insuffisance cardiaque).
+Vous pouvez ensuite affiner l'analyse en ajoutant des variables de filtres (socio-économiques, offre de soins, environnement) et en ajustant leur plage de valeurs via un curseur.
+Seuls les territoires qui correspondent à vos filtres apparaissent en couleur : Un territoire est grisé dès qu'il ne correspond pas à au moins un des filtres.
+Plusieurs filtres peuvent être combinés et supprimés à tout moment.
+Vous pouvez survoler avec votre souris un EPCI et une bulle d'informations s'affichera pour comprendre pourquoi ils ont été exclus (s'il l'a été) et afficher son nom et la valeur exacte. 
+Vous pouvez cliquer dessus pour le sélectionner (contour rouge), pour vous permettre de l'ajouter au radar.
 
-### 2. Radar Comparatif
-un outil de visualisation permettant de comparer le profil d'un EPCI spécifique à la moyenne régionale sur une sélection de variables.
+**2. Analysez le radar comparatif** (défiler en bas dans la page exploration)
+Les variables que vous avez sélectionné pour la carte sont gardées en mémoire.
+Le radar s'active dès qu'au moins un territoire est sélectionné et trois variables choisies. 
+Il permet de comparer un ou plusieurs territoires entre eux, à la moyenne régionale et à une zone d'acceptabilité (écart-type).
 
-### 3. Méthodologie
-Détail de l'ensemble des variables et sources de données utilisées, avec possibilité de configuration.
-
----
-
-
-
-### À propos
-
-Ce projet a été réalisé par 5 étudiants du CPES **“Sciences des données, société et santé”** de Paris-Saclay, dans le cadre du **Challenge Open Data University** (Latitudes x HEC Paris). 
-**Commanditaire :** Fondation Roche. 
-**Comité d'experts :** Inspection Générale des Affaires Sociales (IGAS).
+> Vidéo d'aide
+Pas de vidéo disponible poiur l'instant. La vidéo présentera comment utiliser le dashboard. 

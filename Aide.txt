@@ -1,0 +1,16 @@
+### 1. Explorez la carte  
+
+* Sur le **menu de gauche** : Sélectionnez d'abord le **type d'indicateur** (mortalité, incidence ou prévalence) et la **pathologie** (AVC, cardiopathies ou insuffisance cardiaque).
+* Vous pouvez ensuite affiner l'analyse en ajoutant des **variables de filtres** (socio-économiques, offre de soins, environnement) et en ajustant leur **plage de valeurs via un curseur**.
+* **Seuls les territoires qui correspondent à vos filtres apparaissent en couleur** : un territoire est **grisé** dès qu’il ne correspond pas à au moins un des filtres.
+* Plusieurs filtres peuvent être **combinés et supprimés** à tout moment.
+* Vous pouvez **survoler** avec votre souris un **EPCI** : une **bulle d'informations** s’affichera pour comprendre la raison d'une exclusion, son nom et sa valeur exacte. 
+* Vous pouvez **cliquer dessus pour le sélectionner** (**contour rouge**), ce qui permet de **l’ajouter au radar**.
+
+---
+
+### 2. Analysez le radar comparatif (défiler en bas dans la page)
+
+* Les **variables** sélectionnées pour la carte sont **gardées en mémoire**.
+* Le radar s'active dès qu'au moins **un territoire est sélectionné** et **trois variables choisies**. 
+* Il permet de **comparer** un ou plusieurs territoires entre eux, à la **moyenne régionale** et à une **zone d'acceptabilité (écart-type)**.
