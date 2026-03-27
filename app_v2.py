@@ -528,11 +528,16 @@ def sync_aside_state(opened, current_aside):
 
 @app.callback(
     Output('aside-opened-store', 'data', allow_duplicate=True),
-    Input('close-aside-btn', 'n_clicks'),
+    [Input('close-aside-btn', 'n_clicks'),
+     Input('url', 'pathname')],
     prevent_initial_call=True
 )
-def close_aside(n):
-    return False
+def close_aside(n, pathname):
+    if pathname not in ['/exploration', '/carte', '/radar']:
+        return False
+    if dash.callback_context.triggered_id == 'close-aside-btn':
+        return False
+    return dash.no_update
 
 if __name__ == '__main__':
     app.run(debug=True, port=8050)
