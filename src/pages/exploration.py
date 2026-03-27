@@ -161,25 +161,16 @@ layout = dmc.Container(
 )
 def update_aside_content(pathname):
     if pathname in ['/exploration', '/carte', '/radar']:
-        return dmc.Stack(gap="md", children=[
-            dmc.Title("Mode d'emploi - Exploration", order=3, c="#2c3e50"),
-            dmc.Text("La vue exploration combine la carte régionale et le radar comparatif.", size="sm"),
-            dmc.Divider(),
-            dmc.Title("Carte", order=5),
-            dmc.Text("- Utilisez les curseurs à gauche pour filtrer. Les territoires hors limites restent grisés.", size="sm"),
-            dmc.Text("- Cliquez sur n'importe quel zone pour l'ajouter/retirer du comparateur.", size="sm"),
-            dmc.Title("Radar Chart", order=5),
-            dmc.Text("- Le radar affiche les indicateurs pour l'EPCI sélectionné par rapport à la moyenne régionale (zone bleue).", size="sm"),
-            dmc.Text("- Faites défiler pour voir le radar sous la carte.", size="sm"),
-            dmc.Divider(),
-            dmc.Alert(
-                "Le panneau de filtrage à gauche s'adapte à vos choix d'indicateur de santé.",
-                title="Astuce",
-                color="blue",
-                variant="light",
-                radius="md"
-            )
-        ])
+        try:
+            # Try to read Aide.txt (usually in the project root)
+            with open("Aide.txt", "r", encoding="utf-8") as f:
+                content = f.read()
+            return dmc.Stack(gap="md", children=[
+                dcc.Markdown(content, style={"fontSize": "14px", "lineHeight": "1.6"})
+            ])
+        except Exception:
+            # Fallback if file not found
+            return dmc.Text("Guide d'aide non disponible.", c="dimmed", fs="italic")
     return dmc.Text("Aucune aide spécifique pour cette page.", c="dimmed", fs="italic")
 
 # --- Sliders Management ---
