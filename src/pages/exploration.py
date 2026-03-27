@@ -54,7 +54,7 @@ layout = dmc.Container(
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:map-linear", color="#339af0"),
-                                dmc.Text("Carte choroplèthe", id='map-dynamic-title', fw=700),
+                                dmc.Text("Carte ", id='map-dynamic-title', fw=700),
                             ]),
                         ]),
                         dmc.Grid(
@@ -677,7 +677,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                 
                 unit = unit_dict.get(v, "")
                 label_name = variable_dict.get(v, v)
-                indice_str = f" (indice : {unit})" if unit else ""
+                indice_str = f" (unité : {unit})" if unit else ""
                 
                 epci_highlights.append(dmc.Text([
                     "la variable ", dmc.Text(label_name, fw=800, span=True), 
@@ -689,7 +689,10 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             epci_narrative = [dmc.Text("Pour l'EPCI ", span=True), dmc.Text(epci_name, fw=800, c="blue.9", span=True), " : "]
             for i, h in enumerate(epci_highlights):
                 if i > 0:
-                    epci_narrative.append(dmc.Text(" et ", span=True))
+                    epci_narrative.append(dmc.Text(". ", span=True))
+                
+                # Capitalize first word of highlight
+                h.children[0] = h.children[0].capitalize()
                 epci_narrative.append(h)
             epci_narrative.append(dmc.Text(". ", span=True))
             narrative_sections.append(dmc.Box(epci_narrative, mb=4))
@@ -702,7 +705,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             dmc.Group(gap="xs", children=[
                 dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
                 dmc.Tooltip(
-                    label="L'interprétation des variables ci-dessous est évaluée selon l'écart-type : 'proche de la moyenne régionale' < 0.5 écart type, 'légèrement au dessus / en dessous de la moyenne régionale' de 0.5 écart type à 1.5 écart type, et 'nettement au dessus / en dessous de la moyenne régionale' > 1.5 écart type.",
+                    label="Sur ceradar comparatif, les variables sont standardisées entre 0 et 100%. L'interprétation des variables ci-dessous est évaluée selon l'écart-type : 'proche de la moyenne régionale' < 0.5 écart type, 'légèrement au dessus / en dessous de la moyenne régionale' de 0.5 écart type à 1.5 écart type, et 'nettement au dessus / en dessous de la moyenne régionale' > 1.5 écart type.",
                     w=300, multiline=True, withArrow=True,
                     children=dmc.ActionIcon(
                         DashIconify(icon="solar:question-circle-linear"),

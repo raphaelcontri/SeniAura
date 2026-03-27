@@ -306,14 +306,15 @@ header = dmc.AppShellHeader(
     px="xl",
     style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "flexDirection": "column", "justifyContent": "center"},
     children=[
-        # Ligne 1 : Logo & Navigation (Alignés à gauche)
+        # Ligne 1 : Logo & Navigation
         dmc.Group(
-            justify="flex-start",
+            justify="space-between",
+            wrap="nowrap",
             h=65,
-            gap=100, # Espace généreux entre Logo et Tabs
             children=[
                 dmc.Group(
                     gap="xs",
+                    wrap="nowrap",
                     children=[
                         DashIconify(icon="lucide:activity", width=28, color="#339af0"),
                         dmc.Title("CardiAURA", order=2, style={"color": "#339af0", "letterSpacing": "1px", "fontWeight": 900}),
@@ -329,16 +330,19 @@ header = dmc.AppShellHeader(
                     styles={
                         "tab": {
                             "border": "1px solid #dee2e6",
-                            "padding": "6px 16px",
-                            "fontWeight": 600,
+                            "padding": "10px 24px",
+                            "fontWeight": 800,
+                            "fontSize": "15px",
                             "transition": "all 200ms ease",
-                            "backgroundColor": "#f8f9fa",
+                            "backgroundColor": "#ffffff",
                             "color": "#495057",
+                            "borderRadius": "12px",
                         },
                         "tab[data-active]": {
                             "backgroundColor": "#339af0 !important",
                             "borderColor": "#339af0 !important",
-                            "color": "white !important"
+                            "color": "white !important",
+                            "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
                         }
                     },
                     children=[
@@ -358,8 +362,9 @@ header = dmc.AppShellHeader(
                 dmc.Group(
                     justify="space-between",
                     align="flex-start",
+                    wrap="nowrap",
                     children=[
-                        dmc.Stack(gap=0, children=[
+                        dmc.Stack(gap=0, style={"flex": 1, "minWidth": 0, "marginRight": "15px"}, children=[
                             dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
                             dmc.Text("Améliorez les politiques de prévention en effectuant un diagnostic visuel des principaux indicateurs de la santé cardio-neuro-vasculaire et des déterminants sociaux, en Auvergne Rhone-Alpes à l'échelle EPCI.", size="sm", c="dimmed", lineClamp=1),
                         ]),
