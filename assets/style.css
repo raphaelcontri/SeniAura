@@ -587,7 +587,7 @@ label {
     color: white !important;
 }
 
-/* Fix dcc.RangeSlider percentile marks (5% / 95%) */
+/* Slider marks styling for Min/Max values */
 .rc-slider-mark {
     display: block !important;
 }
@@ -598,16 +598,12 @@ label {
     font-weight: 500 !important;
 }
 
-.rc-slider-dot {
-    display: block !important;
-    border: 1px solid #adb5bd !important;
-    width: 6px !important;
-    height: 6px !important;
-    background-color: #f1f3f5 !important;
-    top: -2px !important;
-}
-
 .rc-slider {
     margin-top: 25px !important;
     margin-bottom: 25px !important;
+}
+
+/* Custom scroll offset for Prise en main */
+#accordion-item-prise-en-main {
+    scroll-margin-top: 100px;
 }

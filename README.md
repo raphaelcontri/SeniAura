@@ -1,37 +1,56 @@
+# 🩺 CardiAURA — Diagnostic Territorial (ARA)
 
-# Dashboard Interactif EPCI
+> Un tableau de bord interactif pour explorer les déterminants des maladies cardio-neuro-vasculaires en Auvergne-Rhône-Alpes (Échelle EPCI).
 
-Ce tableau de bord permet de visualiser des indicateurs de précarité et de santé à l'échelle des EPCI (Établissements Publics de Coopération Intercommunale).
+![CardiAURA Preview](assets/Senio.png)
 
-## Prérequis
+---
 
-Assurez-vous d'avoir installé les dépendances nécessaires :
+## 🚀 Démarrage Rapide
 
-```bash
-pip install -r ../requirements.txt
-```
-
-(Le fichier `requirements.txt` se trouve à la racine du projet)
-
-## Structure des Données
-
-Le dashboard utilise :
-- **GeoJSON** : `data/epci-ara.geojson` (Généré à partir de `communes-ara.geojson` via le script `scripts/prepare_geo_data.py`)
-- **CSV Data** : `../../data/sources/dataset_pour_python_60_ans_et_plus_avec_score_precarite - df1_with_precarity_score(1).csv.csv`
-
-## Lancement
-
-Pour lancer l'application :
+### 1. Installation
+Assurez-vous d'avoir Python 3.9+ installé. Clonez le dépôt et installez les dépendances :
 
 ```bash
-python app.py
+pip install -r requirements.txt
 ```
 
+### 2. Lancement
+Lancez l'application via le point d'entrée principal :
+
+```bash
+python app_v2.py
+```
 Ensuite, ouvrez votre navigateur à l'adresse : `http://127.0.0.1:8050/`
 
-## Fonctionnalités
+---
 
-- **Carte Choroplèthe** : Visualisation des différents indicateurs.
-- **Sélecteur de Métrique** : Choisissez "Score de Précarité", "Population 60+", etc.
-- **Survol** : Affichez le nom de l'EPCI et la valeur au survol de la souris.
-- **Zoom/Pan** : Navigation interactive sur la carte.
+## 📖 Documentation Complète
+
+Pour tout savoir sur l'architecture du code, les données utilisées et la gestion des callbacks, consultez notre guide technique détaillé :
+
+👉 **[Consultez la DOCUMENTATION.md](DOCUMENTATION.md)**
+
+---
+
+## ✨ Fonctionnalités Clés
+
+- **Cartographie Interactive** : Visualisation choroplèthe des indicateurs de santé (Incidence, Mortalité, Prévalence).
+- **Filtrage Dynamique** : Filtres socio-économiques, environnementaux et d'offre de soins via sliders.
+- **Radar Comparatif** : Comparez plusieurs territoires (EPCI) par rapport à la moyenne régionale.
+- **Analyse Automatisée** : Interprétations narratives et positionnement en quantiles régionaux.
+- **SEO Ready** : Support `robots.txt` et méta-données optimisés pour l'indexation.
+
+---
+
+## 🛠️ Stack Technique
+
+- **Backend/Frontend** : Dash (Flask + React)
+- **UI Components** : Dash Mantine Components (v7)
+- **Data** : Pandas, GeoPandas, Plotly
+- **Hébergement** : Optimisé pour Render (Gunicorn)
+
+---
+
+## 👥 Équipe
+Projet **HEC Capstone / SeniAura** — 2026.

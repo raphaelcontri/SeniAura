@@ -221,16 +221,12 @@ def update_sliders(social, offre, env, current_vals, current_ids):
             mn_rounded = round(mn, 3 if (mx-mn) < 10 else 1)
             mx_rounded = round(mx, 3 if (mx-mn) < 10 else 1)
             initial_val_rounded = [round(v, 3 if (mx-mn) < 10 else 1) for v in initial_val]
-            q05 = round(gdf_merged[var].quantile(0.05), 3 if (mx-mn) < 10 else 1)
-            q95 = round(gdf_merged[var].quantile(0.95), 3 if (mx-mn) < 10 else 1)
-            
             sliders.append(dmc.Box(mb=8, px=0, children=[
                 dmc.Text(label_full, size="10px", fw=600, mb=2, c="dimmed"),
                 dcc.RangeSlider(
                     id={'type': 'exploration-slider', 'index': var},
                     min=mn_rounded, max=mx_rounded, value=initial_val_rounded,
-                    marks={q05: {"label": "5%", "style": {"fontSize": "8px", "marginTop": "-15px"}}, 
-                           q95: {"label": "95%", "style": {"fontSize": "8px", "marginTop": "-15px"}}},
+                    marks={mn_rounded: str(mn_rounded), mx_rounded: str(mx_rounded)},
                     step=round((mx-mn)/100, 3 if (mx-mn) < 10 else 1),
                     tooltip={"always_visible": True, "placement": "bottom"}
                 )
@@ -430,6 +426,35 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
                     hoverinfo='skip',
                     name="Sélection"
                 ))
+        
+        # 6. Major Cities
+        cities = [
+            {"name": "Lyon", "lat": 45.7640, "lon": 4.8357},
+            {"name": "Saint-Étienne", "lat": 45.4397, "lon": 4.3873},
+            {"name": "Grenoble", "lat": 45.1885, "lon": 5.7248},
+            {"name": "Clermont-Ferrand", "lat": 45.7772, "lon": 3.0870},
+            {"name": "Valence", "lat": 44.9333, "lon": 4.8917},
+            {"name": "Annecy", "lat": 45.8992, "lon": 6.1293},
+            {"name": "Chambéry", "lat": 45.5646, "lon": 5.9238},
+            {"name": "Bourg-en-Bresse", "lat": 46.2052, "lon": 5.2258},
+            {"name": "Montluçon", "lat": 46.3401, "lon": 2.6020},
+            {"name": "Aurillac", "lat": 44.9264, "lon": 2.4418},
+            {"name": "Le Puy-en-Velay", "lat": 45.0428, "lon": 3.8829},
+            {"name": "Moulins", "lat": 46.5667, "lon": 3.3333},
+            {"name": "Privas", "lat": 44.7333, "lon": 4.6000},
+        ]
+        
+        fig.add_trace(go.Scattergeo(
+            lat=[c["lat"] for c in cities],
+            lon=[c["lon"] for c in cities],
+            text=[c["name"] for c in cities],
+            mode="markers+text",
+            marker=dict(size=4, color="black", opacity=0.7),
+            textposition="top center",
+            textfont=dict(family="Inter, sans-serif", size=9, color="black"),
+            hoverinfo="text",
+            showlegend=False
+        ))
 
         fig.update_geos(fitbounds="locations", visible=False)
         fig.update_layout(
@@ -498,7 +523,23 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
         desc_paper = dmc.Paper(
             p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
             children=[
-                dmc.Text("Descriptions des variables", fw=700, mb="xs"),
+                dmc.Group(
+                    justify="space-between", align="center", mb="xs",
+                    children=[
+                        dmc.Text("Descriptions des variables", fw=700),
+                        dcc.Link(
+                            dmc.Button(
+                                "Liste variables et méthodologie",
+                                size="xs",
+                                variant="outline",
+                                color="blue",
+                                radius="md",
+                                leftSection=DashIconify(icon="solar:library-bold-duotone", width=16)
+                            ),
+                            href="/methodologie"
+                        )
+                    ]
+                ),
                 dmc.Stack(gap="xs", children=desc_children)
             ]
         ) if desc_children else None
@@ -614,13 +655,13 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
         hoverinfo='skip'
     ))
     
-    # Moyenne Région (Normalisée)
+    # Moyenne Région (Normalisée - Closed loop)
     fig.add_trace(go.Scatterpolar(
-        r=norm_means, 
-        theta=labels, 
+        r=norm_means + [norm_means[0]], 
+        theta=labels + [labels[0]], 
         name="Moyenne Région", 
         line=dict(dash='solid', color='#868e96'),
-        customdata=[gdf_merged[v].mean() for v in selected_vars],
+        customdata=[gdf_merged[v].mean() for v in selected_vars] + [gdf_merged[selected_vars[0]].mean()],
         hovertemplate="Moyenne régionale: %{customdata:.2f}<extra></extra>"
     ))
 
@@ -639,12 +680,12 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                     r_vals_raw.append(val)
                 
                 fig.add_trace(go.Scatterpolar(
-                    r=r_vals_norm, 
-                    theta=labels, 
+                    r=r_vals_norm + [r_vals_norm[0]], 
+                    theta=labels + [labels[0]], 
                     fill='toself', 
                     name=row['nom_EPCI'].values[0], 
                     line=dict(color=C[i%len(C)]),
-                    customdata=r_vals_raw,
+                    customdata=r_vals_raw + [r_vals_raw[0]],
                     hovertemplate="Valeur: %{customdata:.2f}<extra></extra>"
                 ))
     
@@ -718,13 +759,65 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     else:
         narrative_sections = [dmc.Text("Sélectionnez des territoires et des variables pour voir l'analyse.", fs="italic", c="dimmed")]
 
-    guide = dmc.Stack(gap="xs", children=[
+    # --- NEW: Quantile & Relative Ranking Analysis ---
+    quantile_paper = None
+    if epci_codes and selected_vars:
+        # Pre-calculate ranks for all selected variables across the region
+        ranks_df = gdf_merged[selected_vars].rank(pct=True)
+        C_radar = ['#339af0', '#51cf66', '#fcc419', '#ff922b', '#ae3ec9', '#15aabf']
         
+        quantile_content = []
+        for i, code in enumerate(epci_codes):
+            row = gdf_merged[gdf_merged['EPCI_CODE'] == code]
+            if row.empty: continue
+            
+            idx = row.index[0]
+            epci_name = row['nom_EPCI'].values[0]
+            
+            epci_quantiles = []
+            for v in selected_vars:
+                pct = ranks_df.loc[idx, v] * 100
+                label_name = variable_dict.get(v, v)
+                
+                # Visual qualifier with color coding
+                if pct >= 90: 
+                    qual, col = "Top 10% (Très élevé)", "red"
+                elif pct >= 75: 
+                    qual, col = "Top 25% (Élevé)", "orange"
+                elif pct <= 10: 
+                    qual, col = "Bas 10% (Très faible)", "teal"
+                elif pct <= 25: 
+                    qual, col = "Bas 25% (Faible)", "cyan"
+                else: 
+                    qual, col = f"Médian ({pct:.0f}ème perc.)", "gray"
+                
+                epci_quantiles.append(dmc.Group(justify="space-between", children=[
+                    dmc.Text(label_name, size="sm", fw=500),
+                    dmc.Badge(qual, variant="light", color=col, size="xs")
+                ]))
+            
+            quantile_content.append(dmc.Stack(gap=4, children=[
+                dmc.Divider(label=epci_name, labelPosition="left", size="sm", color=C_radar[i%len(C_radar)]),
+                dmc.Stack(gap=2, children=epci_quantiles)
+            ]))
+
+        quantile_paper = dmc.Paper(
+            p="md", withBorder=True, radius="md", bg="gray.1", mt="md",
+            children=[
+                dmc.Group(gap="xs", mb="sm", children=[
+                    DashIconify(icon="solar:ranking-bold-duotone", color="#339af0", width=20),
+                    dmc.Text("Positionnement Relatif (Quantiles Régionaux)", fw=800, size="sm", tt="uppercase"),
+                ]),
+                dmc.Stack(gap="md", children=quantile_content)
+            ]
+        )
+
+    guide = dmc.Stack(gap="xs", children=[
         dmc.Group(justify="space-between", mb="xs", mt="sm", children=[
             dmc.Group(gap="xs", children=[
                 dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
                 dmc.Tooltip(
-                    label="Sur ceradar comparatif, les variables sont standardisées entre 0 et 100%. L'interprétation des variables ci-dessous est évaluée selon l'écart-type : 'proche de la moyenne régionale' < 0.5 écart type, 'légèrement au dessus / en dessous de la moyenne régionale' de 0.5 écart type à 1.5 écart type, et 'nettement au dessus / en dessous de la moyenne régionale' > 1.5 écart type.",
+                    label="Sur ce radar comparatif, les variables sont standardisées entre 0 et 100%. L'interprétation des variables ci-dessous est évaluée selon l'écart-type. Les quantiles indiquent la position du territoire par rapport à l'ensemble des EPCI de la région.",
                     w=300, multiline=True, withArrow=True,
                     children=dmc.ActionIcon(
                         DashIconify(icon="solar:question-circle-linear"),
@@ -738,7 +831,8 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             children=[
                 dmc.Stack(gap=4, children=narrative_sections)
             ]
-        )
+        ),
+        quantile_paper
     ])
 
     return fig, {'display': 'block', 'flex': 1}, {'display': 'none'}, guide, dynamic_title

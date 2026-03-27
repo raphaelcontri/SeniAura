@@ -98,6 +98,8 @@ external_stylesheets = [
     'https://unpkg.com/@mantine/dates@7/styles.css',
     'https://unpkg.com/@mantine/charts@7/styles.css',
 ]
+from flask import send_from_directory
+
 app = dash.Dash(
     __name__, 
     title="CardiAURA - Accueil", 
@@ -107,10 +109,18 @@ app = dash.Dash(
         {
             "name": "viewport", 
             "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2"
+        },
+        {
+            "name": "google-site-verification", 
+            "content": "KkhBSX_KhNawMneZxCpnKcVxCLAbYd38mpCqEXTEeZw"
         }
     ]
 )
 server = app.server
+
+@server.route('/robots.txt')
+def serve_robots():
+    return send_from_directory(os.path.join(os.getcwd(), 'assets'), 'robots.txt')
 
 sidebar = dmc.AppShellNavbar(
     p="md",
@@ -310,14 +320,13 @@ header = dmc.AppShellHeader(
         dmc.Group(
             justify="space-between",
             wrap="nowrap",
-            h=65,
+            h=85,
             children=[
                 dmc.Group(
                     gap="xs",
                     wrap="nowrap",
                     children=[
-                        DashIconify(icon="lucide:activity", width=28, color="#339af0"),
-                        dmc.Title("CardiAURA", order=2, style={"color": "#339af0", "letterSpacing": "1px", "fontWeight": 900}),
+                        html.Img(src="/assets/Senio.png", height=75, style={"marginRight": "10px"}),
                         dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10),
                     ]
                 ),
