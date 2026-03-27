@@ -361,12 +361,11 @@ header = dmc.AppShellHeader(
             children=[
                 dmc.Group(
                     justify="space-between",
-                    align="flex-start",
+                    align="center",
                     wrap="nowrap",
                     children=[
                         dmc.Stack(gap=0, style={"flex": 1, "minWidth": 0, "marginRight": "15px"}, children=[
-                            dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700}),
-                            dmc.Text("Améliorez les politiques de prévention en effectuant un diagnostic visuel des principaux indicateurs de la santé cardio-neuro-vasculaire et des déterminants sociaux, en Auvergne Rhone-Alpes à l'échelle EPCI.", size="sm", c="dimmed", lineClamp=1),
+                            dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700})
                         ]),
                         dmc.Button(
                             "Afficher l'aide",
@@ -374,7 +373,6 @@ header = dmc.AppShellHeader(
                             leftSection=DashIconify(icon="akar-icons:question", width=18),
                             radius="md",
                             size="sm",
-                            mt=5,
                             style={
                                 "display": "none", 
                                 "backgroundColor": "#f3f0ff", 

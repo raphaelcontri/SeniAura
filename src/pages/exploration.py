@@ -136,12 +136,31 @@ layout = dmc.Container(
                         ]),
                         html.Div(
                             id='radar-placeholder',
-                            style={'flex': 1, 'display': 'flex', 'minHeight': '300px'},
+                            style={'flex': 1, 'display': 'flex', 'minHeight': '350px'},
                             children=dmc.Center(
                                 style={"width": "100%"},
-                                children=dmc.Stack(align="center", gap="xs", children=[
-                                    DashIconify(icon="solar:chart-2-bold-duotone", width=60, color="#ced4da"),
-                                    dmc.Text("Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut", size="sm", c="dimmed"),
+                                children=dmc.Stack(align="center", gap="xl", children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
+                                        size=140, radius=100, variant="light", color="blue"
+                                    ),
+                                    dmc.Paper(
+                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
+                                        shadow="sm", maw=600,
+                                        style={"border": "2px dashed #339af0"},
+                                        children=[
+                                            dmc.Text(
+                                                "Action Requise", 
+                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
+                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                            ),
+                                            dmc.Text(
+                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
+                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                style={"lineHeight": "1.6"}
+                                            )
+                                        ]
+                                    )
                                 ])
                             )
                         ),
