@@ -74,14 +74,47 @@ layout = dmc.Container(
                                             }
                                         ),
                                         # New horizontal stats box
-                                        dmc.Paper(
-                                            withBorder=True, p="md", radius="md", bg="#f8f9fa", mt="sm",
+                                        dmc.Group(
+                                            align="stretch", gap="md", mt="sm",
                                             children=[
-                                                dmc.Group(justify="space-between", mb="xs", children=[
-                                                    dmc.Text("Détails des exclusions par variable", size="xs", fw=700, tt="uppercase", c="dimmed"),
-                                                    html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
-                                                ]),
-                                                html.Div(id='map-legend-stats-content'),
+                                                dmc.Paper(
+                                                    withBorder=True, p="md", radius="md", bg="#f8f9fa",
+                                                    style={'flex': 1},
+                                                    children=[
+                                                        dmc.Group(justify="space-between", mb="xs", children=[
+                                                            dmc.Text("Interprétations : ", size="xs", fw=700, tt="uppercase", c="dimmed"),
+                                                            html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
+                                                        ]),
+                                                        html.Div(id='map-stats-header-content'),
+                                                        html.Div(id='map-narrative-content')
+                                                    ]
+                                                ),
+                                                dmc.Paper(
+                                                    withBorder=True, p="md", radius="md", bg="white",
+                                                    style={"width": "300px", "display": "none"},
+                                                    children=[
+                                                        dmc.Stack(gap="xs", children=[
+                                                            dmc.Group(gap="xs", children=[
+                                                                dmc.Text("Afficher les EPCI grisés par :", size="xs", fw=600),
+                                                                dmc.Tooltip(
+                                                                    label="Vous pouvez visualiser quels EPCI ont été grisés par une certaine variable. En effet, quand vous sélectionnez plusieurs variables de filtres, un EPCI peut être grisé par une variable mais pas l'autre.",
+                                                                    w=300, multiline=True, withArrow=True,
+                                                                    children=dmc.ActionIcon(
+                                                                        DashIconify(icon="solar:question-circle-linear"),
+                                                                        variant="subtle", color="gray", size="sm"
+                                                                    )
+                                                                )
+                                                            ]),
+                                                            dmc.Select(
+                                                                id='highlight-variable-select',
+                                                                size="xs",
+                                                                placeholder="Choisir une variable",
+                                                                data=[],
+                                                                clearable=True,
+                                                            )
+                                                        ])
+                                                    ]
+                                                )
                                             ]
                                         )
                                     ]
@@ -223,18 +256,32 @@ def select_epci_on_click(clickData, current_selection):
     else: selection.append(epci_code)
     return selection
 
+# --- Highlight Select Options Management ---
+@callback(
+    Output('highlight-variable-select', 'data'),
+    [Input('sidebar-filter-social', 'value'),
+     Input('sidebar-filter-offre', 'value'),
+     Input('sidebar-filter-env', 'value')]
+)
+def update_highlight_options(social, offre, env):
+    all_vars = (social or []) + (offre or []) + (env or [])
+    if not all_vars: return []
+    return [{'label': variable_dict.get(v, v), 'value': v} for v in all_vars if v in variable_dict]
+
 # --- Map Callback ---
 @callback(
     [Output('map-graph', 'figure'),
-     Output('map-legend-stats-content', 'children'),
+     Output('map-stats-header-content', 'children'),
+     Output('map-narrative-content', 'children'),
      Output('map-reading-guide', 'children'),
      Output('map-dynamic-title', 'children')],
     [Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input({'type': 'exploration-slider', 'index': ALL}, 'value'),
-     Input('sidebar-epci-radar', 'value')],
+     Input('sidebar-epci-radar', 'value'),
+     Input('highlight-variable-select', 'value')],
     State({'type': 'exploration-slider', 'index': ALL}, 'id')
 )
-def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
+def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_ids):
     try:
         # Dynamic Title logic
         indic_map = {'INCI': "l'incidence", 'MORT': "la mortalité", 'PREV': "la prévalence"}
@@ -248,7 +295,8 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
         if target not in gdf_merged.columns: return go.Figure(), "Indicateur non trouvé", "", dynamic_title
 
         total_epci = len(gdf_merged)
-        mask = pd.Series([True] * total_epci)
+        mask = pd.Series([True] * total_epci, index=gdf_merged.index)
+        exclusion_reasons = pd.Series([""] * total_epci, index=gdf_merged.index)
         summaries = []
         
         if slider_vals:
@@ -256,6 +304,11 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
                 col = id_dict['index']
                 col_mask = gdf_merged[col].between(val[0], val[1])
                 mask &= col_mask
+                
+                # Update exclusion reasons
+                fail_mask = ~col_mask
+                var_name = variable_dict.get(col, col)
+                exclusion_reasons.loc[fail_mask] += f"<br>- {var_name}"
                 
                 # Stats
                 nan_n = gdf_merged[col].isna().sum()
@@ -272,6 +325,14 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
         df_focus = gdf_merged[mask].copy()
         fig = go.Figure()
 
+        click_instruction = "<i>Cliquez sur cet EPCI pour l'ajouter au radar chart</i><br><br>"
+        
+        # Build text for background layer
+        bg_text = click_instruction + "<b>" + gdf_merged['nom_EPCI'] + "</b>"
+        has_exclusion = exclusion_reasons != ""
+        bg_text_with_reasons = bg_text.copy()
+        bg_text_with_reasons.loc[has_exclusion] += "<br><span style='font-size: 11px; color: #e03131'>Grisé par :</span>" + exclusion_reasons.loc[has_exclusion]
+
         # 1. Background layer (All territories) - Using ID for robust mapping
         fig.add_trace(go.Choropleth(
             geojson=geojson_data,
@@ -281,8 +342,8 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
             showscale=False,
             marker_line_width=0.5,
             marker_line_color='rgba(0,0,0,0.1)',
-            hoverinfo='text',
-            text=gdf_merged['nom_EPCI'],
+            hovertemplate="%{text}<extra></extra>",
+            text=bg_text_with_reasons,
             customdata=gdf_merged['EPCI_CODE'],
             name="Région"
         ))
@@ -297,7 +358,7 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
                 marker_line_width=0.5,
                 marker_line_color="rgba(255,255,255,0.8)",
                 colorbar=dict(thickness=15, len=0.8, y=0.5, x=0.01, xanchor="left", title=unit_dict.get(target, "")),
-                hovertemplate="<b>%{text}</b><br>" + variable_dict.get(target, target) + ": %{z:.2f}<extra></extra>",
+                hovertemplate=click_instruction + "<b>%{text}</b><br>" + variable_dict.get(target, target) + ": %{z:.2f}<extra></extra>",
                 text=df_focus['nom_EPCI'],
                 customdata=df_focus['EPCI_CODE']
             ))
@@ -314,8 +375,33 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
             hoverinfo='skip'
         ))
 
-        # 4. Exclusion Markers - DELETED as requested.
-        # Markers for excluded territories are no longer displayed on the map.
+        # 4. Highlight Exclusion (Specific Variable)
+        if highlight_var:
+            # Find the slider value for highlight_var
+            slider_indices = [i for i, d in enumerate(slider_ids) if d['index'] == highlight_var]
+            if slider_indices:
+                idx = slider_indices[0]
+                val = slider_vals[idx]
+                
+                # EPCIs specifically excluded by this variable
+                # mask is already computed in the loop above, but we need the specific one here
+                excluded_by_var = ~gdf_merged[highlight_var].between(val[0], val[1])
+                # We only show them if they are in the background (already gray)
+                df_excl_highlight = gdf_merged[excluded_by_var].copy()
+                
+                if not df_excl_highlight.empty:
+                    fig.add_trace(go.Choropleth(
+                        geojson=geojson_data,
+                        locations=df_excl_highlight.index.astype(str),
+                        z=[1] * len(df_excl_highlight),
+                        colorscale=[[0, '#adb5bd'], [1, '#adb5bd']], # Medium gray
+                        showscale=False,
+                        marker_line_width=1,
+                        marker_line_color='rgba(0,0,0,0.3)',
+                        hovertemplate=click_instruction + "<b>%{text}</b><br>Grisé par : " + variable_dict.get(highlight_var, highlight_var) + "<extra></extra>",
+                        text=df_excl_highlight['nom_EPCI'],
+                        name=f"Exclu par {highlight_var}"
+                    ))
 
         # 5. Highlight selection
         selection_alert = None
@@ -346,24 +432,19 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
         # Narrative Sentence Generation (with Bold info)
         narrative_children = []
         if summaries:
-            # We want different connectors if there are multiple parts
-            available_connectors = random.sample(CONNECTORS, len(CONNECTORS))
-            
-            narrative_children = [dmc.Text("Les territoires colorés ont ", span=True)]
+            narrative_children = [dmc.Text("Les territoires colorés sont ceux dont : ", span=True)]
             for i, s in enumerate(summaries):
                 unit = unit_dict.get(s['id'], "")
                 if i > 0:
-                    # Pick a random connector from our shuffled list (cycle if needed)
-                    connector = available_connectors[(i-1) % len(available_connectors)]
-                    narrative_children.append(dmc.Text(connector, fw=700, c="blue.7", span=True))
+                    narrative_children.append(dmc.Text(" et ", fw=700, c="blue.7", span=True))
                 
                 narrative_children.extend([
-                    dmc.Text(s['label'], fw=800, span=True),
-                    dmc.Text(" compris entre ", span=True),
+                    dmc.Text(f" la variable {s['label']} ", fw=800, span=True),
+                    dmc.Text(" est entre ", span=True),
                     dmc.Text(f"{s['val'][0]:.1f}", fw=800, c="blue.9", span=True),
                     dmc.Text(" et ", span=True),
                     dmc.Text(f"{s['val'][1]:.1f}", fw=800, c="blue.9", span=True),
-                    dmc.Text(f" {unit}", span=True),
+                    dmc.Text(f" (unité : {unit})" if unit else "", span=True),
                 ])
             narrative_children.append(dmc.Text(".", span=True))
         
@@ -402,7 +483,7 @@ def update_map(ind, patho, slider_vals, epci_selection, slider_ids):
             dmc.Text("Gris : Territoires ne répondant pas aux critères", size="xs", c="dimmed"),
         ], gap="sm")
         
-        return fig, content, guide, dynamic_title
+        return fig, stats_header, narrative_paper if summaries else dmc.Text("Aucun filtre actif", size="xs", fs="italic", c="dimmed"), guide, dynamic_title
         
     except Exception as e:
         import traceback
