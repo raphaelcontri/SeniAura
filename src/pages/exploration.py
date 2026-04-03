@@ -366,8 +366,15 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
 
         click_instruction = "<i>Cliquez sur cet EPCI pour l'ajouter au radar chart</i><br><br>"
         
+        # Demographic Context for Tooltips
+        demo_text_series = pd.Series([""] * total_epci, index=gdf_merged.index)
+        if 'H_65_plus' in gdf_merged.columns and 'F_65_plus' in gdf_merged.columns:
+             demo_h = gdf_merged['H_65_plus'].apply(lambda x: f"{x:.1f}%" if pd.notna(x) else "N/A")
+             demo_f = gdf_merged['F_65_plus'].apply(lambda x: f"{x:.1f}%" if pd.notna(x) else "N/A")
+             demo_text_series = "<br><span style='font-size: 11.5px;'>👨 Hommes 65+ : <b>" + demo_h + "</b>  |  👩 Femmes 65+ : <b>" + demo_f + "</b></span>"
+
         # Build text for background layer
-        bg_text = click_instruction + "<b>" + gdf_merged['nom_EPCI'] + "</b>"
+        bg_text = click_instruction + "<b>" + gdf_merged['nom_EPCI'] + "</b>" + demo_text_series
         has_exclusion = exclusion_reasons != ""
         bg_text_with_reasons = bg_text.copy()
         bg_text_with_reasons.loc[has_exclusion] += "<br><span style='font-size: 11px; color: #e03131'>Grisé par :</span>" + exclusion_reasons.loc[has_exclusion]
@@ -389,6 +396,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
 
         # 2. Focus layer
         if not df_focus.empty:
+            focus_text = df_focus['nom_EPCI'] + demo_text_series.loc[df_focus.index]
             fig.add_trace(go.Choropleth(
                 geojson=geojson_data,
                 locations=df_focus.index.astype(str),
@@ -397,8 +405,8 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
                 marker_line_width=0.5,
                 marker_line_color="rgba(255,255,255,0.8)",
                 colorbar=dict(thickness=15, len=0.8, y=0.5, x=0.01, xanchor="left", title=unit_dict.get(target, "")),
-                hovertemplate=click_instruction + "<b>%{text}</b><br>" + variable_dict.get(target, target) + ": %{z:.2f}<extra></extra>",
-                text=df_focus['nom_EPCI'],
+                hovertemplate=click_instruction + "<b>%{text}</b><br><br>" + variable_dict.get(target, target) + " : <b>%{z:.2f}</b><extra></extra>",
+                text=focus_text,
                 customdata=df_focus['EPCI_CODE']
             ))
 
@@ -777,37 +785,50 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                 pct = ranks_df.loc[idx, v] * 100
                 label_name = variable_dict.get(v, v)
                 
-                # Visual qualifier with explicit sentences
+                # Narrative-driven ranking badges
                 if pct >= 90: 
-                    qual, col = "très élevé", "red"
-                    phrase = f"Fait partie des 10% des territoires ayant les valeurs les plus hautes (seuls {100-pct:.0f}% font plus)."
+                    col = "red"
+                    phrase = f"Pour cette variable, ce territoire se situe en haut de classement (au-dessus de {pct:.0f}% des EPCI)"
                 elif pct >= 75: 
-                    qual, col = "élevé", "orange"
-                    phrase = f"Fait partie des 25% des territoires ayant les valeurs les plus hautes ({100-pct:.0f}% font plus)."
+                    col = "orange"
+                    phrase = f"Pour cette variable, ce territoire se situe en haut de classement (au-dessus de {pct:.0f}% des EPCI)"
                 elif pct <= 10: 
-                    qual, col = "très faible", "teal"
-                    phrase = f"Fait partie des 10% des territoires ayant les valeurs les plus basses (seuls {pct:.0f}% font moins)."
+                    col = "teal"
+                    phrase = f"Pour cette variable, ce territoire se situe en bas de classement (au-dessus de {pct:.0f}% des EPCI)"
                 elif pct <= 25: 
-                    qual, col = "faible", "cyan"
-                    phrase = f"Fait partie des 25% des territoires ayant les valeurs les plus basses ({pct:.0f}% font moins)."
+                    col = "cyan"
+                    phrase = f"Pour cette variable, ce territoire se situe en bas de classement (au-dessus de {pct:.0f}% des EPCI)"
                 else: 
-                    qual, col = "moyen", "gray"
-                    phrase = f"Se situe dans la moyenne régionale (supérieur à {pct:.0f}% des EPCI)."
+                    col = "gray"
+                    phrase = f"Pour cette variable, ce territoire se situe dans la moyenne régionale (au-dessus de {pct:.0f}% des EPCI)"
                 
-                unit = unit_dict.get(v, "")
-                val_raw = row[v].values[0]
-                val_str = f"{val_raw:.2f}" if abs(val_raw) < 10 else f"{val_raw:.1f}"
-                
-                epci_quantiles.append(dmc.Box(mb=8, children=[
-                    dmc.Group(justify="space-between", gap=4, children=[
-                        dmc.Text(label_name, size="sm", fw=700),
-                        dmc.Text(f"{val_str} {unit}", size="sm", fw=500, c="dimmed")
-                    ]),
-                    dmc.Text(phrase, size="xs", c=f"{col}.8", fs="italic")
+                epci_quantiles.append(dmc.Grid(align="center", mb=8, children=[
+                    dmc.GridCol(span=4, children=[dmc.Text(label_name, size="sm", fw=700)]),
+                    dmc.GridCol(span=8, children=[
+                        dmc.Badge(
+                            phrase, 
+                            variant="light", 
+                            color=col, 
+                            size="sm", 
+                            radius="xs", 
+                            fullWidth=True,
+                            style={
+                                "height": "auto", 
+                                "padding": "6px 10px", 
+                                "whiteSpace": "normal", 
+                                "textAlign": "center",
+                                "textTransform": "none",
+                                "fontSize": "12px", # Slightly larger
+                                "fontWeight": 600,
+                                "lineHeight": "1.3"
+                            }
+                        )
+                    ])
                 ]))
             
-            quantile_content.append(dmc.Stack(gap=4, children=[
-                dmc.Divider(label=epci_name, labelPosition="left", size="sm", color=C_radar[i%len(C_radar)]),
+            quantile_content.append(dmc.Stack(gap=2, children=[
+                dmc.Text(epci_name, size="lg", fw=900, c="#2c3e50", style={"fontSize": "19px", "letterSpacing": "0.5px", "marginTop": "12px", "marginBottom": "2px"}),
+                dmc.Divider(size="md", color="#adb5bd", mb="xs"),
                 dmc.Stack(gap=2, children=epci_quantiles)
             ]))
 
@@ -818,8 +839,11 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                     DashIconify(icon="solar:ranking-bold-duotone", color="#339af0", width=20),
                     dmc.Text("Positionnement du territoire au sein de la région", fw=800, size="sm", tt="uppercase"),
                     dmc.Tooltip(
-                        label="Ce classement indique la position du territoire par rapport à l'ensemble des EPCI de la région (quantiles).",
+                        label="Comparaison avec les 172 territoires de la région : Rouge/Orange pour les valeurs les plus hautes, Bleu pour les plus basses, Gris pour la moyenne.",
                         withArrow=True,
+                        withinPortal=True,
+                        multiline=True,
+                        w=250,
                         children=dmc.ActionIcon(
                             DashIconify(icon="solar:question-circle-linear"),
                             variant="subtle", color="gray", size="xs"

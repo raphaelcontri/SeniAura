@@ -608,6 +608,42 @@ label {
     border-color: #339af0 !important;
 }
 
+.premium-hover-purple {
+    transition: all 200ms ease !important;
+}
+
+.premium-hover-purple:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(132, 94, 247, 0.2) !important;
+    background-color: #f8f0fc !important;
+    border-color: #845ef7 !important;
+}
+
+/* Header Navigation Tabs Styling */
+.header-nav-tabs .mantine-Tabs-list {
+    gap: 12px !important;
+}
+
+.header-nav-tabs .mantine-Tabs-tab {
+    border: 1px solid #e9ecef !important;
+    background-color: white !important;
+    transition: all 250ms ease !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    color: #495057 !important;
+}
+
+.header-nav-tabs .mantine-Tabs-tab:hover {
+    border-color: #339af0 !important;
+    background-color: #f8f9fa !important;
+    color: #339af0 !important;
+}
+
+.header-nav-tabs .mantine-Tabs-tab[data-active] {
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(51, 154, 240, 0.15) !important;
+}
+
 /* Tab list layout preservation */
 #methodo-tabs-main .mantine-Tabs-list {
     margin-bottom: 24px !important;

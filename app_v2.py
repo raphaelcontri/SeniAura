@@ -377,15 +377,14 @@ header = dmc.AppShellHeader(
                         dmc.Button(
                             "Afficher l'aide",
                             id="exploration-guide-btn",
+                            variant="outline",
+                            color="violet",
+                            className="premium-hover-purple",
                             leftSection=DashIconify(icon="akar-icons:question", width=18),
                             radius="md",
                             size="sm",
                             style={
                                 "display": "none", 
-                                "backgroundColor": "#f3f0ff", 
-                                "borderColor": "#845ef7", 
-                                "color": "#6741d9",
-                                "border": "1px solid #845ef7",
                                 "fontWeight": 700,
                                 "paddingLeft": "15px",
                                 "paddingRight": "15px"
