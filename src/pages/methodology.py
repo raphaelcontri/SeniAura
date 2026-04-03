@@ -7,7 +7,17 @@ import os
 from ..data import load_data, PROJECT_ROOT
 
 # Load data
+from ..data import load_data, PROJECT_ROOT, DATA_DIR_DASH, BASE_DIR
 gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _, source_dict, classement_dict = load_data()
+
+# Load Action Levers (Leviers d'action)
+LEVIERS_PATH = os.path.join(BASE_DIR, "Leviers d'action.md")
+try:
+    with open(LEVIERS_PATH, "r", encoding="utf-8") as f:
+        leviers_content = f.read()
+except Exception as e:
+    print(f"Error loading {LEVIERS_PATH}: {e}")
+    leviers_content = "### Leviers d'action non disponibles."
 
 
 
@@ -88,76 +98,86 @@ layout = dmc.Container(
         ),
         
         dmc.Tabs(
-            id='methodo-tabs',
-            value='socioeco',
+            id='methodo-tabs-main',
+            value='variables',
             variant="pills",
             radius="md",
-            styles={
-                "tab": {
-                    "padding": "12px 20px",
-                    "fontSize": "15px",
-                    "fontWeight": 600,
-                    "borderRadius": "12px",
-                    "border": "1px solid #e9ecef",      # Same border as sidebar
-                    "backgroundColor": "transparent",
-                    "color": "#2c3e50",                  # Same near-black as sidebar
-                    "transition": "background-color 200ms ease, border-color 200ms ease",
-                    "&[data-active]": {
-                        "backgroundColor": "#339af0 !important",
-                        "color": "white !important",
-                        "borderColor": "#1c7ed6 !important",
-                        # No box-shadow
-                    },
-                    "&:hover": {
-                        "backgroundColor": "#f1f3f5",    # Same hover bg as sidebar
-                        "color": "#2c3e50",              # Text stays black on hover
-                        "borderColor": "#339af0",        # Blue border on hover
-                        # No transform, no box-shadow
-                    }
-                },
-                "list": {"marginBottom": "24px", "gap": "6px"}
-            },
             children=[
-                # --- Tabs Navigation ---
+                # --- Main Tabs Navigation ---
                 dmc.TabsList([
-                    dmc.TabsTab("Socioéco", value="socioeco"),
-                    dmc.TabsTab("Offre de soins", value="offre"),
-                    dmc.TabsTab("Environnement", value="env"),
-                    dmc.TabsTab("Santé", value="sante"),
-                    dmc.TabsTab("Construction et méthodologie", value="construction", style={"marginLeft": "auto", "backgroundColor": "#f3f0ff", "borderColor": "#845ef7", "color": "#6741d9"}),
+                    dmc.TabsTab("Liste des variables", value="variables"),
+                    dmc.TabsTab("Leviers d'action", value="leviers"),
+                    dmc.TabsTab("Construction et méthodologie", value="construction"),
                 ]),
                 
-                # --- Variables Panels ---
-                dmc.TabsPanel(value='socioeco', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables socio-économiques", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Population, emploi, revenus et logement.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(socioeco_vars))
-                    ])
+                # --- Variables Main Panel (with Nested Tabs) ---
+                dmc.TabsPanel(value='variables', children=[
+                    dmc.Tabs(
+                        id='variables-sub-tabs',
+                        value='socioeco',
+                        variant="pills",
+                        radius="md",
+                        children=[
+                            dmc.TabsList([
+                                dmc.TabsTab("Socioéco", value="socioeco"),
+                                dmc.TabsTab("Offre de soins", value="offre"),
+                                dmc.TabsTab("Environnement", value="env"),
+                                dmc.TabsTab("Santé", value="sante"),
+                            ]),
+                            
+                            dmc.TabsPanel(value='socioeco', children=[
+                                dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
+                                    dmc.Title("Variables socio-économiques", order=3, mb="xs", c="#2c3e50"),
+                                    dmc.Text("Population, emploi, revenus et logement.", c="dimmed", mb="xl"),
+                                    dmc.ScrollArea(children=make_var_table(socioeco_vars))
+                                ])
+                            ]),
+                            
+                            dmc.TabsPanel(value='offre', children=[
+                                dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
+                                    dmc.Title("Variables offre de soins", order=3, mb="xs", c="#2c3e50"),
+                                    dmc.Text("Densité et accessibilité des professionnels de santé.", c="dimmed", mb="xl"),
+                                    dmc.ScrollArea(children=make_var_table(offre_vars))
+                                ])
+                            ]),
+                            
+                            dmc.TabsPanel(value='env', children=[
+                                dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
+                                    dmc.Title("Variables environnement", order=3, mb="xs", c="#2c3e50"),
+                                    dmc.Text("Qualité de l'air, bruit et risques environnementaux.", c="dimmed", mb="xl"),
+                                    dmc.ScrollArea(children=make_var_table(env_vars))
+                                ])
+                            ]),
+                            
+                            dmc.TabsPanel(value='sante', children=[
+                                dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
+                                    dmc.Title("Variables de santé", order=3, mb="xs", c="#2c3e50"),
+                                    dmc.Text("Indicateurs cardiovasculaires (incidences et prévalences).", c="dimmed", mb="xl"),
+                                    dmc.ScrollArea(children=make_var_table(sante_vars))
+                                ])
+                            ]),
+                        ]
+                    )
                 ]),
-                
-                dmc.TabsPanel(value='offre', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables offre de soins", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Densité et accessibilité des professionnels de santé.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(offre_vars))
-                    ])
-                ]),
-                
-                dmc.TabsPanel(value='env', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables environnement", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Qualité de l'air, bruit et risques environnementaux.", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(env_vars))
-                    ])
-                ]),
-                
-                dmc.TabsPanel(value='sante', children=[
-                    dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
-                        dmc.Title("Variables de santé", order=3, mb="xs", c="#2c3e50"),
-                        dmc.Text("Indicateurs cardiovasculaires (incidences et prévalences).", c="dimmed", mb="xl"),
-                        dmc.ScrollArea(children=make_var_table(sante_vars))
-                    ])
+
+                # --- Action Levers Panel ---
+                dmc.TabsPanel(value='leviers', children=[
+                    dmc.Paper(
+                        withBorder=True, p="xl", radius="md", shadow="sm",
+                        children=[
+                            dmc.Title("Leviers d'action et littérature", order=2, mb="xl", c="#2c3e50", style={"borderBottom": "2px solid #339af0", "paddingBottom": "10px"}),
+                            dmc.Box(
+                                className="markdown-container",
+                                children=[
+                                    dcc.Markdown(
+                                        leviers_content,
+                                        link_target="_blank",
+                                        className="methodo-markdown"
+                                    )
+                                ]
+                            )
+                        ]
+                    )
                 ]),
 
                 # --- Methodology Panel ---
@@ -228,7 +248,7 @@ layout = dmc.Container(
                             )
                         ]
                     )
-                ])
+                ]),
             ]
         ),
         dmc.Space(h="xl")

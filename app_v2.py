@@ -176,7 +176,7 @@ sidebar = dmc.AppShellNavbar(
                                     dmc.Text("Type d'indicateur", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
                                     dmc.Select(
                                         id='map-indic-select', 
-                                        data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Mortalité', 'value': 'MORT'},{'label': 'Prévalence', 'value': 'PREV'}], 
+                                        data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Prévalence', 'value': 'PREV'},{'label': 'Mortalité', 'value': 'MORT'}], 
                                         value='INCI', size="sm", radius="md",
                                         comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
                                         styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
@@ -352,24 +352,6 @@ header = dmc.AppShellHeader(
                     variant="pills",
                     radius="md",
                     className="header-nav-tabs",
-                    styles={
-                        "tab": {
-                            "border": "1px solid #dee2e6",
-                            "padding": "10px 24px",
-                            "fontWeight": 800,
-                            "fontSize": "15px",
-                            "transition": "all 200ms ease",
-                            "backgroundColor": "#ffffff",
-                            "color": "#495057",
-                            "borderRadius": "12px",
-                        },
-                        "tab[data-active]": {
-                            "backgroundColor": "#339af0 !important",
-                            "borderColor": "#339af0 !important",
-                            "color": "white !important",
-                            "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
-                        }
-                    },
                     children=[
                         dmc.TabsList([
                             dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),

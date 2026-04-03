@@ -543,19 +543,23 @@ label {
 }
 
 /* ---- Methodology Tabs (mirror sidebar button style) ---- */
-#methodo-tabs .mantine-Tabs-tab {
+#methodo-tabs-main .mantine-Tabs-tab,
+#variables-sub-tabs .mantine-Tabs-tab {
     border-radius: 12px;
     border: 1px solid #e9ecef;
     color: #2c3e50;
     font-weight: 600;
     font-size: 15px;
-    transition: background-color 200ms ease, border-color 200ms ease;
+    transition: all 200ms ease;
 }
 
-#methodo-tabs .mantine-Tabs-tab:hover {
+#methodo-tabs-main .mantine-Tabs-tab:hover,
+#variables-sub-tabs .mantine-Tabs-tab:hover {
     background-color: #f1f3f5 !important;
     border-color: #339af0 !important;
-    color: #2c3e50 !important;
+    color: #339af0 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(51, 154, 240, 0.15) !important;
 }
 
 /* ---- Header Navigation Tabs ---- */
@@ -571,20 +575,48 @@ label {
 
 .header-nav-tabs .mantine-Tabs-tab:hover {
     background-color: #f8f9fa !important;
-    border-color: #e9ecef !important;
+    border-color: #339af0 !important;
     color: #339af0 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(51, 154, 240, 0.15) !important;
 }
 
 .header-nav-tabs .mantine-Tabs-tab[data-active] {
     background-color: #339af0 !important;
     color: white !important;
     border-color: #1c7ed6 !important;
+    box-shadow: 0 4px 12px rgba(51, 154, 240, 0.3) !important;
 }
 
-#methodo-tabs .mantine-Tabs-tab[data-active] {
+#methodo-tabs-main .mantine-Tabs-tab[data-active],
+#variables-sub-tabs .mantine-Tabs-tab[data-active] {
     background-color: #339af0 !important;
     border-color: #1c7ed6 !important;
     color: white !important;
+    box-shadow: 0 4px 12px rgba(51, 154, 240, 0.3) !important;
+}
+
+/* --- Premium Hover Effects for generic buttons --- */
+.premium-hover {
+    transition: all 200ms ease !important;
+}
+
+.premium-hover:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(51, 154, 240, 0.2) !important;
+    background-color: #f8f9fa !important;
+    border-color: #339af0 !important;
+}
+
+/* Tab list layout preservation */
+#methodo-tabs-main .mantine-Tabs-list {
+    margin-bottom: 24px !important;
+    gap: 6px !important;
+}
+
+#variables-sub-tabs .mantine-Tabs-list {
+    margin-bottom: 20px !important;
+    gap: 10px !important;
 }
 
 /* Slider marks styling for Min/Max values */
@@ -606,4 +638,39 @@ label {
 /* Custom scroll offset for Prise en main */
 #accordion-item-prise-en-main {
     scroll-margin-top: 100px;
+}
+
+/* Styling for Markdown tables in Methodology */
+.methodo-markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.methodo-markdown th {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 12px;
+    text-align: left;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.methodo-markdown td {
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.methodo-markdown tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.methodo-markdown tr:hover {
+    background-color: #e7f5ff;
 }

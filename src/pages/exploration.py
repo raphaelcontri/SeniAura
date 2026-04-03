@@ -294,7 +294,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
         patho_map = {'AVC': "de l'AVC", 'CardIsch': "de la Cardiopathie Ischémique", 'InsuCard': "de l'insuffisance cardiaque"}
         i_str = indic_map.get(ind, ind)
         p_str = patho_map.get(patho, patho)
-        dynamic_title = f"Carte choroplèthe de {i_str} {p_str} en Auvergne-Rhône-Alpes selon les variables sélectionnées"
+        dynamic_title = f"Carte de {i_str} {p_str} en Auvergne-Rhône-Alpes selon les variables sélectionnées"
 
         target = f"{ind}_{patho}"
         if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
@@ -534,7 +534,8 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
                                 variant="outline",
                                 color="blue",
                                 radius="md",
-                                leftSection=DashIconify(icon="solar:library-bold-duotone", width=16)
+                                leftSection=DashIconify(icon="solar:library-bold-duotone", width=16),
+                                className="premium-hover"
                             ),
                             href="/methodologie"
                         )
