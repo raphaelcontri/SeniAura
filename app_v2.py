@@ -385,7 +385,7 @@ header = dmc.AppShellHeader(
                             id="exploration-guide-btn",
                             variant="outline",
                             color="violet",
-                            className="premium-hover-purple",
+                            className="premium-hover-purple help-button-animated",
                             leftSection=DashIconify(icon="akar-icons:question", width=18),
                             radius="md",
                             size="sm",

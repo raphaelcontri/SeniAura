@@ -7,9 +7,16 @@ Elle s'organise autour de deux outils principaux (accessible sur l'onglet explor
 
 > Quel est l'objectif de ce dashboard ? 
 Le présent site internet se veut être un outil pour les décideurs politiques de la région Auvergne-Rhône-Alpes, permettant :
-- D'identifier les forces et faiblesses des EPCI en termes de vulnérabilité sanitaire, socio-économique et environnementale.
+- D'identifier les forces et faiblesses des EPCI* en termes de vulnérabilité sanitaire, socio-économique et environnementale.
 - De déterminer des leviers d'actions pour guider le déploiement de politiques publiques de prévention spécifiques aux caractéristiques des territoires.
 - De répondre au constat de P. Peretti-Watel et J.-P. Moatti dans *Le Principe de Prévention* (2009), en évitant une approche "descendante" et uniforme qui ignorerait les spécificités sociales et territoriales des populations, risquant ainsi d'accroître les inégalités de santé au lieu de les réduire.
+
+
+
+*Un EPCI (Établissement Public de Coopération Intercommunale) est un regroupement de communes qui travaillent ensemble sur des compétences communes (aménagement, santé, environnement, etc.).
+Ils peuvent être des Communautés de Communes (CC) ou des Communautés d'Agglomération (CA).
+C’est l’échelle territoriale utilisée ici pour analyser et comparer les données.*
+
 
 > Prise en main
 **1. Explorez la carte (dans le menu *Exploration*)**
@@ -26,11 +33,6 @@ Le présent site internet se veut être un outil pour les décideurs politiques 
 
 
 
-
-> Qu'est-ce qu'un EPCI ?
-Un EPCI (Établissement Public de Coopération Intercommunale) est un regroupement de communes qui travaillent ensemble sur des compétences communes (aménagement, santé, environnement, etc.).
-Ils peuvent être des Communautés de Communes (CC) ou des Communautés d'Agglomération (CA).
-C’est l’échelle territoriale utilisée ici pour analyser et comparer les données.
 
 > Pour quels destinataires ?
 - **Élus et décideurs (EPCI)** : Disposer d'un outil de « diagnostic flash » pour situer le territoire par rapport aux moyennes régionales et justifier les investissements (ex : structures de santé, urbanisme).
