@@ -11,5 +11,14 @@ window.dash_clientside.clientside = {
             }
         }
         return window.dash_clientside.no_update;
+    },
+    scrollToElement: function (n_clicks, elementId) {
+        if (n_clicks) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        return window.dash_clientside.no_update;
     }
 };

@@ -149,6 +149,33 @@ def load_data():
     # De-fragment the dataframe as per user suggestion
     df = df.copy()
 
+    # Demographic aggregations (Gender-Specific)
+    cols_H_0_24 = ['SEXE1_AGEPYR1000_taux', 'SEXE1_AGEPYR1003_taux', 'SEXE1_AGEPYR1006_taux', 'SEXE1_AGEPYR1011_taux', 'SEXE1_AGEPYR1018_taux']
+    cols_F_0_24 = ['SEXE2_AGEPYR1000_taux', 'SEXE2_AGEPYR1003_taux', 'SEXE2_AGEPYR1006_taux', 'SEXE2_AGEPYR1011_taux', 'SEXE2_AGEPYR1018_taux']
+    cols_H_25_64 = ['SEXE1_AGEPYR1025_taux', 'SEXE1_AGEPYR1040_taux', 'SEXE1_AGEPYR1055_taux']
+    cols_F_25_64 = ['SEXE2_AGEPYR1025_taux', 'SEXE2_AGEPYR1040_taux', 'SEXE2_AGEPYR1055_taux']
+    cols_H_65_plus = ['SEXE1_AGEPYR1065_taux', 'SEXE1_AGEPYR1080_taux']
+    cols_F_65_plus = ['SEXE2_AGEPYR1065_taux', 'SEXE2_AGEPYR1080_taux']
+
+    demo_configs = [
+        ('H_0_24', cols_H_0_24, 'Part des hommes 0-24 ans (%)', "Part des hommes âgés de 0 à 24 ans", -1),
+        ('F_0_24', cols_F_0_24, 'Part des femmes 0-24 ans (%)', "Part des femmes âgées de 0 à 24 ans", -1),
+        ('H_25_64', cols_H_25_64, 'Part des hommes 25-64 ans (%)', "Part des hommes principaux (25-64 ans)", -1),
+        ('F_25_64', cols_F_25_64, 'Part des femmes 25-64 ans (%)', "Part des femmes principales (25-64 ans)", -1),
+        ('H_65_plus', cols_H_65_plus, 'Part des hommes 65 ans et + (%)', "Part des hommes âgés de 65 ans et plus", 1),
+        ('F_65_plus', cols_F_65_plus, 'Part des femmes 65 ans et + (%)', "Part des femmes âgées de 65 ans et plus", 1),
+    ]
+
+    for v_code, cols, v_label, v_desc, v_sens in demo_configs:
+        if all(c in df.columns for c in cols):
+            df[v_code] = df[cols].sum(axis=1) * 100
+            variable_dict[v_code] = v_label
+            category_dict[v_code] = 'socioéco'
+            sens_dict[v_code] = v_sens
+            description_dict[v_code] = v_desc
+            unit_dict[v_code] = "%"
+            source_dict[v_code] = "Insee - RP"
+
     # Calculate Taux_CNR if missing
     if 'Taux_CNR' not in df.columns:
          cols_to_sum = ['INCI_AVC', 'INCI_CardIsch', 'INCI_InsuCard']

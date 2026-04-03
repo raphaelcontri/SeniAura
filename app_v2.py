@@ -79,7 +79,13 @@ NAV_LINK_STYLE = {
             "color": "white !important", # Force white text/icon when active
             "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
         },
-        "&:hover": {
+        "&[data-active]:hover": {
+            "backgroundColor": "#228be6 !important", # Slightly darker blue on hover
+            "borderColor": "#228be6 !important",
+            "color": "white !important",
+            "transform": "translateX(4px)"
+        },
+        "&:not([data-active]):hover": {
             "backgroundColor": "#f8f9fa",
             "borderColor": "#dee2e6",
             "transform": "translateX(4px)",
@@ -176,7 +182,7 @@ sidebar = dmc.AppShellNavbar(
                                     dmc.Text("Type d'indicateur", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
                                     dmc.Select(
                                         id='map-indic-select', 
-                                        data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Mortalité', 'value': 'MORT'},{'label': 'Prévalence', 'value': 'PREV'}], 
+                                        data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Prévalence', 'value': 'PREV'},{'label': 'Mortalité', 'value': 'MORT'}], 
                                         value='INCI', size="sm", radius="md",
                                         comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
                                         styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
@@ -352,24 +358,6 @@ header = dmc.AppShellHeader(
                     variant="pills",
                     radius="md",
                     className="header-nav-tabs",
-                    styles={
-                        "tab": {
-                            "border": "1px solid #dee2e6",
-                            "padding": "10px 24px",
-                            "fontWeight": 800,
-                            "fontSize": "15px",
-                            "transition": "all 200ms ease",
-                            "backgroundColor": "#ffffff",
-                            "color": "#495057",
-                            "borderRadius": "12px",
-                        },
-                        "tab[data-active]": {
-                            "backgroundColor": "#339af0 !important",
-                            "borderColor": "#339af0 !important",
-                            "color": "white !important",
-                            "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
-                        }
-                    },
                     children=[
                         dmc.TabsList([
                             dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
@@ -395,15 +383,14 @@ header = dmc.AppShellHeader(
                         dmc.Button(
                             "Afficher l'aide",
                             id="exploration-guide-btn",
+                            variant="outline",
+                            color="violet",
+                            className="premium-hover-purple help-button-animated",
                             leftSection=DashIconify(icon="akar-icons:question", width=18),
                             radius="md",
                             size="sm",
                             style={
                                 "display": "none", 
-                                "backgroundColor": "#f3f0ff", 
-                                "borderColor": "#845ef7", 
-                                "color": "#6741d9",
-                                "border": "1px solid #845ef7",
                                 "fontWeight": 700,
                                 "paddingLeft": "15px",
                                 "paddingRight": "15px"

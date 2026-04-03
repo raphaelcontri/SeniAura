@@ -14,3 +14,17 @@
 * Les **variables** sélectionnées pour la carte sont **gardées en mémoire** et utilisées sur le radar comparatif.
 * Le radar s'active dès qu'au moins **un territoire est sélectionné** et **trois variables choisies**. 
 * Il permet de **comparer** un ou plusieurs territoires entre eux, à la **moyenne régionale** et à une **zone d'acceptabilité (écart-type régional)**.
+
+---
+
+### 3. Comprendre les classements régionaux (quantiles)
+
+Pour chaque variable du radar, le territoire est comparé aux 172 EPCI de la région. Un code couleur et une phrase d'interprétation indiquent sa position relative :
+
+*   🔴 **Territoire en haut de classement** (Top 10%) : Se situe au-dessus de 90% des autres territoires.
+*   🟠 **Territoire en haut de classement** (Top 25%) : Se situe au-dessus de 75% des autres territoires.
+*   ⚪ **Moyenne régionale** (Gris) : Se situe dans la moyenne (entre le 25ème et le 75ème centile).
+*   🔵 **Territoire en bas de classement** (Bas 25% - Cyan) : Se situe au-dessus de moins de 25% des autres territoires.
+*   🟢 **Territoire en bas de classement** (Bas 10% - Teal) : Se situe au-dessus de moins de 10% des autres territoires.
+
+*Note : Selon la variable, être en "haut" ou en "bas" peut être un signe positif ou de vigilance (ex: Chômage vs Offre de soins).*
