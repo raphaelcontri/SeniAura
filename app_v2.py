@@ -79,7 +79,13 @@ NAV_LINK_STYLE = {
             "color": "white !important", # Force white text/icon when active
             "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.3)"
         },
-        "&:hover": {
+        "&[data-active]:hover": {
+            "backgroundColor": "#228be6 !important", # Slightly darker blue on hover
+            "borderColor": "#228be6 !important",
+            "color": "white !important",
+            "transform": "translateX(4px)"
+        },
+        "&:not([data-active]):hover": {
             "backgroundColor": "#f8f9fa",
             "borderColor": "#dee2e6",
             "transform": "translateX(4px)",

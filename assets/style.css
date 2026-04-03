@@ -633,7 +633,7 @@ label {
     color: #495057 !important;
 }
 
-.header-nav-tabs .mantine-Tabs-tab:hover {
+.header-nav-tabs .mantine-Tabs-tab:hover:not([data-active]) {
     border-color: #339af0 !important;
     background-color: #f8f9fa !important;
     color: #339af0 !important;
