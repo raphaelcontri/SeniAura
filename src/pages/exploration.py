@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, Input, Output, callback, ALL, State, no_update
+from dash import dcc, html, Input, Output, callback, ALL, State, no_update, clientside_callback, ClientsideFunction
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 import plotly.graph_objects as go
@@ -120,6 +120,28 @@ layout = dmc.Container(
                                     ]
                                 )
                             ]
+                        ),
+                        dmc.Space(h="md"),
+                        html.Div(
+                            id="scroll-to-radar-indicator",
+                            className="scroll-indicator-container",
+                            style={
+                                "display": "flex", 
+                                "flexDirection": "column", 
+                                "alignItems": "center", 
+                                "cursor": "pointer",
+                                "opacity": 0.8
+                            },
+                            n_clicks=0,
+                            children=[
+                                dmc.Text("Comparer les territoires (Radar)", size="xs", fw=700, c="blue.7", style={"textTransform": "uppercase", "letterSpacing": "0.8px"}),
+                                DashIconify(
+                                    icon="solar:alt-arrow-down-linear", 
+                                    width=24, 
+                                    color="#339af0",
+                                    className="bounce"
+                                )
+                            ]
                         )
                     ]
                 ),
@@ -185,7 +207,18 @@ def update_aside_content(pathname):
             with open("Aide.txt", "r", encoding="utf-8") as f:
                 content = f.read()
             return dmc.Stack(gap="md", children=[
-                dcc.Markdown(content, style={"fontSize": "14px", "lineHeight": "1.6"})
+                dcc.Markdown(content, style={"fontSize": "14px", "lineHeight": "1.6"}),
+                dcc.Link(
+                    dmc.Button(
+                        "Consulter les leviers d'action", 
+                        variant="light", 
+                        radius="md", 
+                        fullWidth=True,
+                        leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=18),
+                        className="premium-hover"
+                    ),
+                    href="/methodologie#leviers"
+                )
             ])
         except Exception:
             # Fallback if file not found
@@ -490,11 +523,28 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
         stats_header = dmc.Paper(
             p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
             children=[
-                dmc.Text([
-                    "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
-                    dmc.Text(str(inclus), fw=700, c="blue", span=True), " sont inclus par filtres sélectionnés et ",
-                    dmc.Text(str(exclus), fw=700, c="red", span=True), " sont exclus."
-                ], size="md", c="gray.9")
+                dmc.Group(
+                    justify="space-between",
+                    align="center",
+                    children=[
+                        dmc.Text([
+                            "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
+                            dmc.Text(str(inclus), fw=700, c="blue", span=True), " sont inclus par filtres sélectionnés et ",
+                            dmc.Text(str(exclus), fw=700, c="red", span=True), " sont exclus. Les territoires exclus sont ceux dont les données sont en dehors d'au moins une des plages de variables sélectionnées."
+                        ], size="md", c="gray.9"),
+                        dcc.Link(
+                            dmc.Button(
+                                "Quels leviers d'action pour ces territoires ?", 
+                                variant="outline", 
+                                color="blue", 
+                                size="xs",
+                                leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=16),
+                                className="premium-hover"
+                            ),
+                            href="/methodologie#leviers"
+                        )
+                    ]
+                )
             ]
         )
         
@@ -707,59 +757,6 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
         height=700, 
         legend=dict(orientation="h", y=-0.05, x=0.5, xanchor="center")
     )
-    # Dynamic Narrative Guide (Advanced Analysis)
-    narrative_sections = []
-    
-    if epci_codes and selected_vars:
-        for code in epci_codes:
-            row = gdf_merged[gdf_merged['EPCI_CODE'] == code]
-            if row.empty: continue
-            
-            epci_name = row['nom_EPCI'].values[0]
-            epci_highlights = []
-            
-            for v in selected_vars_unique:
-                val = row[v].values[0]
-                m = gdf_merged[v].mean()
-                s = gdf_merged[v].std()
-                z = (val - m) / s if s > 0 else 0
-                
-                # Natural language qualifiers
-                if abs(z) < 0.5: 
-                    qual = "proche de la moyenne régionale"
-                elif z >= 1.5: 
-                    qual = "nettement au-dessus de la moyenne régionale"
-                elif z >= 0.5:
-                    qual = "légèrement au-dessus de la moyenne régionale"
-                elif z <= -1.5:
-                    qual = "nettement en dessous de la moyenne régionale"
-                else: # z <= -0.5
-                    qual = "légèrement en dessous de la moyenne régionale"
-                
-                unit = unit_dict.get(v, "")
-                label_name = variable_dict.get(v, v)
-                indice_str = f" (unité : {unit})" if unit else ""
-                
-                epci_highlights.append(dmc.Text([
-                    "la variable ", dmc.Text(label_name, fw=800, span=True), 
-                    dmc.Text(indice_str, span=True),
-                    " est ", dmc.Text(qual, fw=700, c="blue.7", span=True)
-                ], span=True))
-            
-            # Combine highlights for this EPCI
-            epci_narrative = [dmc.Text("Pour l'EPCI ", span=True), dmc.Text(epci_name, fw=800, c="blue.9", span=True), " : "]
-            for i, h in enumerate(epci_highlights):
-                if i > 0:
-                    epci_narrative.append(dmc.Text(". ", span=True))
-                
-                # Capitalize first word of highlight
-                h.children[0] = h.children[0].capitalize()
-                epci_narrative.append(h)
-            epci_narrative.append(dmc.Text(". ", span=True))
-            narrative_sections.append(dmc.Box(epci_narrative, mb=4))
-    else:
-        narrative_sections = [dmc.Text("Sélectionnez des territoires et des variables pour voir l'analyse.", fs="italic", c="dimmed")]
-
     # --- NEW: Quantile & Relative Ranking Analysis ---
     quantile_paper = None
     if epci_codes and selected_vars:
@@ -780,21 +777,33 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                 pct = ranks_df.loc[idx, v] * 100
                 label_name = variable_dict.get(v, v)
                 
-                # Visual qualifier with color coding
+                # Visual qualifier with explicit sentences
                 if pct >= 90: 
-                    qual, col = "Top 10% (Très élevé)", "red"
+                    qual, col = "très élevé", "red"
+                    phrase = f"Fait partie des 10% des territoires ayant les valeurs les plus hautes (seuls {100-pct:.0f}% font plus)."
                 elif pct >= 75: 
-                    qual, col = "Top 25% (Élevé)", "orange"
+                    qual, col = "élevé", "orange"
+                    phrase = f"Fait partie des 25% des territoires ayant les valeurs les plus hautes ({100-pct:.0f}% font plus)."
                 elif pct <= 10: 
-                    qual, col = "Bas 10% (Très faible)", "teal"
+                    qual, col = "très faible", "teal"
+                    phrase = f"Fait partie des 10% des territoires ayant les valeurs les plus basses (seuls {pct:.0f}% font moins)."
                 elif pct <= 25: 
-                    qual, col = "Bas 25% (Faible)", "cyan"
+                    qual, col = "faible", "cyan"
+                    phrase = f"Fait partie des 25% des territoires ayant les valeurs les plus basses ({pct:.0f}% font moins)."
                 else: 
-                    qual, col = f"Médian ({pct:.0f}ème perc.)", "gray"
+                    qual, col = "moyen", "gray"
+                    phrase = f"Se situe dans la moyenne régionale (supérieur à {pct:.0f}% des EPCI)."
                 
-                epci_quantiles.append(dmc.Group(justify="space-between", children=[
-                    dmc.Text(label_name, size="sm", fw=500),
-                    dmc.Badge(qual, variant="light", color=col, size="xs")
+                unit = unit_dict.get(v, "")
+                val_raw = row[v].values[0]
+                val_str = f"{val_raw:.2f}" if abs(val_raw) < 10 else f"{val_raw:.1f}"
+                
+                epci_quantiles.append(dmc.Box(mb=8, children=[
+                    dmc.Group(justify="space-between", gap=4, children=[
+                        dmc.Text(label_name, size="sm", fw=700),
+                        dmc.Text(f"{val_str} {unit}", size="sm", fw=500, c="dimmed")
+                    ]),
+                    dmc.Text(phrase, size="xs", c=f"{col}.8", fs="italic")
                 ]))
             
             quantile_content.append(dmc.Stack(gap=4, children=[
@@ -807,33 +816,50 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             children=[
                 dmc.Group(gap="xs", mb="sm", children=[
                     DashIconify(icon="solar:ranking-bold-duotone", color="#339af0", width=20),
-                    dmc.Text("Positionnement Relatif (Quantiles Régionaux)", fw=800, size="sm", tt="uppercase"),
+                    dmc.Text("Positionnement du territoire au sein de la région", fw=800, size="sm", tt="uppercase"),
+                    dmc.Tooltip(
+                        label="Ce classement indique la position du territoire par rapport à l'ensemble des EPCI de la région (quantiles).",
+                        withArrow=True,
+                        children=dmc.ActionIcon(
+                            DashIconify(icon="solar:question-circle-linear"),
+                            variant="subtle", color="gray", size="xs"
+                        )
+                    )
                 ]),
-                dmc.Stack(gap="md", children=quantile_content)
+                dmc.Stack(gap="md", children=quantile_content),
+                dmc.Divider(variant="dotted", my="sm"),
+                dcc.Link(
+                    dmc.Button(
+                        "Quels leviers d'action pour ces territoires ?", 
+                        variant="outline", 
+                        color="blue", 
+                        size="xs",
+                        leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=16),
+                        className="premium-hover"
+                    ),
+                    href="/methodologie#leviers"
+                )
             ]
         )
 
     guide = dmc.Stack(gap="xs", children=[
-        dmc.Group(justify="space-between", mb="xs", mt="sm", children=[
-            dmc.Group(gap="xs", children=[
-                dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
-                dmc.Tooltip(
-                    label="Sur ce radar comparatif, les variables sont standardisées entre 0 et 100%. L'interprétation des variables ci-dessous est évaluée selon l'écart-type. Les quantiles indiquent la position du territoire par rapport à l'ensemble des EPCI de la région.",
-                    w=300, multiline=True, withArrow=True,
-                    children=dmc.ActionIcon(
-                        DashIconify(icon="solar:question-circle-linear"),
-                        variant="subtle", color="gray", size="sm"
-                    )
-                )
-            ])
-        ]),
-        dmc.Paper(
-            p="md", withBorder=True, radius="md", bg="blue.0",
-            children=[
-                dmc.Stack(gap=4, children=narrative_sections)
-            ]
-        ),
         quantile_paper
     ])
 
     return fig, {'display': 'block', 'flex': 1}, {'display': 'none'}, guide, dynamic_title
+
+# --- Scroll Affordance Callback ---
+clientside_callback(
+    """function(n_clicks) {
+        if (n_clicks) {
+            const el = document.getElementById('container-radar');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        return window.dash_clientside.no_update;
+    }""",
+    Output('scroll-to-radar-indicator', 'id', allow_duplicate=True),
+    Input('scroll-to-radar-indicator', 'n_clicks'),
+    prevent_initial_call=True
+)

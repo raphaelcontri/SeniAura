@@ -254,3 +254,18 @@ layout = dmc.Container(
         dmc.Space(h="xl")
     ]
 )
+
+# --- URL Deep linking callback ---
+@callback(
+    Output('methodo-tabs-main', 'value'),
+    Input('url', 'hash'),
+    prevent_initial_call=False
+)
+def update_methodo_tab_from_url(hash_val):
+    if hash_val == '#leviers':
+        return 'leviers'
+    if hash_val == '#variables':
+        return 'variables'
+    if hash_val == '#construction':
+        return 'construction'
+    return dash.no_update
