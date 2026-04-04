@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#documentation-technique-cardiaura-seniaura-dashboard" class="md-skip">
+        <a href="#seniaura-documentation-technique" class="md-skip">
           Aller au contenu
         </a>
       
@@ -443,18 +443,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-vue-densemble" class="md-nav__link">
+  <a href="#presentation-du-projet" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Vue d'ensemble
+        Présentation du projet
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1. Vue d&#39;ensemble">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fonctionnalites-principales" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -464,8 +463,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#stack-technique" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -475,9 +474,26 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-haut-niveau" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture haut niveau
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigation-dans-la-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Navigation dans la documentation
+      
+    </span>
+  </a>
   
 </li>
       
@@ -678,18 +694,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-vue-densemble" class="md-nav__link">
+  <a href="#presentation-du-projet" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Vue d'ensemble
+        Présentation du projet
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1. Vue d&#39;ensemble">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fonctionnalites-principales" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -699,8 +714,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#stack-technique" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -710,9 +725,26 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-haut-niveau" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture haut niveau
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigation-dans-la-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Navigation dans la documentation
+      
+    </span>
+  </a>
   
 </li>
       
@@ -733,57 +765,122 @@
 
 
 
-<h1 id="documentation-technique-cardiaura-seniaura-dashboard">Documentation Technique — CardiAURA / SeniAura Dashboard</h1>
+<h1 id="seniaura-documentation-technique">🫀 SeniAura — Documentation Technique</h1>
 <blockquote>
-<p><strong>Version</strong> : 3.0 — Mars 2026<br />
-<strong>Framework</strong> : Dash + Dash Mantine Components (dmc v7) + Plotly<br />
-<strong>Région</strong> : Auvergne-Rhône-Alpes (ARA)  </p>
+<p><strong>Version</strong> : 3.0 — Mars/Avril 2026<br />
+<strong>Framework</strong> : Python · Dash · Dash Mantine Components (v7) · Plotly<br />
+<strong>Couverture géographique</strong> : Région Auvergne-Rhône-Alpes (ARA) — 132+ EPCI</p>
 </blockquote>
 <hr />
-<h2 id="1-vue-densemble">1. Vue d'ensemble</h2>
-<p>CardiAURA (alias SeniAura) est un <strong>tableau de bord interactif</strong> permettant d'explorer les déterminants des maladies cardio-neuro-vasculaires à l'échelle des <strong>EPCI</strong> (Établissements Publics de Coopération Intercommunale) de la région Auvergne-Rhône-Alpes.</p>
-<h3 id="fonctionnalites-principales">Fonctionnalités principales</h3>
+<h2 id="presentation-du-projet">Présentation du projet</h2>
+<p><strong>SeniAura</strong> (alias <em>CardiAURA</em>) est un tableau de bord interactif médical permettant d'explorer, de filtrer et d'analyser les déterminants des <strong>maladies cardio-neuro-vasculaires (CNR)</strong> à l'échelle des Établissements Publics de Coopération Intercommunale (EPCI) de la région Auvergne-Rhône-Alpes.</p>
+<p>Il a été développé dans le cadre d'un <strong>projet Capstone HEC</strong> en partenariat avec des acteurs de santé régionaux.</p>
+<div class="admonition tip">
+<p class="admonition-title">Objectif</p>
+<p>Fournir aux professionnels de santé, acteurs territoriaux et décideurs publics une lecture fine et comparative des inégalités de santé cardiovasculaire à l'échelle intercommunale.</p>
+</div>
+<hr />
+<h2 id="fonctionnalites-principales">Fonctionnalités principales</h2>
 <table>
 <thead>
 <tr>
-<th>Fonctionnalité</th>
-<th>Description</th>
+<th style="text-align: left;">Fonctionnalité</th>
+<th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Carte choroplèthe</strong></td>
-<td>Visualisation colorée d'un indicateur de santé (Incidence, Mortalité, Prévalence) par EPCI</td>
+<td style="text-align: left;"><strong>🗺️ Carte choroplèthe</strong></td>
+<td style="text-align: left;">Visualisation colorée de l'Incidence, Mortalité ou Prévalence (AVC, Insuffisance Cardiaque, Cardiopathie Ischémique) par EPCI</td>
 </tr>
 <tr>
-<td><strong>Filtrage par variables</strong></td>
-<td>Sliders dynamiques pour filtrer les EPCI selon des critères socio-éco, offre de soins, environnement</td>
+<td style="text-align: left;"><strong>🎛️ Filtrage multi-variables</strong></td>
+<td style="text-align: left;">Sliders dynamiques pour isoler des EPCI selon 30+ critères socio-économiques, d'offre de soins et d'environnement</td>
 </tr>
 <tr>
-<td><strong>Radar comparatif</strong></td>
-<td>Comparaison multi-variables de territoires sélectionnés vs. la moyenne régionale</td>
+<td style="text-align: left;"><strong>📡 Radar comparatif</strong></td>
+<td style="text-align: left;">Comparaison multi-axes de territoires sélectionnés (jusqu'à 8 EPCI simultanément) vs. la moyenne régionale</td>
 </tr>
 <tr>
-<td><strong>Analyse textuelle auto-générée</strong></td>
-<td>Interprétations narratives et positionnement en quantiles</td>
+<td style="text-align: left;"><strong>📝 Analyse narrative</strong></td>
+<td style="text-align: left;">Interprétations textuelles automatiques et positionnement en quintiles régionaux</td>
 </tr>
 <tr>
-<td><strong>Méthodologie</strong></td>
-<td>Tables détaillées des variables avec descriptions, unités et sources</td>
+<td style="text-align: left;"><strong>👁️ Highlight d'exclusion</strong></td>
+<td style="text-align: left;">Visualisation des EPCI exclus par une variable spécifique parmi les filtres actifs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>📚 Méthodologie intégrée</strong></td>
+<td style="text-align: left;">Tables descriptives des variables avec descriptions, unités et sources institutionnelles</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>🧩 Demographics genrés</strong></td>
+<td style="text-align: left;">6 agrégats démographiques H/F ventilés par classe d'âge (0-24, 25-64, 65+)</td>
 </tr>
 </tbody>
 </table>
-<h3 id="stack-technique">Stack technique</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Python 3.x
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── dash                      # Framework web réactif
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── dash-mantine-components   # Composants UI (v7, style Mantine)
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── dash-iconify              # Icônes (Solar icon set)
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── plotly                    # Graphiques (Choropleth, Scatterpolar, Scattergeo)
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>├── geopandas                 # Manipulation des données géographiques
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── pandas / numpy            # Manipulation des données tabulaires
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├── openpyxl                  # Lecture des fichiers Excel (.xlsx)
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└── gunicorn                  # Serveur WSGI pour la production
+<hr />
+<h2 id="stack-technique">Stack technique</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Python 3.10+
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── dash &gt;= 2.x               # Framework web réactif (SPA - Single Page Application)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── dash-mantine-components   # Composants UI premium (v0.14, Mantine v7)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── dash-iconify              # Icônes vectorielles (Solar icon set via Iconify)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── plotly &gt;= 5.x             # Moteur graphique (Choropleth, Scatterpolar, Scattergeo)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>├── geopandas                 # Manipulation géospatiale (GeoDataFrame, CRS)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── pandas / numpy            # Traitement de données tabulaires
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├── openpyxl                  # Lecture des fichiers Excel .xlsx
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└── gunicorn                  # Serveur WSGI de production
 </code></pre></div>
+<hr />
+<h2 id="architecture-haut-niveau">Architecture haut niveau</h2>
+<pre class="mermaid"><code>graph LR
+    A[GeoJSON EPCI] --&gt; D[load_data]
+    B[Excel Dataset] --&gt; D
+    C[Dictionnaire CSV] --&gt; D
+    D --&gt; E[GeoDataFrame fusionné]
+    E --&gt; F[app_v2.py — AppShell Layout]
+    F --&gt; G[exploration.py — Carte + Radar]
+    F --&gt; H[home.py — Page Accueil]
+    F --&gt; I[methodology.py — Méthodologie]
+    G --&gt; J[Utilisateur Final]
+    H --&gt; J
+    I --&gt; J</code></pre>
+<hr />
+<h2 id="navigation-dans-la-documentation">Navigation dans la documentation</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Section</th>
+<th style="text-align: left;">Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="structure/">🗂️ Arborescence</a></td>
+<td style="text-align: left;">Structure des fichiers du projet</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="data/">🗃️ Données</a></td>
+<td style="text-align: left;">Pipeline de chargement, métadonnées, agrégats démographiques</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="backend/">🏗️ Architecture &amp; Flux</a></td>
+<td style="text-align: left;">Layout AppShell, callbacks globaux, navigation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="pages/">📄 Pages</a></td>
+<td style="text-align: left;">Logique des 3 pages principales</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="frontend/">🎨 Assets Front-end</a></td>
+<td style="text-align: left;">CSS, animations, JavaScript</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="ops/">🚀 Déploiement &amp; FAQ</a></td>
+<td style="text-align: left;">Mise en production et questions récurrentes</td>
+</tr>
+</tbody>
+</table>
 
 
 

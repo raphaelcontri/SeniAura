@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#2-arborescence-du-projet" class="md-skip">
+        <a href="#arborescence-du-projet" class="md-skip">
           Aller au contenu
         </a>
       
@@ -418,6 +418,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -460,6 +462,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -468,22 +472,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#2-arborescence-du-projet" class="md-nav__link">
+  <a href="#structure-complete" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Arborescence du projet
+        Structure complète
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Arborescence du projet">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description-des-fichiers-critiques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description des fichiers critiques
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Description des fichiers critiques">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fichiers-legacy-non-utilises-par-app_v2py" class="md-nav__link">
+  <a href="#app_v2py-point-dentree" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fichiers legacy (non utilisés par app_v2.py)
+        app_v2.py — Point d'entrée
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#srcdatapy-pipeline-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        src/data.py — Pipeline de données
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#datadictionnaire_variablescsv-metadonnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data/dictionnaire_variables.csv — Metadonnées
       
     </span>
   </a>
@@ -492,6 +529,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fichiers-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fichiers legacy
+      
+    </span>
+  </a>
   
 </li>
       
@@ -655,6 +703,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -663,22 +713,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#2-arborescence-du-projet" class="md-nav__link">
+  <a href="#structure-complete" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Arborescence du projet
+        Structure complète
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Arborescence du projet">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description-des-fichiers-critiques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description des fichiers critiques
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Description des fichiers critiques">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fichiers-legacy-non-utilises-par-app_v2py" class="md-nav__link">
+  <a href="#app_v2py-point-dentree" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fichiers legacy (non utilisés par app_v2.py)
+        app_v2.py — Point d'entrée
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#srcdatapy-pipeline-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        src/data.py — Pipeline de données
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#datadictionnaire_variablescsv-metadonnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data/dictionnaire_variables.csv — Metadonnées
       
     </span>
   </a>
@@ -687,6 +770,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fichiers-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fichiers legacy
+      
+    </span>
+  </a>
   
 </li>
       
@@ -707,46 +801,126 @@
 
 
 
-  <h1>Arborescence</h1>
-
-<h2 id="2-arborescence-du-projet">2. Arborescence du projet</h2>
+<h1 id="arborescence-du-projet">🗂️ Arborescence du Projet</h1>
+<h2 id="structure-complete">Structure complète</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>SeniAura-main/
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── app_v2.py                          # Point d&#39;entrée principal (layout + callbacks globaux)
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── requirements.txt                   # Dépendances Python
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── mkdocs.yml                         # Configuration de la documentation
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── docs/                              # Dossier source de la documentation MkDocs
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── app_v2.py                          # 🚀 Point d&#39;entrée principal
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── requirements.txt                   # 📦 Dépendances Python
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── mkdocs.yml                         # 📖 Configuration de la documentation
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── src/
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── __init__.py                    # Package Python
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── data.py                        # Chargement et fusion des données
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── src/                               # 📦 Package Python de l&#39;application
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── __init__.py
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── data.py                        # 🗃️ Chargement, fusion et enrichissement des données
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   └── pages/
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│       ├── __init__.py
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│       ├── home.py                    # Page d&#39;accueil (texte introductif)
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│       ├── exploration.py             # Page d&#39;exploration (carte + radar + analyses)
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│       ├── methodology.py             # Page méthodologie (tables de variables)
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│       ├── radar.py                   # (Legacy) Module radar standalone
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│       ├── map.py                     # (Legacy) Module carte standalone
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│       └── clustering.py              # (Legacy) Clustering exploratoire
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│       ├── home.py                    # 🏠 Page d&#39;accueil
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│       ├── exploration.py             # 🗺️ Page d&#39;exploration (carte + radar) ← Cœur
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│       ├── methodology.py             # 📚 Page méthodologie
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│       ├── radar.py                   # ⚠️ (Legacy) Radar standalone
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│       ├── map.py                     # ⚠️ (Legacy) Carte standalone
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│       └── clustering.py             # ⚠️ (Legacy) Clustering
 <a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>├── assets/
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│   ├── Senio.png                      # Logo Senio (header)
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│   ├── style.css                      # Feuille de style globale
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│   └── scroll.js                      # Clientside callback JS (scroll smooth)
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│   ├── Senio.png                      # 🖼️ Logo header (75px)
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│   ├── style.css                      # 🎨 Feuille de style globale (~750 lignes)
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│   └── scroll.js                      # ⚡ Clientside callback (scroll smooth)
 <a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│
 <a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>├── data/
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│   ├── FINAL-DATASET-epci-11.xlsx     # Dataset principal (variables par EPCI)
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│   ├── dictionnaire_variables.csv     # Métadonnées des variables (nom, catégorie, unité, source...)
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│   └── epci-ara.geojson               # Contours géographiques des EPCI ARA
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│   ├── FINAL-DATASET-epci-11.xlsx     # 📊 Dataset principal (variables par EPCI)
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│   ├── dictionnaire_variables.csv     # 📋 Métadonnées des variables
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│   └── epci-ara.geojson               # 🗺️ Géométries EPCI de la région ARA
 <a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>├── texte introductif du dashboard.txt # Contenu textuel de la page d&#39;accueil
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>├── Aide.txt                           # Contenu du panneau d&#39;aide latéral
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>└── DOCUMENTATION.md                   # Documentation monolithique (source)
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>├── docs/                              # 📖 Sources MkDocs (ce site)
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>└── site/                              # 🌐 Site statique généré (gitignored)
 </code></pre></div>
-<h3 id="fichiers-legacy-non-utilises-par-app_v2py">Fichiers legacy (non utilisés par <code>app_v2.py</code>)</h3>
-<ul>
-<li><code>app.py</code> : Ancienne version du point d'entrée.</li>
-<li><code>src/pages/map.py</code>, <code>radar.py</code>, <code>clustering.py</code> : Modules originaux, remplacés par <code>exploration.py</code> qui intègre carte + radar dans une vue unifiée.</li>
-</ul>
+<hr />
+<h2 id="description-des-fichiers-critiques">Description des fichiers critiques</h2>
+<h3 id="app_v2py-point-dentree"><code>app_v2.py</code> — Point d'entrée</h3>
+<p>Fichier principal (~590 lignes) qui instancie l'application Dash, définit le layout global via un <code>AppShell</code> Mantine, et enregistre les callbacks de navigation inter-pages.</p>
+<div class="admonition warning">
+<p class="admonition-title">Version active</p>
+<p>Seul <code>app_v2.py</code> est utilisé en production. Le fichier <code>app.py</code> est l'ancienne version et peut être ignoré.</p>
+</div>
+<h3 id="srcdatapy-pipeline-de-donnees"><code>src/data.py</code> — Pipeline de données</h3>
+<p>Module chargé une seule fois au démarrage (~200 lignes). Tous les autres modules l'importent via :
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">..data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_data</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">gdf_merged</span><span class="p">,</span> <span class="n">variable_dict</span><span class="p">,</span> <span class="n">category_dict</span><span class="p">,</span> <span class="o">...</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">()</span>
+</code></pre></div></p>
+<h3 id="datadictionnaire_variablescsv-metadonnees"><code>data/dictionnaire_variables.csv</code> — Metadonnées</h3>
+<p>Fichier CSV pivot contrôlant <strong>ce qui apparaît dans l'UI</strong>. Toute nouvelle variable doit être déclarée ici. Colonnes attendues :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Colonne</th>
+<th style="text-align: left;">Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Variable</code></td>
+<td style="text-align: left;">Code exact de la colonne dans l'Excel</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Nom_Court</code></td>
+<td style="text-align: left;">Label court affiché dans les dropdowns</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Description</code></td>
+<td style="text-align: left;">Description longue affichée dans les tooltips et la méthodologie</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Catégorie</code></td>
+<td style="text-align: left;"><code>Socioéco</code>, <code>Offre de soins</code>, <code>Environnement</code>, <code>Santé</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Sens</code></td>
+<td style="text-align: left;"><code>1</code> (positif) ou <code>-1</code> (négatif) — contrôle la couleur du radar</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Unité</code></td>
+<td style="text-align: left;"><code>%</code>, <code>‰</code>, <code>€</code>, <code>nb</code>, etc.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Sources</code></td>
+<td style="text-align: left;">Institution source (INSEE, DREES, ARS, etc.)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Classement</code></td>
+<td style="text-align: left;">Contrôle la visibilité dans la sidebar (voir <a href="../data/#logique-de-classement">section dédiée</a>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="fichiers-legacy">Fichiers legacy</h2>
+<p>Les fichiers suivants sont conservés à titre historique mais <strong>ne sont pas utilisés</strong> par <code>app_v2.py</code> :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Fichier</th>
+<th style="text-align: left;">Raison de l'archivage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>app.py</code></td>
+<td style="text-align: left;">Première version du point d'entrée</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>src/pages/radar.py</code></td>
+<td style="text-align: left;">Module radar intégré dans <code>exploration.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>src/pages/map.py</code></td>
+<td style="text-align: left;">Module carte intégré dans <code>exploration.py</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>src/pages/clustering.py</code></td>
+<td style="text-align: left;">Exploration de clustering ML, non intégrée à l'UI</td>
+</tr>
+</tbody>
+</table>
 
 
 

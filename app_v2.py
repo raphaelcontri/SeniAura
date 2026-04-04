@@ -375,7 +375,7 @@ header = dmc.AppShellHeader(
                             withArrow=True,
                             children=dmc.Anchor(
                                 DashIconify(icon="solar:document-bold-duotone", width=26, color="#339af0"),
-                                href="https://github.com/raphaelcontri/SeniAura/docs", # À adapter par l'utilisateur ou laisser relatif si servi localement
+                                href="https://raphaelcontri.github.io/SeniAura/",
                                 target="_blank",
                                 underline=False,
                                 style={"display": "flex", "alignItems": "center", "transition": "transform 0.2s ease"}
