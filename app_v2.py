@@ -352,18 +352,35 @@ header = dmc.AppShellHeader(
                         dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10),
                     ]
                 ),
-                dmc.Tabs(
-                    id="nav-tabs",
-                    value="/",
-                    variant="pills",
-                    radius="md",
-                    className="header-nav-tabs",
+                dmc.Group(
+                    gap="lg",
                     children=[
-                        dmc.TabsList([
-                            dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
-                            dmc.TabsTab("Exploration", value="/exploration", leftSection=DashIconify(icon="solar:map-linear", width=18)),
-                            dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
-                        ])
+                        dmc.Tabs(
+                            id="nav-tabs",
+                            value="/",
+                            variant="pills",
+                            radius="md",
+                            className="header-nav-tabs",
+                            children=[
+                                dmc.TabsList([
+                                    dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
+                                    dmc.TabsTab("Exploration", value="/exploration", leftSection=DashIconify(icon="solar:map-linear", width=18)),
+                                    dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
+                                ])
+                            ]
+                        ),
+                        dmc.Tooltip(
+                            label="Documentation Technique (Développement)",
+                            position="bottom",
+                            withArrow=True,
+                            children=dmc.Anchor(
+                                DashIconify(icon="solar:document-bold-duotone", width=26, color="#339af0"),
+                                href="https://github.com/raphaelcontri/SeniAura/docs", # À adapter par l'utilisateur ou laisser relatif si servi localement
+                                target="_blank",
+                                underline=False,
+                                style={"display": "flex", "alignItems": "center", "transition": "transform 0.2s ease"}
+                            )
+                        )
                     ]
                 ),
             ]
