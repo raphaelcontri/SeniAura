@@ -1,0 +1,1113 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation technique pour le dashboard de santé CardiAURA / SeniAura.">
+      
+      
+        <meta name="author" content="Raphael">
+      
+      
+      
+        <link rel="prev" href="../data/">
+      
+      
+        <link rel="next" href="../pages/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Architecture & Flux - SeniAura - Documentation Technique</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture-flux-de-donnees" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href=".." title="SeniAura - Documentation Technique" class="md-header__button md-logo" aria-label="SeniAura - Documentation Technique" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SeniAura - Documentation Technique
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture & Flux
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Passage en mode sombre"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Passage en mode sombre" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="Passage en mode clair"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Passage en mode clair" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Partager" aria-label="Partager" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Vue d'ensemble
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../structure/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Arborescence
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../data/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Données
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture & Flux
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../pages/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Pages & Logique
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../frontend/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assets Front-end
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../ops/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Déploiement & FAQ
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SeniAura - Documentation Technique" class="md-nav__button md-logo" aria-label="SeniAura - Documentation Technique" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SeniAura - Documentation Technique
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arborescence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Données
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Flux
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Flux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vue-densemble-de-app_v2py" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vue d'ensemble de app_v2.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layout-global-appshell-mantine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layout global — AppShell Mantine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callbacks-de-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callbacks de navigation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Callbacks de navigation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unified_navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unified_navigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autres-callbacks-app_v2py" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autres callbacks app_v2.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flux-de-donnees-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flux de données global
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#identifiants-de-composants-cles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifiants de composants clés
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages & Logique
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets Front-end
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Déploiement & FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vue-densemble-de-app_v2py" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vue d'ensemble de app_v2.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layout-global-appshell-mantine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layout global — AppShell Mantine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callbacks-de-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callbacks de navigation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Callbacks de navigation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unified_navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unified_navigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autres-callbacks-app_v2py" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autres callbacks app_v2.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flux-de-donnees-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flux de données global
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#identifiants-de-composants-cles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifiants de composants clés
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="architecture-flux-de-donnees">🏗️ Architecture &amp; Flux de Données</h1>
+<h2 id="vue-densemble-de-app_v2py">Vue d'ensemble de <code>app_v2.py</code></h2>
+<p>Ce fichier est le <strong>chef d'orchestre</strong> de l'application (~590 lignes). Il réunit :</p>
+<ol>
+<li>L'initialisation de l'instance Dash</li>
+<li>Le layout global imbriqué (<code>AppShell</code> Mantine)</li>
+<li>Tous les callbacks de navigation et de gestion du panneau d'aide</li>
+</ol>
+<hr />
+<h2 id="layout-global-appshell-mantine">Layout global — AppShell Mantine</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>MantineProvider
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>└── AppShell (padding=&quot;md&quot;, header_height=130)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ├── AppShellHeader
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    │   ├── Ligne 1 — Logo + Badge Région + Navigation (Tabs pills)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    │   │            └── Bouton icône &quot;Documentation Technique&quot;
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    │   └── Ligne 2 — Titre &quot;Diagnostic Territorial...&quot; + Bouton &quot;Afficher l&#39;aide&quot;
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    ├── AppShellNavbar (width=350px)  ← Masquée hors page Exploration
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    │   └── ScrollArea
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    │       ├── Select — Type d&#39;indicateur (Incidence / Mortalité / Prévalence)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    │       ├── Select — Pathologie (AVC / Cardiopathie Isch. / Insuffisance Card.)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    │       ├── Section Socio-Économie   → MultiSelect + RangeSliders dynamiques
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    │       ├── Section Offre de Soins   → MultiSelect + RangeSliders dynamiques
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    │       ├── Section Environnement    → MultiSelect + RangeSliders dynamiques
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    │       ├── MultiSelect — Sélection EPCI pour Radar
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    │       └── Footer &quot;HEC Capstone v3.0&quot;
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    ├── AppShellMain
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    │   └── ScrollArea → Container (fluid) → #page-content
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    │                    ↑ Injection dynamique selon l&#39;URL active
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    │
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    └── AppShellAside (width=450px)  ← Togglable via bouton Aide
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        ├── Header : &quot;Aide &amp; Mode d&#39;emploi&quot; + Bouton Fermer
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        └── ScrollArea → #aside-content
+</code></pre></div>
+<hr />
+<h2 id="callbacks-de-navigation">Callbacks de navigation</h2>
+<h3 id="unified_navigation"><code>unified_navigation</code></h3>
+<p>Callback principal qui synchronise l'état de toute la navigation.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nd">@callback</span><span class="p">(</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;pathname&quot;</span><span class="p">),</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;nav-tabs&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;app-shell&quot;</span><span class="p">,</span> <span class="s2">&quot;navbar&quot;</span><span class="p">),</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;pathname&quot;</span><span class="p">),</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;nav-tabs&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">unified_navigation</span><span class="p">(</span><span class="n">pathname</span><span class="p">,</span> <span class="n">tab_value</span><span class="p">):</span> <span class="o">...</span>
+</code></pre></div>
+<p><strong>Comportement</strong> :
+- Si l'URL change → met à jour l'onglet actif
+- Si l'onglet change → met à jour l'URL
+- La <strong>sidebar</strong> (navbar) est automatiquement masquée sur Accueil et Méthodologie :
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">current_navbar</span><span class="p">[</span><span class="s2">&quot;collapsed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;desktop&quot;</span><span class="p">:</span> <span class="ow">not</span> <span class="n">is_exploration</span><span class="p">,</span> <span class="s2">&quot;mobile&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</code></pre></div></p>
+<h3 id="autres-callbacks-app_v2py">Autres callbacks <code>app_v2.py</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Callback</th>
+<th style="text-align: left;">Déclencheur</th>
+<th style="text-align: left;">Effet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>display_page</code></td>
+<td style="text-align: left;">URL change</td>
+<td style="text-align: left;">Injecte le layout de la page dans <code>#page-content</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>toggle_guide_button</code></td>
+<td style="text-align: left;">URL change</td>
+<td style="text-align: left;">Affiche/masque le bouton "Afficher l'aide" (Exploration uniquement)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>toggle_aside_store</code></td>
+<td style="text-align: left;">Click bouton Aide</td>
+<td style="text-align: left;">Toggle <code>dcc.Store</code> booléen (<code>aside-opened-store</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sync_aside_state</code></td>
+<td style="text-align: left;">Changement Store</td>
+<td style="text-align: left;">Applique <code>collapsed</code> ou <code>visible</code> au panneau Aside</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>close_aside</code></td>
+<td style="text-align: left;">Click fermer OU navigation</td>
+<td style="text-align: left;">Force la fermeture du panneau</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="flux-de-donnees-global">Flux de données global</h2>
+<pre class="mermaid"><code>graph TD
+    subgraph Sidebar [Sidebar — app_v2.py]
+        A["Indicateur Santé\n(INCI/MORT/PREV)"]
+        B["Filtres Variables\n(3 MultiSelects)"]
+        C["Sélection EPCI\n(MultiSelect + Clic carte)"]
+    end
+
+    subgraph Callbacks [exploration.py — Callbacks]
+        D[update_sliders]
+        E[update_map]
+        F[update_radar]
+        G[select_epci_on_click]
+    end
+
+    A --&gt; E
+    B --&gt; D
+    B --&gt; E
+    B --&gt; F
+    C --&gt; F
+    G --&gt; C
+    E --&gt; E</code></pre>
+<hr />
+<h2 id="identifiants-de-composants-cles">Identifiants de composants clés</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Composant</th>
+<th style="text-align: left;">Fichier</th>
+<th style="text-align: left;">Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>url</code></td>
+<td style="text-align: left;"><code>dcc.Location</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Routage SPA (<code>/</code>, <code>/exploration</code>, <code>/leviers</code>, <code>/methodologie</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>nav-tabs</code></td>
+<td style="text-align: left;"><code>dmc.Tabs</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Navigation header</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>app-shell</code></td>
+<td style="text-align: left;"><code>dmc.AppShell</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Shell principal</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>page-content</code></td>
+<td style="text-align: left;"><code>html.Div</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Conteneur d'injection de page</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>aside-opened-store</code></td>
+<td style="text-align: left;"><code>dcc.Store</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">État du panneau d'aide</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>exploration-guide-btn</code></td>
+<td style="text-align: left;"><code>dmc.Button</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Toggle panneau aide</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>map-indic-select</code></td>
+<td style="text-align: left;"><code>dmc.Select</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Type indicateur</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>map-patho-select</code></td>
+<td style="text-align: left;"><code>dmc.Select</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Pathologie</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sidebar-filter-social</code></td>
+<td style="text-align: left;"><code>dmc.MultiSelect</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Filtres Socioéco</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sidebar-filter-offre</code></td>
+<td style="text-align: left;"><code>dmc.MultiSelect</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Filtres Offre de soins</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sidebar-filter-env</code></td>
+<td style="text-align: left;"><code>dmc.MultiSelect</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Filtres Environnement</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sidebar-epci-radar</code></td>
+<td style="text-align: left;"><code>dmc.MultiSelect</code></td>
+<td style="text-align: left;">app_v2.py</td>
+<td style="text-align: left;">Sélection EPCI Radar</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>map-graph</code></td>
+<td style="text-align: left;"><code>dcc.Graph</code></td>
+<td style="text-align: left;">exploration.py</td>
+<td style="text-align: left;">Carte choroplèthe</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>radar-chart</code></td>
+<td style="text-align: left;"><code>dcc.Graph</code></td>
+<td style="text-align: left;">exploration.py</td>
+<td style="text-align: left;">Radar comparatif</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>highlight-variable-select</code></td>
+<td style="text-align: left;"><code>dmc.Select</code></td>
+<td style="text-align: left;">exploration.py</td>
+<td style="text-align: left;">Filtre d'exclusion par variable</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>{'type':'exploration-slider','index':var}</code></td>
+<td style="text-align: left;"><code>dcc.RangeSlider</code></td>
+<td style="text-align: left;">exploration.py</td>
+<td style="text-align: left;">Sliders dynamiques (pattern-matching)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.top", "search.highlight", "search.share", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

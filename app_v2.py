@@ -6,7 +6,7 @@ import os
 import pandas as pd
 
 # Import layouts from pages
-from src.pages import home, methodology, exploration
+from src.pages import home, methodology, exploration, leviers
 from src.data import load_data
 
 # Load data for filter options
@@ -140,6 +140,7 @@ def serve_sitemap():
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>{host}/</loc><priority>1.0</priority></url>
   <url><loc>{host}/exploration</loc><priority>0.8</priority></url>
+  <url><loc>{host}/leviers</loc><priority>0.7</priority></url>
   <url><loc>{host}/methodologie</loc><priority>0.5</priority></url>
 </urlset>"""
     return Response(content, mimetype='application/xml')
@@ -352,18 +353,24 @@ header = dmc.AppShellHeader(
                         dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10),
                     ]
                 ),
-                dmc.Tabs(
-                    id="nav-tabs",
-                    value="/",
-                    variant="pills",
-                    radius="md",
-                    className="header-nav-tabs",
+                dmc.Group(
+                    gap="lg",
                     children=[
-                        dmc.TabsList([
-                            dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
-                            dmc.TabsTab("Exploration", value="/exploration", leftSection=DashIconify(icon="solar:map-linear", width=18)),
-                            dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
-                        ])
+                        dmc.Tabs(
+                            id="nav-tabs",
+                            value="/",
+                            variant="pills",
+                            radius="md",
+                            className="header-nav-tabs",
+                            children=[
+                                dmc.TabsList([
+                                    dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
+                                    dmc.TabsTab("Exploration", value="/exploration", leftSection=DashIconify(icon="solar:map-linear", width=18)),
+                                    dmc.TabsTab("Leviers d'action", value="/leviers", leftSection=DashIconify(icon="solar:star-linear", width=18)),
+                                    dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
+                                ])
+                            ]
+                        )
                     ]
                 ),
             ]
@@ -480,14 +487,14 @@ def unified_navigation(url_path, tab_val, current_navbar):
         # Initial load
         is_explor = url_path in ['/exploration', '/carte', '/radar']
         current_navbar["collapsed"] = {"desktop": not is_explor, "mobile": True}
-        return url_path if url_path in ['/', '/exploration', '/methodologie'] else '/', dash.no_update, current_navbar
+        return url_path if url_path in ['/', '/exploration', '/leviers', '/methodologie'] else '/', dash.no_update, current_navbar
 
     trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
     if trigger_id == 'url':
         # URL changed (back button or link)
         target_tab = '/exploration' if url_path in ['/carte', '/radar'] else url_path
-        if target_tab not in ['/', '/exploration', '/methodologie']: target_tab = '/'
+        if target_tab not in ['/', '/exploration', '/leviers', '/methodologie']: target_tab = '/'
         
         is_explor = target_tab == '/exploration'
         current_navbar["collapsed"] = {"desktop": not is_explor, "mobile": True}
@@ -510,6 +517,8 @@ def display_page(pathname):
         return home.layout
     elif pathname in ['/exploration', '/carte', '/radar']:
         return exploration.layout
+    elif pathname == '/leviers':
+        return leviers.layout
     elif pathname == '/methodologie':
         return methodology.layout
     else:
