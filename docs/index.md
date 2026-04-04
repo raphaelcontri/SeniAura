@@ -26,6 +26,7 @@ Il a été développé dans le cadre d'un **projet Capstone HEC** en partenariat
 | **📡 Radar comparatif** | Comparaison multi-axes de territoires sélectionnés (jusqu'à 8 EPCI simultanément) vs. la moyenne régionale |
 | **📝 Analyse narrative** | Interprétations textuelles automatiques et positionnement en quintiles régionaux |
 | **👁️ Highlight d'exclusion** | Visualisation des EPCI exclus par une variable spécifique parmi les filtres actifs |
+| **💡 Leviers d'action** | Page dédiée aux interventions et à la littérature scientifique |
 | **📚 Méthodologie intégrée** | Tables descriptives des variables avec descriptions, unités et sources institutionnelles |
 | **🧩 Demographics genrés** | 6 agrégats démographiques H/F ventilés par classe d'âge (0-24, 25-64, 65+) |
 
@@ -58,10 +59,12 @@ graph LR
     E --> F[app_v2.py — AppShell Layout]
     F --> G[exploration.py — Carte + Radar]
     F --> H[home.py — Page Accueil]
-    F --> I[methodology.py — Méthodologie]
+    F --> I[leviers.py — Leviers d'action]
+    F --> K[methodology.py — Méthodologie]
     G --> J[Utilisateur Final]
     H --> J
     I --> J
+    K --> J
 ```
 
 ---

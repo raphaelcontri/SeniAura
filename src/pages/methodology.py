@@ -104,10 +104,10 @@ layout = dmc.Container(
             radius="md",
             children=[
                 # --- Main Tabs Navigation ---
+                # --- Main Tabs Navigation ---
                 dmc.TabsList([
                     dmc.TabsTab("Liste des variables", value="variables"),
-                    dmc.TabsTab("Leviers d'action", value="leviers"),
-                    dmc.TabsTab("Construction et méthodologie", value="construction"),
+                    dmc.TabsTab("Documentation Technique", value="documentation", leftSection=DashIconify(icon="solar:document-bold-duotone", width=18)),
                 ]),
                 
                 # --- Variables Main Panel (with Nested Tabs) ---
@@ -160,95 +160,47 @@ layout = dmc.Container(
                     )
                 ]),
 
-                # --- Action Levers Panel ---
-                dmc.TabsPanel(value='leviers', children=[
+                # --- Technical Documentation Panel ---
+                dmc.TabsPanel(value='documentation', children=[
                     dmc.Paper(
                         withBorder=True, p="xl", radius="md", shadow="sm",
                         children=[
-                            dmc.Title("Leviers d'action et littérature", order=2, mb="xl", c="#2c3e50", style={"borderBottom": "2px solid #339af0", "paddingBottom": "10px"}),
-                            dmc.Box(
-                                className="markdown-container",
-                                children=[
-                                    dcc.Markdown(
-                                        leviers_content,
-                                        link_target="_blank",
-                                        className="methodo-markdown"
-                                    )
-                                ]
-                            )
+                            dmc.Title("Documentation Technique & Méthodologie", order=2, mb="xs", c="#2c3e50"),
+                            dmc.Text("Accédez à la documentation complète du projet : architecture, pipeline de données et détails méthodologiques.", c="dimmed", mb="xl"),
+                            
+                            dmc.Group([
+                                html.A(
+                                    dmc.Button(
+                                        "Ouvrir la Documentation Technique",
+                                        leftSection=DashIconify(icon="solar:document-bold-duotone", width=20),
+                                        size="lg",
+                                        variant="gradient",
+                                        gradient={"from": "blue", "to": "indigo", "deg": 45},
+                                        radius="md",
+                                        className="premium-hover-purple"
+                                    ),
+                                    href="https://raphaelcontri.github.io/SeniAura/",
+                                    target="_blank",
+                                    style={"textDecoration": "none"}
+                                ),
+                                html.A(
+                                    dmc.Button(
+                                        "Voir sur GitHub",
+                                        leftSection=DashIconify(icon="akar-icons:github-fill", width=20),
+                                        size="lg",
+                                        variant="outline",
+                                        color="gray",
+                                        radius="md"
+                                    ),
+                                    href="https://github.com/raphaelcontri/SeniAura",
+                                    target="_blank",
+                                    style={"textDecoration": "none"}
+                                )
+                            ], gap="md")
                         ]
                     )
                 ]),
 
-                # --- Methodology Panel ---
-                dmc.TabsPanel(value='construction', children=[
-                    dmc.Paper(
-                        withBorder=True, p="xl", radius="md", shadow="sm",
-                        children=[
-                            dmc.Title("Prétraitements et méthodologie", order=2, mb="xl", c="#2c3e50", style={"borderBottom": "2px solid #339af0", "paddingBottom": "10px"}),
-                            dmc.Accordion(
-                                chevronPosition="right",
-                                variant="separated",
-                                value="sources",
-                                radius="md",
-                                children=[
-                                    dmc.AccordionItem(
-                                        value="sources",
-                                        children=[
-                                            dmc.AccordionControl(
-                                                dmc.Group([
-                                                    DashIconify(icon="solar:database-linear", width=22, color="#339af0"),
-                                                    dmc.Text("Sources primaires et collecte des données", fw=600, fz="lg")
-                                                ])
-                                            ),
-                                            dmc.AccordionPanel([
-                                                dmc.Text("CardiAURA agrège des données hétérogènes issues de multiples sources institutionnelles :", mb="md"),
-                                                dmc.List(
-                                                    spacing="sm",
-                                                    icon=dmc.ThemeIcon(DashIconify(icon="akar-icons:check", width=12), radius="xl", color="blue", size=20),
-                                                    children=[
-                                                        dmc.ListItem(html.Span([html.B("Santé"), " : Odissé / Santé Publique France."])),
-                                                        dmc.ListItem(html.Span([html.B("Socio-économie"), " : Insee (Filosofi, Recensement)."])),
-                                                        dmc.ListItem(html.Span([html.B("Offre de soins"), " : DREES et ORS AURA."])),
-                                                        dmc.ListItem(html.Span([html.B("Environnement"), " : Balises / ORS AURA."]))
-                                                    ]
-                                                )
-                                            ]),
-                                        ],
-                                    ),
-                                    dmc.AccordionItem(
-                                        value="cleaning",
-                                        children=[
-                                            dmc.AccordionControl(
-                                                dmc.Group([
-                                                    DashIconify(icon="solar:magic-stick-3-linear", width=22, color="#339af0"),
-                                                    dmc.Text("Nettoyage et harmonisation numérique", fw=600, fz="lg")
-                                                ])
-                                            ),
-                                            dmc.AccordionPanel(
-                                                dmc.Text("Correction des formats, unification des séparateurs de milliers/décimales et gestion des types numériques pour garantir la fiabilité statistique.")
-                                            ),
-                                        ],
-                                    ),
-                                    dmc.AccordionItem(
-                                        value="geo",
-                                        children=[
-                                            dmc.AccordionControl(
-                                                dmc.Group([
-                                                    DashIconify(icon="solar:globus-linear", width=22, color="#339af0"),
-                                                    dmc.Text("Standardisation géographique (échelle EPCI)", fw=600, fz="lg")
-                                                ])
-                                            ),
-                                            dmc.AccordionPanel(
-                                                dmc.Text("Agrégation des données communales vers l'échelon intercommunal (EPCI) par moyenne pondérée.")
-                                            ),
-                                        ],
-                                    ),
-                                ]
-                            )
-                        ]
-                    )
-                ]),
             ]
         ),
         dmc.Space(h="xl")

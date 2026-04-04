@@ -111,7 +111,7 @@ graph TD
 
 | ID | Composant | Fichier | Rôle |
 |:---|:---|:---|:---|
-| `url` | `dcc.Location` | app_v2.py | Routage SPA |
+| `url` | `dcc.Location` | app_v2.py | Routage SPA (`/`, `/exploration`, `/leviers`, `/methodologie`) |
 | `nav-tabs` | `dmc.Tabs` | app_v2.py | Navigation header |
 | `app-shell` | `dmc.AppShell` | app_v2.py | Shell principal |
 | `page-content` | `html.Div` | app_v2.py | Conteneur d'injection de page |

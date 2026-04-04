@@ -160,7 +160,7 @@ Pour chaque variable de chaque EPCI :
 #### Badges de positionnement régional
 
 | Badge | Couleur | Signification |
-|:---|:---:|:---|
+|:---|:---|:---|
 | Top 10% | 🔴 Rouge | Parmi les 10% les plus élevés de la région |
 | Top 25% | 🟠 Orange | Parmi le premier quartile |
 | Médian | ⚫ Gris | Valeur proche de la médiane |
@@ -171,21 +171,24 @@ Pour chaque variable de chaque EPCI :
 
 ## 5.3 — Page Méthodologie (`methodology.py`)
 
-**Taille** : ~237 lignes
+**Taille** : ~210 lignes
 
-### Structure en onglets
+#### Structure en onglets
 
 ```
 Tabs (pills, variante bleue)
-├── Onglet : Socioéco          → Table des variables
-├── Onglet : Offre de soins    → Table des variables
-├── Onglet : Environnement     → Table des variables
-├── Onglet : Santé             → Table des variables
-└── Onglet : Construction et méthodologie → Accordion
-    ├── Sources primaires et collecte
-    ├── Nettoyage et harmonisation
-    └── Standardisation géographique
+├── Onglet : Liste des variables  → Table des variables (Socioéco, Offre, Env, Santé)
+└── Onglet : Documentation Technique → Boutons vers MkDocs et GitHub
 ```
+
+---
+
+## 5.4 — Page Leviers d'action (`leviers.py`) [NEW]
+
+**Taille** : ~45 lignes
+
+- Affiche le contenu du fichier `Leviers d'action.md`.
+- Intégrée directement dans la navigation principale du header.
 
 ### Tables de variables
 
