@@ -743,10 +743,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#badges-de-positionnement-regional" class="md-nav__link">
+  <a href="#badges-de-positionnement-regional-et-phrases-dinterpretation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Badges de positionnement régional
+        Badges de positionnement régional et Phrases d'Interprétation
       
     </span>
   </a>
@@ -785,6 +785,23 @@
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-page-leviers-daction-levierspy-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 — Page Leviers d'action (leviers.py) [NEW]
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.4 — Page Leviers d&#39;action (leviers.py) [NEW]">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#tables-de-variables" class="md-nav__link">
@@ -1092,10 +1109,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#badges-de-positionnement-regional" class="md-nav__link">
+  <a href="#badges-de-positionnement-regional-et-phrases-dinterpretation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Badges de positionnement régional
+        Badges de positionnement régional et Phrases d'Interprétation
       
     </span>
   </a>
@@ -1134,6 +1151,23 @@
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-page-leviers-daction-levierspy-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 — Page Leviers d'action (leviers.py) [NEW]
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.4 — Page Leviers d&#39;action (leviers.py) [NEW]">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#tables-de-variables" class="md-nav__link">
@@ -1375,57 +1409,100 @@
 </tr>
 </tbody>
 </table>
-<h4 id="badges-de-positionnement-regional">Badges de positionnement régional</h4>
+<h4 id="badges-de-positionnement-regional-et-phrases-dinterpretation">Badges de positionnement régional et Phrases d'Interprétation</h4>
+<p>L'algorithme de positionnement analyse vos territoires finement via le <strong>sens de la variable</strong> (<code>sens_dict</code>, défini dans <code>dictionnaire_variables.csv</code>). Ainsi, il qualifie chaque indicateur et déclenche des "Points forts" ou des alertes ciblées :</p>
+<p><strong>Cas 1 : Variables où une forte valeur est un ATOUT (Sens "1", ex: Densité médicale, Revenus)</strong></p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">Badge</th>
-<th style="text-align: center;">Couleur</th>
+<th style="text-align: left;">Couleur</th>
 <th style="text-align: left;">Signification</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Top 10%</td>
-<td style="text-align: center;">🔴 Rouge</td>
-<td style="text-align: left;">Parmi les 10% les plus élevés de la région</td>
+<td style="text-align: left;">🎉 <strong>Teal</strong> (Vert Foncé)</td>
+<td style="text-align: left;">Point fort : Top 10% régional</td>
 </tr>
 <tr>
 <td style="text-align: left;">Top 25%</td>
-<td style="text-align: center;">🟠 Orange</td>
-<td style="text-align: left;">Parmi le premier quartile</td>
+<td style="text-align: left;">🟢 <strong>Cyan</strong> (Vert Clair)</td>
+<td style="text-align: left;">Atout : Top 25% régional</td>
 </tr>
 <tr>
 <td style="text-align: left;">Médian</td>
-<td style="text-align: center;">⚫ Gris</td>
-<td style="text-align: left;">Valeur proche de la médiane</td>
+<td style="text-align: left;">⚪ <strong>Gris</strong></td>
+<td style="text-align: left;">Équilibré : Moyenne régionale</td>
 </tr>
 <tr>
 <td style="text-align: left;">Bas 25%</td>
-<td style="text-align: center;">🔵 Cyan</td>
-<td style="text-align: left;">Dernier quartile</td>
+<td style="text-align: left;">🟠 <strong>Orange</strong></td>
+<td style="text-align: left;">Attention : Dans les 25% les plus bas (Vulnérabilité)</td>
 </tr>
 <tr>
 <td style="text-align: left;">Bas 10%</td>
-<td style="text-align: center;">🟢 Teal</td>
-<td style="text-align: left;">Parmi les 10% les plus bas</td>
+<td style="text-align: left;">🔴 <strong>Rouge</strong></td>
+<td style="text-align: left;">Alerte : Plus bas que 90% des territoires (Alerte critique)</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Cas 2 : Variables où une forte valeur est une VULNÉRABILITÉ (Sens "-1", ex: Polluants, Précarité, Mortalité)</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Badge</th>
+<th style="text-align: left;">Couleur</th>
+<th style="text-align: left;">Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Bas 10%</td>
+<td style="text-align: left;">🎉 <strong>Teal</strong> (Vert Foncé)</td>
+<td style="text-align: left;">Point fort : Top 10% régional (très bas)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bas 25%</td>
+<td style="text-align: left;">🟢 <strong>Cyan</strong> (Vert Clair)</td>
+<td style="text-align: left;">Atout : Top 25% régional</td>
+</tr>
+<tr>
+<td style="text-align: left;">Médian</td>
+<td style="text-align: left;">⚪ <strong>Gris</strong></td>
+<td style="text-align: left;">Équilibré : Moyenne régionale</td>
+</tr>
+<tr>
+<td style="text-align: left;">Haut 25%</td>
+<td style="text-align: left;">🟠 <strong>Orange</strong></td>
+<td style="text-align: left;">Attention : Dans les 25% les plus élevés (Vulnérabilité)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Haut 10%</td>
+<td style="text-align: left;">🔴 <strong>Rouge</strong></td>
+<td style="text-align: left;">Alerte : Plus élevé que 90% des territoires (Alerte critique)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Génération de Leviers</strong> : Si au moins une variable d'un territoire tombe dans la zone Rouge ou Orange, le dashboard identifie la catégorie de la variable (Accès aux Soins, Environnement...) et génère sur le champ des liens vers les <code>'Leviers d'action'</code> adéquats.</p>
+</blockquote>
 <hr />
 <h2 id="53-page-methodologie-methodologypy">5.3 — Page Méthodologie (<code>methodology.py</code>)</h2>
-<p><strong>Taille</strong> : ~237 lignes</p>
-<h3 id="structure-en-onglets">Structure en onglets</h3>
+<p><strong>Taille</strong> : ~210 lignes</p>
+<h4 id="structure-en-onglets">Structure en onglets</h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Tabs (pills, variante bleue)
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>├── Onglet : Socioéco          → Table des variables
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>├── Onglet : Offre de soins    → Table des variables
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>├── Onglet : Environnement     → Table des variables
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>├── Onglet : Santé             → Table des variables
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>└── Onglet : Construction et méthodologie → Accordion
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    ├── Sources primaires et collecte
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    ├── Nettoyage et harmonisation
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    └── Standardisation géographique
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>├── Onglet : Liste des variables  → Table des variables (Socioéco, Offre, Env, Santé)
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>└── Onglet : Documentation Technique → Boutons vers MkDocs et GitHub
 </code></pre></div>
+<hr />
+<h2 id="54-page-leviers-daction-levierspy-new">5.4 — Page Leviers d'action (<code>leviers.py</code>) [NEW]</h2>
+<p><strong>Taille</strong> : ~45 lignes</p>
+<ul>
+<li>Affiche le contenu du fichier <code>Leviers d'action.md</code>.</li>
+<li>Intégrée directement dans la navigation principale du header.</li>
+</ul>
 <h3 id="tables-de-variables">Tables de variables</h3>
 <p>Chaque table affiche 4 colonnes à largeur fixe (<code>layout="fixed"</code>) pour éviter le débordement :</p>
 <table>
