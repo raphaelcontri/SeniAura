@@ -102,7 +102,25 @@ DATA_DIR  = os.path.join(BASE_DIR, "data")
 GEOJSON_PATH  = DATA_DIR + "/epci-ara.geojson"
 DATASET_PATH  = DATA_DIR + "/FINAL-DATASET-epci-11.xlsx"
 DICT_PATH     = DATA_DIR + "/dictionnaire_variables.csv"
+HOSP_PATH     = DATA_DIR + "/hospitals_ara.csv"
 ```
 
 !!! warning "Prérequis de déploiement"
-    Les trois fichiers de données doivent être présents au chemin relatif indiqué. Les données ne sont **pas** versionnées dans le dépôt Git public.
+    Les quatre fichiers de données doivent être présents au chemin relatif indiqué. Les données ne sont **pas** versionnées dans le dépôt Git public.
+
+---
+
+## Données Hospitalières (Centres de soins)
+
+Le dashboard affiche les établissements de santé (hôpitaux et centres spécialisés) de la région AURA comme repères visuels sur la carte.
+
+### Source : Base FINESS (Extraction ARA)
+- **Fichier** : `data/hospitals_ara.csv`
+- **Génération** : Ce fichier est le résultat d'une intersection spatiale (`GeoPandas`) entre la base nationale des hôpitaux et le contour géographique de la région Auvergne-Rhône-Alpes.
+- **Contenu** : 
+    - `name` : Nom de l'établissement.
+    - `lat` / `lon` : Coordonnées géographiques.
+
+### Intégration
+Contrairement aux variables EPCI qui sont chargées dans `src/data.py`, les hôpitaux sont lus directement dans le callback `update_map` de `exploration.py` pour un affichage en couche de points (`go.Scattergeo`).
+

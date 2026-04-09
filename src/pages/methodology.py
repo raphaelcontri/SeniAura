@@ -8,7 +8,7 @@ from ..data import load_data, PROJECT_ROOT
 
 # Load data
 from ..data import load_data, PROJECT_ROOT, DATA_DIR_DASH, BASE_DIR
-gdf_merged, variable_dict, category_dict, _, description_dict, unit_dict, _, source_dict, classement_dict = load_data()
+gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, _, source_dict, classement_dict = load_data()
 
 # Load Action Levers (Leviers d'action)
 LEVIERS_PATH = os.path.join(BASE_DIR, "Leviers d'action.md")
@@ -42,7 +42,9 @@ def get_vars_by_category(target_cat):
             source = source_dict.get(var_code, "-")
             if not source:
                 source = "-"
-            result.append({'code': var_code, 'label': label, 'desc': desc, 'unit': unit, 'source': source})
+            
+            sens = sens_dict.get(var_code, 0)
+            result.append({'code': var_code, 'label': label, 'desc': desc, 'unit': unit, 'source': source, 'sens': sens})
     return sorted(result, key=lambda x: x['label'])
 
 def make_var_table(vars_list):
@@ -52,21 +54,31 @@ def make_var_table(vars_list):
     
     rows = []
     for item in vars_list:
+        sens = item.get('sens', 0)
+        if sens == 1:
+            sens_badge = dmc.Badge("Atout (+)", color="teal", variant="light", leftSection=DashIconify(icon="solar:add-circle-bold", width=14))
+        elif sens == -1:
+            sens_badge = dmc.Badge("Fragilité (-)", color="red", variant="light", leftSection=DashIconify(icon="solar:danger-bold", width=14))
+        else:
+            sens_badge = dmc.Badge("Neutre", color="gray", variant="light")
+
         rows.append(
             dmc.TableTr([
                 dmc.TableTd(dmc.Text(item['label'], fw=500)),
                 dmc.TableTd(dmc.Text(item['desc'], size="sm", c="dimmed")),
-                dmc.TableTd(dmc.Text(item['unit'], size="sm", c="dimmed")),
+                dmc.TableTd(dmc.Text(item['unit'], size="sm", ta="center", c="dimmed")),
                 dmc.TableTd(dmc.Text(item['source'], size="xs", c="dimmed")),
+                dmc.TableTd(sens_badge),
             ])
         )
     
     head = dmc.TableThead(
         dmc.TableTr([
-            dmc.TableTh("Variable", style={"width": "200px"}),
-            dmc.TableTh("Description", style={"width": "400px"}),
-            dmc.TableTh("Unité", style={"width": "100px"}),
-            dmc.TableTh("Source", style={"width": "250px"}),
+            dmc.TableTh("Variable", style={"width": "180px"}),
+            dmc.TableTh("Description", style={"width": "350px"}),
+            dmc.TableTh("Unité", style={"width": "90px"}),
+            dmc.TableTh("Source", style={"width": "200px"}),
+            dmc.TableTh("Polarité", style={"width": "130px"}),
         ])
     )
     
@@ -112,6 +124,25 @@ layout = dmc.Container(
                 
                 # --- Variables Main Panel (with Nested Tabs) ---
                 dmc.TabsPanel(value='variables', children=[
+                    dmc.Paper(withBorder=True, p="md", radius="md", mt="md", mb="md", bg="gray.0", children=[
+                        dmc.Group(gap="lg", children=[
+                            dmc.Stack(gap=2, children=[
+                                dmc.Text("Guide de lecture des colonnes :", fw=700, size="sm"),
+                                dmc.Text("• Variable : Nom court utilisé dans l'application.", size="xs"),
+                                dmc.Text("• Description : Détails de la mesure de l'indicateur.", size="xs"),
+                            ]),
+                            dmc.Stack(gap=2, children=[
+                                dmc.Text(" ", size="sm"),
+                                dmc.Text("• Unité : Unité de mesure (%, taux, nombre...).", size="xs"),
+                                dmc.Text("• Source : Organisme producteur de la donnée.", size="xs"),
+                            ]),
+                            dmc.Stack(gap=2, children=[
+                                dmc.Text(" ", size="sm"),
+                                dmc.Text("• Polarité : Impact d'une valeur élevée (Atout vs Fragilité).", size="xs"),
+                                dmc.Text(" ", size="xs"),
+                            ]),
+                        ])
+                    ]),
                     dmc.Tabs(
                         id='variables-sub-tabs',
                         value='socioeco',

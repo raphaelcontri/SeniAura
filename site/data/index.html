@@ -604,6 +604,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#donnees-hospitalieres-centres-de-soins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Données Hospitalières (Centres de soins)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Données Hospitalières (Centres de soins)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-base-finess-extraction-ara" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source : Base FINESS (Extraction ARA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intégration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -852,6 +891,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#donnees-hospitalieres-centres-de-soins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Données Hospitalières (Centres de soins)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Données Hospitalières (Centres de soins)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-base-finess-extraction-ara" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source : Base FINESS (Extraction ARA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intégration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1054,11 +1132,27 @@
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">GEOJSON_PATH</span>  <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/epci-ara.geojson&quot;</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">DATASET_PATH</span>  <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/FINAL-DATASET-epci-11.xlsx&quot;</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">DICT_PATH</span>     <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/dictionnaire_variables.csv&quot;</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">HOSP_PATH</span>     <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/hospitals_ara.csv&quot;</span>
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Prérequis de déploiement</p>
-<p>Les trois fichiers de données doivent être présents au chemin relatif indiqué. Les données ne sont <strong>pas</strong> versionnées dans le dépôt Git public.</p>
+<p>Les quatre fichiers de données doivent être présents au chemin relatif indiqué. Les données ne sont <strong>pas</strong> versionnées dans le dépôt Git public.</p>
 </div>
+<hr />
+<h2 id="donnees-hospitalieres-centres-de-soins">Données Hospitalières (Centres de soins)</h2>
+<p>Le dashboard affiche les établissements de santé (hôpitaux et centres spécialisés) de la région AURA comme repères visuels sur la carte.</p>
+<h3 id="source-base-finess-extraction-ara">Source : Base FINESS (Extraction ARA)</h3>
+<ul>
+<li><strong>Fichier</strong> : <code>data/hospitals_ara.csv</code></li>
+<li><strong>Génération</strong> : Ce fichier est le résultat d'une intersection spatiale (<code>GeoPandas</code>) entre la base nationale des hôpitaux et le contour géographique de la région Auvergne-Rhône-Alpes.</li>
+<li><strong>Contenu</strong> : <ul>
+<li><code>name</code> : Nom de l'établissement.</li>
+<li><code>lat</code> / <code>lon</code> : Coordonnées géographiques.</li>
+</ul>
+</li>
+</ul>
+<h3 id="integration">Intégration</h3>
+<p>Contrairement aux variables EPCI qui sont chargées dans <code>src/data.py</code>, les hôpitaux sont lus directement dans le callback <code>update_map</code> de <code>exploration.py</code> pour un affichage en couche de points (<code>go.Scattergeo</code>).</p>
 
 
 

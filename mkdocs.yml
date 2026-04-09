@@ -4,6 +4,7 @@ site_author: Raphael
 
 theme:
   name: material
+  custom_dir: overrides
   language: fr
   palette:
     - scheme: default

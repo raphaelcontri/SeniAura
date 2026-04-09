@@ -6,7 +6,12 @@ import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 import random
-from ..data import load_data
+from src.data import load_data
+
+try:
+    df_hosp = pd.read_csv("data/hospitals_ara.csv")
+except Exception:
+    df_hosp = pd.DataFrame()
 
 CONNECTORS = [
     " associé à ", " combiné à ", " couplé à ", " ainsi qu'un(e) ", 
@@ -49,7 +54,7 @@ layout = dmc.Container(
                 dmc.Paper(
                     id='container-map',
                     withBorder=True, shadow="sm", p="md", radius="md",
-                    style={"display": "flex", "flexDirection": "column", "minHeight": "650px"},
+                    style={"minHeight": "650px"},
                     children=[
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
@@ -59,13 +64,22 @@ layout = dmc.Container(
                         ]),
                         dmc.Grid(
                             gutter="md",
+                            style={"flex": 1, "minHeight": 0},
                             children=[
                                 dmc.GridCol(
-                                    span=12,
+                                    span=8,
                                     children=[
+                                        dmc.Group(justify="flex-end", mb="xs", children=[
+                                            dmc.Switch(
+                                                id="show-hospitals-switch",
+                                                label="Afficher les hôpitaux",
+                                                checked=True,
+                                                size="xs"
+                                            ),
+                                        ]),
                                         dcc.Graph(
                                             id='map-graph',
-                                            style={'height': "550px", "width": "100%"}, 
+                                            style={'height': "600px", "width": "100%"}, 
                                             config={
                                                 'displayModeBar': False, 
                                                 'scrollZoom': False,
@@ -73,48 +87,48 @@ layout = dmc.Container(
                                                 'showTips': False
                                             }
                                         ),
-                                        # New horizontal stats box
-                                        dmc.Group(
-                                            align="stretch", gap="md", mt="sm",
+                                    ]
+                                ),
+                                # New vertical stats box
+                                dmc.GridCol(
+                                    span=4,
+                                    children=[
+                                        dmc.Paper(
+                                            withBorder=True, p="md", radius="md", bg="#f8f9fa",
+                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
                                             children=[
-                                                dmc.Paper(
-                                                    withBorder=True, p="md", radius="md", bg="#f8f9fa",
-                                                    style={'flex': 1},
-                                                    children=[
-                                                        dmc.Group(justify="space-between", mb="xs", children=[
-                                                            dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
-                                                            html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
-                                                        ]),
-                                                        html.Div(id='map-stats-header-content'),
-                                                        html.Div(id='map-narrative-content')
-                                                    ]
-                                                ),
-                                                dmc.Paper(
-                                                    withBorder=True, p="md", radius="md", bg="white",
-                                                    style={"width": "300px", "display": "none"},
-                                                    children=[
-                                                        dmc.Stack(gap="xs", children=[
-                                                            dmc.Group(gap="xs", children=[
-                                                                dmc.Text("Afficher les EPCI grisés par :", size="xs", fw=600),
-                                                                dmc.Tooltip(
-                                                                    label="Vous pouvez visualiser quels EPCI ont été grisés par une certaine variable. En effet, quand vous sélectionnez plusieurs variables de filtres, un EPCI peut être grisé par une variable mais pas l'autre.",
-                                                                    w=300, multiline=True, withArrow=True,
-                                                                    children=dmc.ActionIcon(
-                                                                        DashIconify(icon="solar:question-circle-linear"),
-                                                                        variant="subtle", color="gray", size="sm"
-                                                                    )
-                                                                )
-                                                            ]),
-                                                            dmc.Select(
-                                                                id='highlight-variable-select',
-                                                                size="xs",
-                                                                placeholder="Choisir une variable",
-                                                                data=[],
-                                                                clearable=True,
+                                                dmc.Group(justify="space-between", mb="xs", children=[
+                                                    dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
+                                                    html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
+                                                ]),
+                                                html.Div(id='map-stats-header-content'),
+                                                html.Div(id='map-narrative-content')
+                                            ]
+                                        ),
+                                        dmc.Paper(
+                                            withBorder=True, p="md", radius="md", bg="white", mt="md",
+                                            style={"display": "none"},
+                                            children=[
+                                                dmc.Stack(gap="xs", children=[
+                                                    dmc.Group(gap="xs", children=[
+                                                        dmc.Text("Afficher les EPCI grisés par :", size="xs", fw=600),
+                                                        dmc.Tooltip(
+                                                            label="Vous pouvez visualiser quels EPCI ont été grisés par une certaine variable. En effet, quand vous sélectionnez plusieurs variables de filtres, un EPCI peut être grisé par une variable mais pas l'autre.",
+                                                            w=300, multiline=True, withArrow=True,
+                                                            children=dmc.ActionIcon(
+                                                                DashIconify(icon="solar:question-circle-linear"),
+                                                                variant="subtle", color="gray", size="sm"
                                                             )
-                                                        ])
-                                                    ]
-                                                )
+                                                        )
+                                                    ]),
+                                                    dmc.Select(
+                                                        id='highlight-variable-select',
+                                                        size="xs",
+                                                        placeholder="Choisir une variable",
+                                                        data=[],
+                                                        clearable=True,
+                                                    )
+                                                ])
                                             ]
                                         )
                                     ]
@@ -150,44 +164,65 @@ layout = dmc.Container(
                 dmc.Paper(
                     id='container-radar',
                     withBorder=True, shadow="sm", p="md", radius="md",
-                    style={"display": "flex", "flexDirection": "column", "minHeight": "600px"},
+                    style={"minHeight": "650px"},
                     children=[
                         dmc.Group(gap="xs", mb="md", children=[
                             DashIconify(icon="solar:chart-2-linear", color="#339af0"),
                             dmc.Text("Profil Comparatif", id='radar-dynamic-title', fw=700),
                         ]),
-                        html.Div(
-                            id='radar-placeholder',
-                            style={'flex': 1, 'display': 'flex', 'minHeight': '350px'},
-                            children=dmc.Center(
-                                style={"width": "100%"},
-                                children=dmc.Stack(align="center", gap="xl", children=[
-                                    dmc.ThemeIcon(
-                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
-                                        size=140, radius=100, variant="light", color="blue"
-                                    ),
-                                    dmc.Paper(
-                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
-                                        shadow="sm", maw=600,
-                                        style={"border": "2px dashed #339af0"},
-                                        children=[
-                                            dmc.Text(
-                                                "Action Requise", 
-                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
-                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
-                                            ),
-                                            dmc.Text(
-                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
-                                                size="md", fw=700, ta="center", c="#1a1b1e",
-                                                style={"lineHeight": "1.6"}
+                        dmc.Grid(
+                            gutter="md",
+                            style={"flex": 1, "minHeight": 0},
+                            children=[
+                                dmc.GridCol(
+                                    span=8,
+                                    children=[
+                                        html.Div(
+                                            id='radar-placeholder',
+                                            style={'display': 'flex', 'height': '600px'},
+                                            children=dmc.Center(
+                                                style={"width": "100%", "height": "100%"},
+                                                children=dmc.Stack(align="center", gap="xl", children=[
+                                                    dmc.ThemeIcon(
+                                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
+                                                        size=140, radius=100, variant="light", color="blue"
+                                                    ),
+                                                    dmc.Paper(
+                                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
+                                                        shadow="sm", maw=600,
+                                                        style={"border": "2px dashed #339af0"},
+                                                        children=[
+                                                            dmc.Text(
+                                                                "Action Requise", 
+                                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
+                                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                                            ),
+                                                            dmc.Text(
+                                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
+                                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                                style={"lineHeight": "1.6"}
+                                                            )
+                                                        ]
+                                                    )
+                                                ])
                                             )
-                                        ]
-                                    )
-                                ])
-                            )
-                        ),
-                        dcc.Graph(id='radar-chart', style={'display': 'none', 'flex': 1, 'minHeight': "750px"}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
-                        html.Div(id='radar-reading-guide', style={'fontSize': '12px', 'marginTop': '10px'})
+                                        ),
+                                        dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
+                                    ]
+                                ),
+                                dmc.GridCol(
+                                    span=4,
+                                    children=[
+                                        html.Div(
+                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
+                                            children=[
+                                                html.Div(id='radar-reading-guide', style={'fontSize': '12px', 'marginTop': '10px'})
+                                            ]
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
                     ]
                 )
             ]
@@ -317,10 +352,11 @@ def update_highlight_options(social, offre, env):
     [Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input({'type': 'exploration-slider', 'index': ALL}, 'value'),
      Input('sidebar-epci-radar', 'value'),
-     Input('highlight-variable-select', 'value')],
+     Input('highlight-variable-select', 'value'),
+     Input('show-hospitals-switch', 'checked')],
     State({'type': 'exploration-slider', 'index': ALL}, 'id')
 )
-def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_ids):
+def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hospitals, slider_ids):
     try:
         # Dynamic Title logic
         indic_map = {'INCI': "l'incidence", 'MORT': "la mortalité", 'PREV': "la prévalence"}
@@ -497,6 +533,24 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, slider_id
             showlegend=False
         ))
 
+        if not df_hosp.empty and show_hospitals:
+            fig.add_trace(go.Scattergeo(
+                lon=df_hosp['lon'],
+                lat=df_hosp['lat'],
+                text=df_hosp['name'],
+                mode='markers',
+                marker=dict(
+                    size=4,
+                    color='#d6336c',
+                    symbol='circle',
+                    line=dict(width=0.5, color='white'),
+                    opacity=0.7
+                ),
+                name="Hôpitaux ARA",
+                showlegend=False,
+                hoverinfo="text"
+            ))
+
         fig.update_geos(fitbounds="locations", visible=False)
         fig.update_layout(
             margin={"r":0, "t":0, "l":0, "b":0},
@@ -663,7 +717,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     dynamic_title = f"Radar comparatif{names_str} par rapport à la moyenne régionale des variables sélectionnées"
 
     if not selected_vars: 
-        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, "", dynamic_title
+        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'height': '600px'}, "", dynamic_title
     
     fig = go.Figure()
     
@@ -741,9 +795,9 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                 fig.add_trace(go.Scatterpolar(
                     r=r_vals_norm + [r_vals_norm[0]], 
                     theta=labels + [labels[0]], 
-                    fill='toself', 
+                    fill=None, 
                     name=row['nom_EPCI'].values[0], 
-                    line=dict(color=C[i%len(C)]),
+                    line=dict(color=C[i%len(C)], width=2.5),
                     customdata=r_vals_raw + [r_vals_raw[0]],
                     hovertemplate="Valeur: %{customdata:.2f}<extra></extra>"
                 ))
@@ -762,7 +816,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             angularaxis=dict(showgrid=True, gridcolor="#e9ecef")
         ), 
         margin={"t":40,"b":40,"l":40,"r":40}, 
-        height=700, 
+        autosize=True,
         legend=dict(orientation="h", y=-0.05, x=0.5, xanchor="center")
     )
     # --- NEW: Quantile & Relative Ranking Analysis ---
@@ -781,26 +835,62 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             epci_name = row['nom_EPCI'].values[0]
             
             epci_quantiles = []
+            suggested_levers = []
             for v in selected_vars:
                 pct = ranks_df.loc[idx, v] * 100
                 label_name = variable_dict.get(v, v)
                 
-                # Narrative-driven ranking badges
-                if pct >= 90: 
-                    col = "red"
-                    phrase = f"Pour cette variable, ce territoire se situe en haut de classement (au-dessus de {pct:.0f}% des EPCI)"
-                elif pct >= 75: 
-                    col = "orange"
-                    phrase = f"Pour cette variable, ce territoire se situe en haut de classement (au-dessus de {pct:.0f}% des EPCI)"
-                elif pct <= 10: 
-                    col = "teal"
-                    phrase = f"Pour cette variable, ce territoire se situe en bas de classement (au-dessus de {pct:.0f}% des EPCI)"
-                elif pct <= 25: 
-                    col = "cyan"
-                    phrase = f"Pour cette variable, ce territoire se situe en bas de classement (au-dessus de {pct:.0f}% des EPCI)"
-                else: 
-                    col = "gray"
-                    phrase = f"Pour cette variable, ce territoire se situe dans la moyenne régionale (au-dessus de {pct:.0f}% des EPCI)"
+                sens = sens_dict.get(v, -1)
+                is_vuln = False
+                
+                # sens == 1 => highest is best
+                if sens == 1:
+                    if pct <= 10: 
+                        col = "red"
+                        phrase = f"Alerte : Plus bas que 90% des territoires"
+                        is_vuln = True
+                    elif pct <= 25: 
+                        col = "orange"
+                        phrase = f"Attention : Dans les 25% les plus bas"
+                        is_vuln = True
+                    elif pct >= 90: 
+                        col = "teal"
+                        phrase = f"Point fort : Top 10% régional"
+                    elif pct >= 75: 
+                        col = "cyan"
+                        phrase = f"Atout : Top 25% régional"
+                    else: 
+                        col = "gray"
+                        phrase = f"Équilibré : Moyenne régionale"
+                # sens == -1 (or 0 fallback) => lowest is best
+                else:
+                    if pct >= 90: 
+                        col = "red"
+                        phrase = f"Alerte : Plus élevé que 90% des territoires"
+                        is_vuln = True
+                    elif pct >= 75: 
+                        col = "orange"
+                        phrase = f"Attention : Dans les 25% les plus élevés"
+                        is_vuln = True
+                    elif pct <= 10: 
+                        col = "teal"
+                        phrase = f"Point fort : Top 10% régional"
+                    elif pct <= 25: 
+                        col = "cyan"
+                        phrase = f"Atout : Top 25% régional"
+                    else: 
+                        col = "gray"
+                        phrase = f"Équilibré : Moyenne régionale"
+                        
+                if is_vuln:
+                    cat = category_dict.get(v, "autre").lower()
+                    if "socio" in cat: cat_str = "Socio-économique"
+                    elif "env" in cat: cat_str = "Environnement"
+                    elif "offre" in cat or "soins" in cat: cat_str = "Accès aux soins"
+                    elif "santé" in cat or "demog" in cat: cat_str = "Prévention"
+                    else: cat_str = "Généraux"
+                    if cat_str not in suggested_levers:
+                        suggested_levers.append(cat_str)
                 
                 epci_quantiles.append(dmc.Grid(align="center", mb=8, children=[
                     dmc.GridCol(span=4, children=[dmc.Text(label_name, size="sm", fw=700)]),
@@ -818,7 +908,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                                 "whiteSpace": "normal", 
                                 "textAlign": "center",
                                 "textTransform": "none",
-                                "fontSize": "12px", # Slightly larger
+                                "fontSize": "12px", 
                                 "fontWeight": 600,
                                 "lineHeight": "1.3"
                             }
@@ -826,14 +916,36 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                     ])
                 ]))
             
+            lever_elements = []
+            if suggested_levers:
+                lever_elements.append(dmc.Text("Leviers recommandés pour combler ces facteurs de vulnérabilité :", size="sm", fw=600, mt="sm", c="indigo"))
+                for cl in suggested_levers:
+                    link = "/leviers"
+                    lever_elements.append(
+                        dmc.Group(gap="xs", mb=5, children=[
+                            DashIconify(icon="solar:arrow-right-bold-duotone", color="#339af0", width=14),
+                            dmc.Text(f"Leviers {cl}", size="sm", fw=700),
+                            dcc.Link(
+                                dmc.Button("Consulter", color="indigo", variant="light", size="xs", radius="md", className="premium-hover"), 
+                                href=link, 
+                                target="_blank", 
+                                style={"textDecoration": "none", "display": "inline-block"}
+                            )
+                        ])
+                    )
+            else:
+                 lever_elements.append(dmc.Text("Aucune vulnérabilité majeure identifiée nécessitant une action prioritaire urgente.", size="sm", fs="italic", c="gray", mt="sm"))
+
             quantile_content.append(dmc.Stack(gap=2, children=[
                 dmc.Text(epci_name, size="lg", fw=900, c="#2c3e50", style={"fontSize": "19px", "letterSpacing": "0.5px", "marginTop": "12px", "marginBottom": "2px"}),
                 dmc.Divider(size="md", color="#adb5bd", mb="xs"),
-                dmc.Stack(gap=2, children=epci_quantiles)
+                dmc.Stack(gap=2, children=epci_quantiles),
+                dmc.Paper(p="xs", radius="sm", bg="indigo.0", mt="xs", children=dmc.Stack(gap=0, children=lever_elements))
             ]))
 
         quantile_paper = dmc.Paper(
             p="md", withBorder=True, radius="md", bg="gray.1", mt="md",
+            style={"minHeight": "100%"},
             children=[
                 dmc.Group(gap="xs", mb="sm", children=[
                     DashIconify(icon="solar:ranking-bold-duotone", color="#339af0", width=20),
@@ -866,11 +978,14 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             ]
         )
 
-    guide = dmc.Stack(gap="xs", children=[
-        quantile_paper
-    ])
+    if quantile_paper:
+        guide = dmc.Stack(gap="xs", children=[quantile_paper])
+    else:
+        guide = html.Div(
+            dmc.Text("Sélectionnez des territoires et des variables dans le menu à gauche pour afficher l'analyse comparative détaillée.", size="sm", fs="italic", c="dimmed", ta="center", mt="xl")
+        )
 
-    return fig, {'display': 'block', 'flex': 1}, {'display': 'none'}, guide, dynamic_title
+    return fig, {'display': 'block', 'height': '600px'}, {'display': 'none'}, guide, dynamic_title
 
 # --- Scroll Affordance Callback ---
 clientside_callback(

@@ -323,12 +323,19 @@ sidebar = dmc.AppShellNavbar(
                 ),
             ]
         ),
-        # Footer (toujours visible si désiré, ou mis dans le ScrollArea)
+        # Footer (toujours visible)
         dmc.Paper(
             p="sm", radius="md", bg="#f8f9fa", withBorder=True, mx="sm", mb="sm",
             children=[
-                dmc.Text("HEC Capstone Project", size="xs", fw=500, ta="center", c="dimmed"),
-                dmc.Text("v3.0 - 2026", size="xs", ta="center", c="dimmed", mt=2)
+                dmc.Text("L'Équipe Capstone", size="xs", fw=700, ta="center", c="dimmed", mb=5),
+                dmc.Group(justify="center", gap="sm", children=[
+                    dmc.Anchor("Violette Marin", href="https://www.linkedin.com/in/violette-marin/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
+                    dmc.Anchor("Lia Biscafé-Park", href="https://www.linkedin.com/in/lia-biscaf%C3%A9-park-a69a0631a/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
+                    dmc.Anchor("Zehlia Ndiaye", href="https://www.linkedin.com/in/zehlia-ndiaye-1691272a3/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
+                    dmc.Anchor("Cléo Gollin", href="https://www.linkedin.com/in/cl%C3%A9o-gollin-1630a4233/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
+                    dmc.Anchor("Raphaël Contri", href="https://www.linkedin.com/in/rapha%C3%ABl-contri-a6b44327b/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
+                ]),
+                dmc.Text("SeniAura v3.0 - 2026", size="10px", ta="center", c="dimmed", mt=8)
             ]
         )
     ]

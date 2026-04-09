@@ -323,8 +323,7 @@ Outputs : radar-chart.figure, radar-chart.style, radar-placeholder.style, radar-
    - `0.5 ≤ z < 1.5` → "légèrement au-dessus/en dessous"
    - `z ≥ 1.5` → "nettement au-dessus/en dessous"
 
-2. **Quantiles régionaux** : Panneau "Positionnement Relatif" avec badges colorés :
-   - **Top 10%** (rouge), **Top 25%** (orange), **Médian** (gris), **Bas 25%** (cyan), **Bas 10%** (teal)
+2. **Quantiles régionaux** : Panneau "Positionnement Relatif" avec badges colorés. *(Voir le document MkDocs `docs/pages.md` pour le détail algorithmique "1" vs "-1" affectant les couleurs).*
 
 ---
 

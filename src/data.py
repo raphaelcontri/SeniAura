@@ -80,12 +80,11 @@ def load_data():
             variable_dict[var_code] = label
             category_dict[var_code] = cat
             
-            # Read Sens (default to -1 if missing or 0)
+            # Read Sens (default to 0 if missing)
             try:
-                s = int(row['Sens'])
-                sens_dict[var_code] = s if s != 0 else -1
+                sens_dict[var_code] = int(row['Sens'])
             except:
-                sens_dict[var_code] = -1
+                sens_dict[var_code] = 0
 
             # Description (raw)
             if 'Description' in row and pd.notna(row['Description']):

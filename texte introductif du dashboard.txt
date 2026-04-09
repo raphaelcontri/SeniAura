@@ -40,15 +40,11 @@ C’est l’échelle territoriale utilisée ici pour analyser et comparer les do
 - **Professionnels de santé (CPTS)** : Appuyer le diagnostic territorial obligatoire et dimensionner les parcours de soins en intégrant les déterminants sociaux et environnementaux de la patientèle.
 - **Délégations de l'ARS** : Bénéficier d'un référentiel objectif commun pour piloter le dialogue avec les élus et objectiver les besoins de santé locaux.
 
-> Qu'est ce qu'une maladie cardio-neuro-vasculaire ?
-Section complétée prochainement...
+> Qu'est-ce qu'une maladie cardio-neuro-vasculaire ?
+Les maladies cardio-neuro-vasculaires (CNV) regroupent les pathologies qui affectent le cœur et les vaisseaux sanguins. Elles incluent les accidents vasculaires cérébraux (AVC), les cardiopathies ischémiques (comme l'infarctus du myocarde) et l'insuffisance cardiaque. Ces maladies sont fortement liées à nos modes de vie (alimentation, sédentarité) et à notre environnement.
 
 > Qui sommes-nous ?
 Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).
 
-*(Une photo de nous)*
-*(Nos linkedin)*
-
-
 > Vidéo d'aide
-Pas de vidéo disponible poiur l'instant. La vidéo présentera comment utiliser le dashboard. 
+Pas de vidéo disponible pour l'instant. La vidéo présentera comment utiliser le dashboard. 

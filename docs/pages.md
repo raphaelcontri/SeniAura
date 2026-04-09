@@ -1,3 +1,4 @@
+
 # 📄 Logique des Pages
 
 ## 5.1 — Page Accueil (`home.py`)
@@ -105,6 +106,7 @@ Outputs: map-graph.figure, map-stats-header-content, map-reading-guide,
 | 4 | **Exclusions spécifiques** (`Choropeth`) | EPCI grisés à cause d'une seule variable (si "highlight" actif) |
 | 5 | **Sélection Radar** (`Scattergeo`) | Contours rouges des EPCI sélectionnés pour le radar |
 | 6 | **Villes repères** (`Scattergeo`) | 13 préfectures et villes majeures ARA (points + labels) |
+| 7 | **Hôpitaux ARA** (`Scattergeo`) | Points roses (`#d6336c`) représentant les centres de soins de la région |
 
 #### Tooltip des EPCI au survol
 
@@ -157,15 +159,31 @@ Pour chaque variable de chaque EPCI :
 | `0.5 ≤ \|z\| < 1.5` | "légèrement au-dessus/en dessous" |
 | `\|z\| ≥ 1.5` | "nettement au-dessus/en dessous" |
 
-#### Badges de positionnement régional
+#### Badges de positionnement régional et Phrases d'Interprétation
+
+L'algorithme de positionnement analyse vos territoires finement via le **sens de la variable** (`sens_dict`, défini dans `dictionnaire_variables.csv`). Ainsi, il qualifie chaque indicateur et déclenche des "Points forts" ou des alertes ciblées :
+
+**Cas 1 : Variables où une forte valeur est un ATOUT (Sens "1", ex: Densité médicale, Revenus)**
 
 | Badge | Couleur | Signification |
 |:---|:---|:---|
-| Top 10% | 🔴 Rouge | Parmi les 10% les plus élevés de la région |
-| Top 25% | 🟠 Orange | Parmi le premier quartile |
-| Médian | ⚫ Gris | Valeur proche de la médiane |
-| Bas 25% | 🔵 Cyan | Dernier quartile |
-| Bas 10% | 🟢 Teal | Parmi les 10% les plus bas |
+| Top 10% | 🎉 **Teal** (Vert Foncé) | Point fort : Top 10% régional |
+| Top 25% | 🟢 **Cyan** (Vert Clair) | Atout : Top 25% régional |
+| Médian | ⚪ **Gris** | Équilibré : Moyenne régionale |
+| Bas 25% | 🟠 **Orange** | Attention : Dans les 25% les plus bas (Vulnérabilité) |
+| Bas 10% | 🔴 **Rouge** | Alerte : Plus bas que 90% des territoires (Alerte critique) |
+
+**Cas 2 : Variables où une forte valeur est une VULNÉRABILITÉ (Sens "-1", ex: Polluants, Précarité, Mortalité)**
+
+| Badge | Couleur | Signification |
+|:---|:---|:---|
+| Bas 10% | 🎉 **Teal** (Vert Foncé) | Point fort : Top 10% régional (très bas) |
+| Bas 25% | 🟢 **Cyan** (Vert Clair) | Atout : Top 25% régional |
+| Médian | ⚪ **Gris** | Équilibré : Moyenne régionale |
+| Haut 25% | 🟠 **Orange** | Attention : Dans les 25% les plus élevés (Vulnérabilité) |
+| Haut 10% | 🔴 **Rouge** | Alerte : Plus élevé que 90% des territoires (Alerte critique) |
+
+> **Génération de Leviers** : Si au moins une variable d'un territoire tombe dans la zone Rouge ou Orange, le dashboard identifie la catégorie de la variable (Accès aux Soins, Environnement...) et génère sur le champ des liens vers les `'Leviers d'action'` adéquats.
 
 ---
 
