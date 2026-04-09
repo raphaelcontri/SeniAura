@@ -67,7 +67,7 @@ layout = dmc.Container(
                             style={"flex": 1, "minHeight": 0},
                             children=[
                                 dmc.GridCol(
-                                    span=8,
+                                    span={"base": 12, "md": 8},
                                     children=[
                                         dmc.Group(justify="flex-end", mb="xs", children=[
                                             dmc.Switch(
@@ -81,17 +81,17 @@ layout = dmc.Container(
                                             id='map-graph',
                                             style={'height': "600px", "width": "100%"}, 
                                             config={
-                                                'displayModeBar': False, 
-                                                'scrollZoom': False,
+                                                'displayModeBar': True, 
+                                                'scrollZoom': True,
                                                 'doubleClick': 'reset+autosize',
-                                                'showTips': False
+                                                'showTips': True
                                             }
                                         ),
                                     ]
                                 ),
                                 # New vertical stats box
                                 dmc.GridCol(
-                                    span=4,
+                                    span={"base": 12, "md": 4},
                                     children=[
                                         dmc.Paper(
                                             withBorder=True, p="md", radius="md", bg="#f8f9fa",
@@ -175,7 +175,7 @@ layout = dmc.Container(
                             style={"flex": 1, "minHeight": 0},
                             children=[
                                 dmc.GridCol(
-                                    span=8,
+                                    span={"base": 12, "md": 8},
                                     children=[
                                         html.Div(
                                             id='radar-placeholder',
@@ -198,20 +198,23 @@ layout = dmc.Container(
                                                                 style={"letterSpacing": "1px", "textTransform": "uppercase"}
                                                             ),
                                                             dmc.Text(
-                                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
-                                                                size="md", fw=700, ta="center", c="#1a1b1e",
-                                                                style={"lineHeight": "1.6"}
+                                                                "Sélectionnez au moins un territoire (EPCI) sur la carte pour générer son profil cardio-vasculaire comparatif.",
+                                                                size="sm", c="dimmed", ta="center", fw=500
                                                             )
                                                         ]
                                                     )
                                                 ])
                                             )
                                         ),
-                                        dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
+                                        dcc.Graph(
+                                            id='radar-chart', 
+                                            style={'display': 'none', 'height': '600px'}, 
+                                            config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}
+                                        ),
                                     ]
                                 ),
                                 dmc.GridCol(
-                                    span=4,
+                                    span={"base": 12, "md": 4},
                                     children=[
                                         html.Div(
                                             style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
@@ -556,7 +559,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
             margin={"r":0, "t":0, "l":0, "b":0},
             paper_bgcolor='white', 
             clickmode='event+select',
-            dragmode=False # Désactive le panoramique et le zoom par glissement
+            dragmode='pan'
         )
         
         # Narrative Sentence Generation (with Bold info)
@@ -624,13 +627,40 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
             ind_desc = description_dict.get(target, "")
             if not ind_desc:
                 ind_desc = "Description non disponible."
-            desc_children.append(dmc.Text([dmc.Text(f"{variable_dict.get(target, target)} (Indicateur Santé) : ", fw=700, span=True), ind_desc], size="sm"))
+            
+            # Polarity message
+            sens = sens_dict.get(target, 0)
+            if sens == 1:
+                sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
+            elif sens == -1:
+                sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
+            else:
+                sens_msg = ""
+                
+            desc_children.append(dmc.Text([
+                dmc.Text(f"{variable_dict.get(target, target)} (Indicateur Santé) : ", fw=700, span=True), 
+                dmc.Text(ind_desc, span=True),
+                dmc.Text(sens_msg, size="xs", fw=600, c="blue.7", span=True)
+            ], size="sm"))
                 
         for s in summaries:
             var_desc = description_dict.get(s['id'], "")
             if not var_desc:
                 var_desc = "Description non disponible."
-            desc_children.append(dmc.Text([dmc.Text(f"{s['label']} : ", fw=700, span=True), var_desc], size="sm"))
+            
+            sens = sens_dict.get(s['id'], 0)
+            if sens == 1:
+                sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
+            elif sens == -1:
+                sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
+            else:
+                sens_msg = ""
+                
+            desc_children.append(dmc.Text([
+                dmc.Text(f"{s['label']} : ", fw=700, span=True), 
+                dmc.Text(var_desc, span=True),
+                dmc.Text(sens_msg, size="xs", fw=600, c="blue.7", span=True)
+            ], size="sm"))
                 
         desc_paper = dmc.Paper(
             p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
@@ -989,16 +1019,13 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
 
 # --- Scroll Affordance Callback ---
 clientside_callback(
-    """function(n_clicks) {
-        if (n_clicks) {
-            const el = document.getElementById('container-radar');
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-        return window.dash_clientside.no_update;
-    }""",
-    Output('scroll-to-radar-indicator', 'id', allow_duplicate=True),
-    Input('scroll-to-radar-indicator', 'n_clicks'),
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='scrollToRadar'
+    ),
+    Output("scroll-to-radar-indicator", "id", allow_duplicate=True),
+    Input("scroll-to-radar-indicator", "n_clicks"),
     prevent_initial_call=True
 )
+
+

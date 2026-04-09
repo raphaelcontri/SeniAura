@@ -20,5 +20,14 @@ window.dash_clientside.clientside = {
             }
         }
         return window.dash_clientside.no_update;
+    },
+    scrollToRadar: function (n_clicks) {
+        if (n_clicks) {
+            const el = document.getElementById('container-radar');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        return window.dash_clientside.no_update;
     }
 };

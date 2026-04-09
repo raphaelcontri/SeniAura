@@ -108,7 +108,7 @@ from flask import send_from_directory, Response
 
 app = dash.Dash(
     __name__, 
-    title="CardiAURA - Accueil", 
+    title="CardiAURA - Diagnostic Territorial", 
     suppress_callback_exceptions=True, 
     external_stylesheets=external_stylesheets,
     meta_tags=[
@@ -119,9 +119,35 @@ app = dash.Dash(
         {
             "name": "google-site-verification", 
             "content": "KkhBSX_KhNawMneZxCpnKcVxCLAbYd38mpCqEXTEeZw"
-        }
+        },
+        {"name": "theme-color", "content": "#339af0"},
+        {"name": "apple-mobile-web-app-capable", "content": "yes"},
+        {"name": "apple-mobile-web-app-status-bar-style", "content": "default"},
+        {"name": "apple-mobile-web-app-title", "content": "SeniAura"},
     ]
 )
+
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+        <link rel="manifest" href="/assets/manifest.json">
+        <link rel="apple-touch-icon" href="/assets/Senio.png">
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
 server = app.server
 
 @server.route('/robots.txt')
@@ -356,8 +382,14 @@ header = dmc.AppShellHeader(
                     gap="xs",
                     wrap="nowrap",
                     children=[
+                        dmc.Burger(
+                            id="mobile-burger",
+                            opened=False,
+                            hiddenFrom="sm",
+                            size="sm"
+                        ),
                         html.Img(src="/assets/Senio.png", height=75, style={"marginRight": "10px"}),
-                        dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10),
+                        dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10, hiddenFrom="xs"),
                     ]
                 ),
                 dmc.Group(
@@ -587,6 +619,19 @@ def close_aside(n, pathname):
     if dash.callback_context.triggered_id == 'close-aside-btn':
         return False
     return dash.no_update
+
+# --- Mobile Navigation Callback ---
+@app.callback(
+    Output("app-shell", "navbar", allow_duplicate=True),
+    Input("mobile-burger", "opened"),
+    State("app-shell", "navbar"),
+    prevent_initial_call=True
+)
+def toggle_navbar(opened, navbar):
+    if not navbar:
+        navbar = {"width": 350, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}}
+    navbar["collapsed"]["mobile"] = not opened
+    return navbar
 
 if __name__ == '__main__':
     app.run(debug=True, port=8050)

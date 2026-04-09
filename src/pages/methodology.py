@@ -56,11 +56,18 @@ def make_var_table(vars_list):
     for item in vars_list:
         sens = item.get('sens', 0)
         if sens == 1:
-            sens_badge = dmc.Badge("Atout (+)", color="teal", variant="light", leftSection=DashIconify(icon="solar:add-circle-bold", width=14))
+            sens_badge = dmc.Group([
+                DashIconify(icon="solar:add-circle-bold", width=16, color="#0ca678"),
+                dmc.Text("Plus cette variable est élevée, moins le territoire est vulnérable", size="sm", fw=600, c="#0ca678")
+            ], gap=8, style={"padding": "4px 12px", "backgroundColor": "#ebfbee", "borderRadius": "4px", "whiteSpace": "nowrap", "border": "1px solid #b2f2bb"})
         elif sens == -1:
-            sens_badge = dmc.Badge("Fragilité (-)", color="red", variant="light", leftSection=DashIconify(icon="solar:danger-bold", width=14))
+            sens_badge = dmc.Group([
+                DashIconify(icon="solar:danger-bold", width=16, color="#f03e3e"),
+                dmc.Text("Plus cette variable est élevée, plus le territoire est vulnérable", size="sm", fw=600, c="#f03e3e")
+            ], gap=8, style={"padding": "4px 12px", "backgroundColor": "#fff5f5", "borderRadius": "4px", "whiteSpace": "nowrap", "border": "1px solid #ffa8a8"})
         else:
             sens_badge = dmc.Badge("Neutre", color="gray", variant="light")
+            
 
         rows.append(
             dmc.TableTr([
@@ -76,9 +83,9 @@ def make_var_table(vars_list):
         dmc.TableTr([
             dmc.TableTh("Variable", style={"width": "180px"}),
             dmc.TableTh("Description", style={"width": "350px"}),
-            dmc.TableTh("Unité", style={"width": "90px"}),
-            dmc.TableTh("Source", style={"width": "200px"}),
-            dmc.TableTh("Polarité", style={"width": "130px"}),
+            dmc.TableTh("Unité", style={"width": "80px"}),
+            dmc.TableTh("Source", style={"width": "150px"}),
+            dmc.TableTh("Impact sur la vulnérabilité"),
         ])
     )
     
@@ -90,8 +97,7 @@ def make_var_table(vars_list):
         highlightOnHover=True, 
         withTableBorder=True, 
         withColumnBorders=True,
-        layout="fixed",
-        style={"width": "950px"}
+        style={"minWidth": "1400px"}
     )
 
 socioeco_vars = get_vars_by_category('Socioéco')
@@ -138,7 +144,7 @@ layout = dmc.Container(
                             ]),
                             dmc.Stack(gap=2, children=[
                                 dmc.Text(" ", size="sm"),
-                                dmc.Text("• Polarité : Impact d'une valeur élevée (Atout vs Fragilité).", size="xs"),
+                                dmc.Text("• Polarité : Impact d'une hausse de la valeur sur la vulnérabilité.", size="xs"),
                                 dmc.Text(" ", size="xs"),
                             ]),
                         ])
