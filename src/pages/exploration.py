@@ -68,7 +68,15 @@ layout = dmc.Container(
                             children=[
                                 dmc.GridCol(
                                     span=8,
+                                    style={"position": "relative"},
                                     children=[
+                                        dmc.LoadingOverlay(
+                                            id="map-loading-overlay",
+                                            visible=False,
+                                            overlayProps={"blur": 2},
+                                            zIndex=1000,
+                                            loaderProps={"variant": "bars", "color": "blue", "size": "xl"},
+                                        ),
                                         dmc.Group(justify="flex-end", mb="xs", children=[
                                             dmc.Switch(
                                                 id="show-hospitals-switch",
@@ -137,6 +145,19 @@ layout = dmc.Container(
                             ]
                         ),
                         dmc.Space(h="md"),
+                        # Clientside callback to toggle loading overlay
+                        dash.clientside_callback(
+                            """
+                                function(loading_state) {
+                                    if (loading_state && loading_state.is_loading) {
+                                        return true;
+                                    }
+                                    return false;
+                                }
+                            """,
+                            Output("map-loading-overlay", "visible"),
+                            Input("map-graph", "loading_state")
+                        ),
                         html.Div(
                             id="scroll-to-radar-indicator",
                             className="scroll-indicator-container",
@@ -226,7 +247,7 @@ layout = dmc.Container(
                                                     style={'backgroundColor': '#f8f9fa'},
                                                     children=[
                                                         dmc.Group(justify="space-between", mb="xs", children=[
-                                                            dmc.Text("Guide de lecture (Radar) :", size="lg", fw=800, tt="uppercase", c="dark"),
+                                                            dmc.Text("Guide de lecture :", size="lg", fw=800, tt="uppercase", c="dark"),
                                                             html.Div(id='radar-guide-header', style={'fontSize': '11px', 'color': 'gray'})
                                                         ]),
                                                         html.Div(id='radar-reading-guide'),

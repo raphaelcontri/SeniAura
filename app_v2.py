@@ -160,7 +160,7 @@ sidebar = dmc.AppShellNavbar(
                     px="md",
                     children=[
                         # Section titre des filtres
-                        dmc.Divider(variant="solid", mb="md", c="gray.2"),
+
                         # --- Filter Section (Hidden on Home/Methodology) ---
                         html.Div(id='sidebar-filters-section', children=[
                             dmc.Group(
@@ -438,22 +438,14 @@ app.layout = dmc.MantineProvider(
                 sidebar,
                 dmc.AppShellMain(
                     children=[
-                        dmc.ScrollArea(
-                            h="calc(100vh - 90px)",
-                            type="always",
-                            scrollbarSize=10,
-                            offsetScrollbars=True,
-                            children=[
-                                dmc.Container(
-                                    size="2000px", # Wide enough for dashboard, but limits infinite stretch
-                                    fluid=False,
-                                    px=0,
-                                    children=[
-                                        html.Div(id='page-content', style={'padding': '20px'})
-                                    ]
-                                )
-                            ]
-                        )
+                                        dmc.Container(
+                                            size="2000px", # Wide enough for dashboard, but limits infinite stretch
+                                            fluid=False,
+                                            px=0,
+                                            children=[
+                                                html.Div(id='page-content', style={'padding': '20px'})
+                                            ]
+                                        )
                     ],
                     style={'backgroundColor': '#f8f9fa'}
                 ),
