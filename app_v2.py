@@ -328,34 +328,38 @@ sidebar = dmc.AppShellNavbar(
 
 header = dmc.AppShellHeader(
     h=90,
-    px="xl",
-    style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "alignItems": "center"},
+    px="lg",
+    style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "alignItems": "center", "overflow": "hidden"},
     children=[
         dmc.Group(
             justify="space-between",
+            align="center",
             wrap="nowrap",
             w="100%",
+            gap="md",
             children=[
-                # Ligne 1 : Logo & Titre
+                # Logo + Badge + Titre (côté gauche)
                 dmc.Group(
-                    gap="xl",
+                    gap="sm",
                     wrap="nowrap",
+                    style={"flexShrink": 0},
                     children=[
-                        dmc.Group(
-                            gap="xs",
-                            wrap="nowrap",
+                        html.Img(src="/assets/Senio.png", height=55),
+                        dmc.Stack(
+                            gap=2,
                             children=[
-                                html.Img(src="/assets/Senio.png", height=60, style={"marginRight": "10px"}),
                                 dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="xs"),
+                                dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, className="dashboard-main-title")
                             ]
                         ),
-                        dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "19px", "fontWeight": 700})
                     ]
                 ),
-                # Ligne 2 : Navigation & Aide
+                # Navigation + Aide (côté droit)
                 dmc.Group(
-                    gap="md",
+                    gap="sm",
                     align="center",
+                    wrap="nowrap",
+                    style={"flexShrink": 0},
                     children=[
                         dmc.Tabs(
                             id="nav-tabs",
@@ -365,10 +369,35 @@ header = dmc.AppShellHeader(
                             className="header-nav-tabs",
                             children=[
                                 dmc.TabsList([
-                                    dmc.TabsTab("Accueil", value="/", leftSection=DashIconify(icon="solar:home-2-linear", width=18)),
-                                    dmc.TabsTab("Exploration", value="/exploration", leftSection=DashIconify(icon="solar:map-linear", width=18)),
-                                    dmc.TabsTab("Leviers d'action", value="/leviers", leftSection=DashIconify(icon="solar:star-linear", width=18)),
-                                    dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
+                                    dmc.TabsTab(
+                                        children=[
+                                            html.Span("Accueil", className="tab-label-long"),
+                                        ],
+                                        value="/",
+                                        leftSection=DashIconify(icon="solar:home-2-linear", width=18),
+                                    ),
+                                    dmc.TabsTab(
+                                        children=[
+                                            html.Span("Exploration", className="tab-label-long"),
+                                        ],
+                                        value="/exploration",
+                                        leftSection=DashIconify(icon="solar:map-linear", width=18),
+                                    ),
+                                    dmc.TabsTab(
+                                        children=[
+                                            html.Span("Leviers", className="tab-label-long"),
+                                        ],
+                                        value="/leviers",
+                                        leftSection=DashIconify(icon="solar:star-linear", width=18),
+                                    ),
+                                    dmc.TabsTab(
+                                        children=[
+                                            html.Span("Variables & Méthodo", className="tab-label-long"),
+                                            html.Span("Méthodo", className="tab-label-short"),
+                                        ],
+                                        value="/methodologie",
+                                        leftSection=DashIconify(icon="solar:book-linear", width=18),
+                                    ),
                                 ])
                             ]
                         ),
@@ -382,7 +411,7 @@ header = dmc.AppShellHeader(
                             radius="md",
                             size="sm",
                             style={
-                                "display": "none", 
+                                "display": "none",
                                 "fontWeight": 700,
                             }
                         )
@@ -400,7 +429,7 @@ app.layout = dmc.MantineProvider(
         dcc.Store(id='aside-opened-store', data=False), # Store pour l'état du panneau latéral
         dmc.AppShell(
             id="app-shell",
-            header={"height": 90},
+            header={"height": 90}, 
             navbar={"width": 350, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
             aside={"width": 450, "breakpoint": "md", "collapsed": {"desktop": True, "mobile": True}}, # Aside configuré mais masqué
             padding="md",

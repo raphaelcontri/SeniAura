@@ -410,45 +410,59 @@ Logo officiel Senio affiché dans le header (75px de hauteur).
 
 ### Diagramme de flux global
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                            SIDEBAR (app_v2.py)                         │
-│                                                                         │
-│  ┌─────────────────┐   ┌──────────────────┐   ┌─────────────────────┐  │
-│  │ Indicateur Santé │   │ Filtres Variables │   │ Sélection EPCI      │  │
-│  │ (INCI/MORT/PREV) │   │ (3 MultiSelects) │   │ (MultiSelect/Clic)  │  │
-│  │ + Pathologie     │   │ + RangeSliders   │   │                     │  │
-│  └────────┬────────┘   └────────┬─────────┘   └──────────┬──────────┘  │
-│           │                     │                         │             │
-└───────────┼─────────────────────┼─────────────────────────┼─────────────┘
-            │                     │                         │
-            ▼                     ▼                         ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        exploration.py — Callbacks                       │
-│                                                                         │
-│  ┌───────────────────────────────────────────────┐                      │
-│  │ update_sliders()                               │                      │
-│  │ Variables sélectionnées → RangeSliders          │                      │
-│  └───────────────────────────────────────────────┘                      │
-│                                                                         │
-│  ┌───────────────────────────────────────────────┐                      │
-│  │ update_map()                                   │                      │
-│  │ Indicateur + Sliders + Sélection → Choropleth  │                      │
-│  │ + Narrative + Descriptions + Villes            │                      │
-│  └───────────────────────────────────────────────┘                      │
-│                                                                         │
-│  ┌───────────────────────────────────────────────┐                      │
-│  │ update_radar()                                 │                      │
-│  │ Variables + EPCIs → Radar + Interprétations    │                      │
-│  │ + Quantiles régionaux                          │                      │
-│  └───────────────────────────────────────────────┘                      │
-│                                                                         │
-│  ┌───────────────────────────────────────────────┐                      │
-│  │ select_epci_on_click()                         │                      │
-│  │ Click carte → Ajoute/retire EPCI du MultiSelect│                      │
-│  └───────────────────────────────────────────────┘                      │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph "Sourcing & Données"
+        Raw[Données Brutes\nINSEE, DREES, FINESS]
+        Excel["Dataset Central\n(Excel / CSV)"]
+        GeoJSON["Contours Géo\n(epci-ara.geojson)"]
+        Raw -->|Traitement| Excel
+    end
+
+    subgraph "Cœur de l'Application (Python/Dash)"
+        DataPy["src/data.py\n(Chargement & Fusion)"]
+        AppV2["app_v2.py\n(Routage & Layout Global)"]
+        
+        subgraph "Modules de Présentation"
+            Home["home.py\n(Accueil & Intro)"]
+            Explo["exploration.py\n(Carte & Radar)"]
+            Methodo["methodology.py\n(Méthodologie)"]
+        end
+
+        Excel --> DataPy
+        GeoJSON --> DataPy
+        DataPy --> Explo
+        DataPy --> Methodo
+        AppV2 --> Home
+        AppV2 --> Explo
+        AppV2 --> Methodo
+    end
+
+    subgraph "Analyse & Sorties"
+        Map["Carte Interactive\n(Plotly Choropleth)"]
+        Radar["Radar Chart\n(Profils Territoriaux)"]
+        Analysis["Analyse Narrative\n(Génération de texte)"]
+        
+        Explo --> Map
+        Explo --> Radar
+        Explo --> Analysis
+    end
+
+    subgraph "Infrastructure & CI/CD"
+        Git["GitHub\n(Code Source)"]
+        Render["Render.com\n(Hébergement Dashboard)"]
+        MkDocs["GitHub Pages\n(Site de Documentation)"]
+        SEO["SEO & Référencement\n(Robots.txt, Metatags)"]
+        
+        Git --> Render
+        Git --> MkDocs
+        Render --> SEO
+    end
+
+    Utilisateur((👤 Utilisateur Final))
+    Utilisateur -->|Consulte le Dashboard| Render
+    Utilisateur -->|Lit la Documentation| MkDocs
+    Analysis -.->|Aide à la décision| Utilisateur
 ```
 
 ### Tableau récapitulatif des IDs de composants

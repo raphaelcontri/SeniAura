@@ -287,6 +287,96 @@ label {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
+/* ─── Navigation Header - Responsive Labels ─── */
+
+/* Default title style */
+.dashboard-main-title {
+    color: #2c3e50;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* Tab labels: show long by default, hide short */
+.tab-label-long {
+    display: inline;
+}
+
+.tab-label-short {
+    display: none;
+}
+
+/* Navigation Tabs Container */
+.header-nav-tabs {
+    overflow: visible;
+}
+
+/* Force tabs list onto a single row - no wrapping */
+.header-nav-tabs .mantine-Tabs-tabsList {
+    flex-wrap: nowrap !important;
+    gap: 2px;
+}
+
+/* Slightly compact the tab padding */
+.header-nav-tabs .mantine-Tabs-tab {
+    padding: 6px 10px;
+    font-size: 13.5px;
+    white-space: nowrap;
+}
+
+/* ── Medium screens (between 1100px et 1400px) ── */
+@media (max-width: 1400px) {
+    .dashboard-main-title {
+        font-size: 14px;
+    }
+
+    .header-nav-tabs .mantine-Tabs-tab {
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+}
+
+/* ── Narrower screens (< 1100px): Switch to short labels ── */
+@media (max-width: 1100px) {
+    .dashboard-main-title {
+        font-size: 13px;
+    }
+
+    /* Show short label instead of long one */
+    .tab-label-long {
+        display: none;
+    }
+
+    .tab-label-short {
+        display: inline;
+    }
+
+    /* Remove text, but keep icon for very compact layout */
+    .header-nav-tabs .mantine-Tabs-tab {
+        font-size: 12px;
+        padding: 5px 7px;
+    }
+}
+
+/* ── Very narrow screens (< 900px): Icon-only tabs ── */
+@media (max-width: 900px) {
+    .dashboard-main-title {
+        display: none;
+        /* Hide title, logo alone sufficient */
+    }
+
+    .tab-label-long,
+    .tab-label-short {
+        display: none;
+    }
+
+    .header-nav-tabs .mantine-Tabs-tab {
+        padding: 5px 8px;
+    }
+}
+
+
 /* Page Headers & Back Button */
 .page-header {
     display: flex;

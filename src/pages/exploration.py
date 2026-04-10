@@ -217,11 +217,21 @@ layout = dmc.Container(
                                         html.Div(
                                             style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
                                             children=[
-                                                dmc.Group(justify="space-between", mb="xs", children=[
-                                                    dmc.Text("Guide de lecture (Radar) :", size="lg", fw=800, tt="uppercase", c="dark"),
-                                                    html.Div(id='radar-guide-header', style={'fontSize': '11px', 'color': 'gray'})
-                                                ]),
-                                                html.Div(id='radar-reading-guide'),
+                                                dmc.Paper(
+                                                    id='radar-guide-paper',
+                                                    withBorder=True,
+                                                    shadow="sm",
+                                                    radius="md",
+                                                    p="md",
+                                                    style={'backgroundColor': '#f8f9fa'},
+                                                    children=[
+                                                        dmc.Group(justify="space-between", mb="xs", children=[
+                                                            dmc.Text("Guide de lecture (Radar) :", size="lg", fw=800, tt="uppercase", c="dark"),
+                                                            html.Div(id='radar-guide-header', style={'fontSize': '11px', 'color': 'gray'})
+                                                        ]),
+                                                        html.Div(id='radar-reading-guide'),
+                                                    ]
+                                                ),
                                             ]
                                         )
                                     ]
@@ -716,6 +726,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
     [Output('radar-chart', 'figure'),
      Output('radar-chart', 'style'),
      Output('radar-placeholder', 'style'),
+     Output('radar-guide-paper', 'style'),
      Output('radar-reading-guide', 'children'),
      Output('radar-dynamic-title', 'children')],
     [Input('sidebar-filter-social', 'value'), 
@@ -737,7 +748,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     
     # Revert to original: only show if at least 3 variables are selected
     if len(selected_vars_unique) < 3:
-        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées"
+        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, {'display': 'none'}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées"
     
     selected_vars = selected_vars_unique
     
@@ -1018,7 +1029,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             dmc.Text("Sélectionnez des territoires et des variables dans le menu à gauche pour afficher l'analyse comparative détaillée.", size="sm", fs="italic", c="dimmed", ta="center", mt="xl")
         )
 
-    return fig, {'display': 'block', 'height': '600px'}, {'display': 'none'}, guide, dynamic_title
+    return fig, {'display': 'block', 'height': '600px'}, {'display': 'none'}, {'display': 'block', 'backgroundColor': '#f8f9fa'}, guide, dynamic_title
 
 # --- Scroll Affordance Callback ---
 clientside_callback(
