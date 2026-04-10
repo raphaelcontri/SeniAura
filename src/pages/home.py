@@ -167,7 +167,7 @@ layout = dmc.Container(
                         dmc.Anchor("Raphaël Contri", href="https://www.linkedin.com/in/rapha%C3%ABl-contri-a6b44327b/", target="_blank", size="xs", c="dimmed", underline=True),
                     ]
                 ),
-                dmc.Text("SeniAura - 2026", size="xs", ta="center", c="dimmed", mt=20)
+                dmc.Text("CardiAURA - 2026", size="xs", ta="center", c="dimmed", mt=20)
             ]
         )
     ]
