@@ -1,7 +1,7 @@
-# 🩺 SeniAura — Diagnostic Territorial (Auvergne-Rhône-Alpes)
+# 🩺 CardiAura — Diagnostic Territorial (Auvergne-Rhône-Alpes)
 
 <div align="center">
-  <img src="assets/Senio.png" alt="SeniAura Preview" width="100%">
+  <img src="assets/Senio.png" alt="CardiAura Preview" width="100%">
   <br/><br/>
   <i>Un tableau de bord interactif puissant pour explorer les déterminants sociaux, environnementaux et géographiques des <b>maladies cardio-neuro-vasculaires (CNV)</b> en Auvergne-Rhône-Alpes (Échelle EPCI).</i>
 </div>
@@ -10,7 +10,7 @@
 
 ## 🎯 Vision du Projet
 
-SeniAura répond au besoin des décideurs publics de disposer d'un outil de **diagnostic flash** pour comprendre la vulnérabilité de leurs territoires. Plutôt qu'une approche de prévention "descendante" et uniforme, SeniAura propose des **leviers d'actions ultra-ciblés** basés sur les spécificités locales (déserts médicaux, pollution, précarité énergétique).
+CardiAura répond au besoin des décideurs publics de disposer d'un outil de **diagnostic flash** pour comprendre la vulnérabilité de leurs territoires. Plutôt qu'une approche de prévention "descendante" et uniforme, CardiAura propose des **leviers d'actions ultra-ciblés** basés sur les spécificités locales (déserts médicaux, pollution, précarité énergétique).
 
 ## ✨ Fonctionnalités Principales
 
@@ -21,7 +21,7 @@ SeniAura répond au besoin des décideurs publics de disposer d'un outil de **di
 
 ## 🛠️ Stack Technique
 
-SeniAura repose sur une architecture moderne de Data Visualisation :
+CardiAura repose sur une architecture moderne de Data Visualisation :
 - **Framework** : `Dash (Flask + React)`
 - **Design System** : `Dash Mantine Components v7` (Mantine UI)
 - **Data Engineering** : `Pandas`, `GeoPandas`, `Plotly`, `Shapely`

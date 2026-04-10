@@ -3,7 +3,7 @@
 ## Structure complète
 
 ```
-SeniAura-main/
+CardiAura-main/
 │
 ├── app_v2.py                          # 🚀 Point d'entrée principal
 ├── requirements.txt                   # 📦 Dépendances Python

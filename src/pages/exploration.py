@@ -88,7 +88,7 @@ layout = dmc.Container(
                                         ]),
                                         dcc.Graph(
                                             id='map-graph',
-                                            style={'height': "600px", "width": "100%"}, 
+                                            style={'height': "600px", "width": "100%", "borderRadius": "inherit"}, 
                                             config={
                                                 'displayModeBar': True, 
                                                 'scrollZoom': True,
@@ -238,21 +238,10 @@ layout = dmc.Container(
                                         html.Div(
                                             style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
                                             children=[
-                                                dmc.Paper(
-                                                    id='radar-guide-paper',
-                                                    withBorder=True,
-                                                    shadow="sm",
-                                                    radius="md",
-                                                    p="md",
-                                                    style={'backgroundColor': '#f8f9fa'},
-                                                    children=[
-                                                        dmc.Group(justify="space-between", mb="xs", children=[
-                                                            dmc.Text("Guide de lecture :", size="lg", fw=800, tt="uppercase", c="dark"),
-                                                            html.Div(id='radar-guide-header', style={'fontSize': '11px', 'color': 'gray'})
-                                                        ]),
-                                                        html.Div(id='radar-reading-guide'),
-                                                    ]
-                                                ),
+                                                html.Div(id='radar-guide-header', style={'display': 'none'}),
+                                                html.Div(id='radar-reading-guide'),
+                                                # Hidden element to keep the callback ID valid
+                                                html.Div(id='radar-guide-paper', style={'display': 'none'}),
                                             ]
                                         )
                                     ]
@@ -1014,7 +1003,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             children=[
                 dmc.Group(gap="xs", mb="sm", children=[
                     DashIconify(icon="solar:ranking-bold-duotone", color="#339af0", width=20),
-                    dmc.Text("Positionnement du territoire au sein de la région", fw=800, size="sm", tt="uppercase"),
+                    dmc.Text("Guide de lecture : Positionnement du territoire au sein de la région", fw=800, size="sm", tt="uppercase"),
                     dmc.Tooltip(
                         label="Comparaison avec les 172 territoires de la région : Rouge/Orange pour les valeurs les plus hautes, Bleu pour les plus basses, Gris pour la moyenne.",
                         withArrow=True,

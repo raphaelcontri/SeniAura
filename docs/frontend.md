@@ -63,7 +63,7 @@ window.dash_clientside.clientside = {
 
 ## `assets/Senio.png`
 
-Logo officiel SeniAura, affiché en header à `height: 75px`.
+Logo officiel CardiAura, affiché en header à `height: 75px`.
 
 !!! tip "Pour modifier le logo"
     Remplacez simplement le fichier `assets/Senio.png` par une nouvelle image PNG du même nom. Pas besoin de modifier le code.
@@ -77,5 +77,5 @@ Fichier de contrôle SEO, servi à `/robots.txt` via une route Flask dédiée da
 ```
 User-agent: *
 Allow: /
-Sitemap: https://seniaura.onrender.com/sitemap.xml
+Sitemap: https://cardiaura.onrender.com/sitemap.xml
 ```

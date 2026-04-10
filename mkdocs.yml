@@ -1,5 +1,5 @@
-site_name: SeniAura - Documentation Technique
-site_description: Documentation technique pour le dashboard de santé CardiAURA / SeniAura.
+site_name: CardiAura - Documentation Technique
+site_description: Documentation technique pour le dashboard de santé CardiAURA.
 site_author: Raphael
 
 theme:

@@ -68,7 +68,7 @@ layout = dmc.Container(
     mb="60px",
     children=[
         dmc.Title(
-            "CardiAURA : Diagnostic des maladies Cardio-Neuro-Vasculaires en Auvergne Rhône-Alpes",
+            "Diagnostic des maladies Cardio-Neuro-Vasculaires en Auvergne Rhône-Alpes",
             order=1,
             ta="center",
             mb="xl",

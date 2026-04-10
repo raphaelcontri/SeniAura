@@ -4,8 +4,8 @@
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/raphaelcontri/SeniAura.git
-cd SeniAura-main
+git clone https://github.com/raphaelcontri/CardiAura.git
+cd CardiAura-main
 
 # 2. Installer les dépendances
 pip install -r requirements.txt
@@ -54,7 +54,7 @@ mkdocs gh-deploy
 
 Cela construit le site et le pousse sur la branche `gh-pages` du dépôt.
 La documentation sera disponible à :
-👉 **https://raphaelcontri.github.io/SeniAura/**
+👉 **https://raphaelcontri.github.io/CardiAura/**
 
 ---
 

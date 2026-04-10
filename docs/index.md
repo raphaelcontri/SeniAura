@@ -8,7 +8,7 @@
 
 ## Présentation du projet
 
-**SeniAura** (alias *CardiAURA*) est un tableau de bord interactif médical permettant d'explorer, de filtrer et d'analyser les déterminants des **maladies cardio-neuro-vasculaires (CNR)** à l'échelle des Établissements Publics de Coopération Intercommunale (EPCI) de la région Auvergne-Rhône-Alpes.
+**CardiAura** (anciennement SeniAura) est un tableau de bord interactif médical permettant d'explorer, de filtrer et d'analyser les déterminants des **maladies cardio-neuro-vasculaires (CNR)** à l'échelle des Établissements Publics de Coopération Intercommunale (EPCI) de la région Auvergne-Rhône-Alpes.
 
 Il a été développé dans le cadre d'un **projet Capstone HEC** en partenariat avec des acteurs de santé régionaux.
 
