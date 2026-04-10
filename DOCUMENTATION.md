@@ -167,7 +167,7 @@ MantineProvider (thème : blue, Inter font)
     │   │   ├── Filtres Offre de Soins (MultiSelect + Sliders dynamiques)
     │   │   ├── Filtres Environnement (MultiSelect + Sliders dynamiques)
     │   │   └── Sélection EPCI à comparer (MultiSelect)
-    │   └── Footer "HEC Capstone Project v3.0"
+    │   └── Footer "Équipe du projet - 2026"
     │
     ├── AppShellMain
     │   └── ScrollArea → Container → #page-content (injection dynamique des pages)
@@ -311,8 +311,7 @@ Outputs : radar-chart.figure, radar-chart.style, radar-placeholder.style, radar-
 
 | Trace | Description |
 |---|---|
-| Zone d'écart-type (+) | Polygone gris clair (moyenne + 1σ) |
-| Zone d'écart-type (−) | Polygone blanc (masque en dessous de moyenne − 1σ) |
+| Zone Moyenne ± σ | Polygone gris clair (moyenne ± 1σ) |
 | Moyenne Région | Ligne continue grise, fermée en boucle |
 | Territoires (EPCI) | Polygones colorés, un par territoire sélectionné |
 

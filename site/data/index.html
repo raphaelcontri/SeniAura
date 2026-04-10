@@ -59,6 +59,8 @@
 
     
     
+  <meta name="google-site-verification" content="CBEuU_saxPdaII7oSzzK7e5JCRrx3q6pviEOPxK1Kho" />
+
   </head>
   
   
@@ -605,15 +607,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#donnees-hospitalieres-centres-de-soins" class="md-nav__link">
+  <a href="#donnees-hospitalieres-centres-de-soins-desactive" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Données Hospitalières (Centres de soins)
+        Données Hospitalières (Centres de soins) — [DÉSACTIVÉ]
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Données Hospitalières (Centres de soins)">
+    <nav class="md-nav" aria-label="Données Hospitalières (Centres de soins) — [DÉSACTIVÉ]">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -892,15 +894,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#donnees-hospitalieres-centres-de-soins" class="md-nav__link">
+  <a href="#donnees-hospitalieres-centres-de-soins-desactive" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Données Hospitalières (Centres de soins)
+        Données Hospitalières (Centres de soins) — [DÉSACTIVÉ]
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Données Hospitalières (Centres de soins)">
+    <nav class="md-nav" aria-label="Données Hospitalières (Centres de soins) — [DÉSACTIVÉ]">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1139,7 +1141,7 @@
 <p>Les quatre fichiers de données doivent être présents au chemin relatif indiqué. Les données ne sont <strong>pas</strong> versionnées dans le dépôt Git public.</p>
 </div>
 <hr />
-<h2 id="donnees-hospitalieres-centres-de-soins">Données Hospitalières (Centres de soins)</h2>
+<h2 id="donnees-hospitalieres-centres-de-soins-desactive">Données Hospitalières (Centres de soins) — [DÉSACTIVÉ]</h2>
 <p>Le dashboard affiche les établissements de santé (hôpitaux et centres spécialisés) de la région AURA comme repères visuels sur la carte.</p>
 <h3 id="source-base-finess-extraction-ara">Source : Base FINESS (Extraction ARA)</h3>
 <ul>
@@ -1152,7 +1154,10 @@
 </li>
 </ul>
 <h3 id="integration">Intégration</h3>
-<p>Contrairement aux variables EPCI qui sont chargées dans <code>src/data.py</code>, les hôpitaux sont lus directement dans le callback <code>update_map</code> de <code>exploration.py</code> pour un affichage en couche de points (<code>go.Scattergeo</code>).</p>
+<div class="admonition note">
+<p class="admonition-title">État actuel</p>
+<p>Cette fonctionnalité a été <strong>désactivée</strong> dans l'interface finale pour simplifier la lecture de la carte. Cependant, le jeu de données <code>hospitals_ara.csv</code> et la logique de rendu dans <code>exploration.py</code> sont conservés pour permettre une réactivation facile si nécessaire.</p>
+</div>
 
 
 

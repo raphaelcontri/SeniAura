@@ -149,7 +149,27 @@ layout = dmc.Container(
                     }
                 }
             )
-        ])
+        ]),
+        
+        # New Credit Section
+        dmc.Paper(
+            shadow="sm", p="lg", radius="md", withBorder=True, mt="xl", bg="#f8f9fa",
+            children=[
+                dmc.Text("Équipe du projet", size="sm", fw=700, ta="center", c="blue.8", mb=15),
+                dmc.Group(
+                    justify="center", 
+                    gap="xl", 
+                    children=[
+                        dmc.Anchor("Violette Marin", href="https://www.linkedin.com/in/violette-marin/", target="_blank", size="xs", c="dimmed", underline=True),
+                        dmc.Anchor("Lia Biscafé-Park", href="https://www.linkedin.com/in/lia-biscaf%C3%A9-park-a69a0631a/", target="_blank", size="xs", c="dimmed", underline=True),
+                        dmc.Anchor("Zehlia Ndiaye", href="https://www.linkedin.com/in/zehlia-ndiaye-1691272a3/", target="_blank", size="xs", c="dimmed", underline=True),
+                        dmc.Anchor("Cléo Gollin", href="https://www.linkedin.com/in/cl%C3%A9o-gollin-1630a4233/", target="_blank", size="xs", c="dimmed", underline=True),
+                        dmc.Anchor("Raphaël Contri", href="https://www.linkedin.com/in/rapha%C3%ABl-contri-a6b44327b/", target="_blank", size="xs", c="dimmed", underline=True),
+                    ]
+                ),
+                dmc.Text("SeniAura - 2026", size="xs", ta="center", c="dimmed", mt=20)
+            ]
+        )
     ]
 )
 

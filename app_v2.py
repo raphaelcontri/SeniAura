@@ -108,7 +108,7 @@ from flask import send_from_directory, Response
 
 app = dash.Dash(
     __name__, 
-    title="CardiAURA - Diagnostic Territorial", 
+    title="CardiAURA - Accueil", 
     suppress_callback_exceptions=True, 
     external_stylesheets=external_stylesheets,
     meta_tags=[
@@ -119,35 +119,9 @@ app = dash.Dash(
         {
             "name": "google-site-verification", 
             "content": "KkhBSX_KhNawMneZxCpnKcVxCLAbYd38mpCqEXTEeZw"
-        },
-        {"name": "theme-color", "content": "#339af0"},
-        {"name": "apple-mobile-web-app-capable", "content": "yes"},
-        {"name": "apple-mobile-web-app-status-bar-style", "content": "default"},
-        {"name": "apple-mobile-web-app-title", "content": "SeniAura"},
+        }
     ]
 )
-
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-        <link rel="manifest" href="/assets/manifest.json">
-        <link rel="apple-touch-icon" href="/assets/Senio.png">
-    </head>
-    <body>
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}
-        </footer>
-    </body>
-</html>
-'''
 server = app.server
 
 @server.route('/robots.txt')
@@ -177,7 +151,7 @@ sidebar = dmc.AppShellNavbar(
     style={"backgroundColor": "#ffffff", "borderRight": "1px solid #e9ecef"},
     children=[
         dmc.ScrollArea(
-            h="calc(100vh - 150px)", # Ajusté pour laisser de la place au footer éventuel ou padding
+            h="calc(100vh - 110px)", # Ajusté pour laisser de la place au footer éventuel ou padding
             type="always",
             scrollbarSize=10,
             children=[
@@ -349,51 +323,39 @@ sidebar = dmc.AppShellNavbar(
                 ),
             ]
         ),
-        # Footer (toujours visible)
-        dmc.Paper(
-            p="sm", radius="md", bg="#f8f9fa", withBorder=True, mx="sm", mb="sm",
-            children=[
-                dmc.Text("L'Équipe Capstone", size="xs", fw=700, ta="center", c="dimmed", mb=5),
-                dmc.Group(justify="center", gap="sm", children=[
-                    dmc.Anchor("Violette Marin", href="https://www.linkedin.com/in/violette-marin/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
-                    dmc.Anchor("Lia Biscafé-Park", href="https://www.linkedin.com/in/lia-biscaf%C3%A9-park-a69a0631a/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
-                    dmc.Anchor("Zehlia Ndiaye", href="https://www.linkedin.com/in/zehlia-ndiaye-1691272a3/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
-                    dmc.Anchor("Cléo Gollin", href="https://www.linkedin.com/in/cl%C3%A9o-gollin-1630a4233/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
-                    dmc.Anchor("Raphaël Contri", href="https://www.linkedin.com/in/rapha%C3%ABl-contri-a6b44327b/", target="_blank", size="11px", c="dimmed", style={"textDecoration": "underline"}),
-                ]),
-                dmc.Text("SeniAura v3.0 - 2026", size="10px", ta="center", c="dimmed", mt=8)
-            ]
-        )
     ]
 )
 
 header = dmc.AppShellHeader(
-    h=130, # Hauteur augmentée pour accommoder le titre fixe sans surcharge
+    h=90,
     px="xl",
-    style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "flexDirection": "column", "justifyContent": "center"},
+    style={"backgroundColor": "white", "borderBottom": "1px solid #e9ecef", "display": "flex", "alignItems": "center"},
     children=[
-        # Ligne 1 : Logo & Navigation
         dmc.Group(
             justify="space-between",
             wrap="nowrap",
-            h=85,
+            w="100%",
             children=[
+                # Ligne 1 : Logo & Titre
                 dmc.Group(
-                    gap="xs",
+                    gap="xl",
                     wrap="nowrap",
                     children=[
-                        dmc.Burger(
-                            id="mobile-burger",
-                            opened=False,
-                            hiddenFrom="sm",
-                            size="sm"
+                        dmc.Group(
+                            gap="xs",
+                            wrap="nowrap",
+                            children=[
+                                html.Img(src="/assets/Senio.png", height=60, style={"marginRight": "10px"}),
+                                dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="xs"),
+                            ]
                         ),
-                        html.Img(src="/assets/Senio.png", height=75, style={"marginRight": "10px"}),
-                        dmc.Badge("Région Auvergne-Rhône-Alpes", variant="light", color="blue", radius="sm", size="sm", ml=10, hiddenFrom="xs"),
+                        dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "19px", "fontWeight": 700})
                     ]
                 ),
+                # Ligne 2 : Navigation & Aide
                 dmc.Group(
-                    gap="lg",
+                    gap="md",
+                    align="center",
                     children=[
                         dmc.Tabs(
                             id="nav-tabs",
@@ -409,41 +371,23 @@ header = dmc.AppShellHeader(
                                     dmc.TabsTab("Liste des variables et méthodologie", value="/methodologie", leftSection=DashIconify(icon="solar:book-linear", width=18)),
                                 ])
                             ]
-                        )
-                    ]
-                ),
-            ]
-        ),
-        # Ligne 2 : Titre du Diagnostic & Bouton Aide (Fixé en haut)
-        dmc.Box(
-            style={"borderTop": "1px solid #f1f3f5", "paddingTop": "8px", "paddingBottom": "12px"},
-            children=[
-                dmc.Group(
-                    justify="space-between",
-                    align="center",
-                    wrap="nowrap",
-                    children=[
-                        dmc.Stack(gap=0, style={"flex": 1, "minWidth": 0, "marginRight": "15px"}, children=[
-                            dmc.Title("Diagnostic Territorial des maladies Cardio-Neuro-Vasculaires", order=4, style={"color": "#2c3e50", "fontSize": "20px", "fontWeight": 700})
-                        ]),
+                        ),
                         dmc.Button(
-                            "Afficher l'aide",
+                            "Aide",
                             id="exploration-guide-btn",
                             variant="outline",
                             color="violet",
                             className="premium-hover-purple help-button-animated",
-                            leftSection=DashIconify(icon="akar-icons:question", width=18),
+                            leftSection=DashIconify(icon="akar-icons:question", width=16),
                             radius="md",
                             size="sm",
                             style={
                                 "display": "none", 
                                 "fontWeight": 700,
-                                "paddingLeft": "15px",
-                                "paddingRight": "15px"
                             }
                         )
                     ]
-                )
+                ),
             ]
         )
     ]
@@ -456,7 +400,7 @@ app.layout = dmc.MantineProvider(
         dcc.Store(id='aside-opened-store', data=False), # Store pour l'état du panneau latéral
         dmc.AppShell(
             id="app-shell",
-            header={"height": 130},
+            header={"height": 90},
             navbar={"width": 350, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
             aside={"width": 450, "breakpoint": "md", "collapsed": {"desktop": True, "mobile": True}}, # Aside configuré mais masqué
             padding="md",
@@ -466,7 +410,7 @@ app.layout = dmc.MantineProvider(
                 dmc.AppShellMain(
                     children=[
                         dmc.ScrollArea(
-                            h="calc(100vh - 130px)",
+                            h="calc(100vh - 90px)",
                             type="always",
                             scrollbarSize=10,
                             offsetScrollbars=True,
@@ -619,19 +563,6 @@ def close_aside(n, pathname):
     if dash.callback_context.triggered_id == 'close-aside-btn':
         return False
     return dash.no_update
-
-# --- Mobile Navigation Callback ---
-@app.callback(
-    Output("app-shell", "navbar", allow_duplicate=True),
-    Input("mobile-burger", "opened"),
-    State("app-shell", "navbar"),
-    prevent_initial_call=True
-)
-def toggle_navbar(opened, navbar):
-    if not navbar:
-        navbar = {"width": 350, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}}
-    navbar["collapsed"]["mobile"] = not opened
-    return navbar
 
 if __name__ == '__main__':
     app.run(debug=True, port=8050)

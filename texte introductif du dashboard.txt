@@ -29,7 +29,7 @@ C’est l’échelle territoriale utilisée ici pour analyser et comparer les do
 **2. Analysez le radar comparatif** (défiler en bas dans la page exploration)
 - Les **variables que vous avez sélectionnées** pour la carte sont **gardées en mémoire**.
 - Le **radar s'active** dès qu'au moins **un territoire est sélectionné** et **trois variables choisies**. 
-- Il permet de **comparer un ou plusieurs territoires** entre eux, à la **moyenne régionale** et à une **zone d'acceptabilité (écart-type)**.
+- Il permet de **comparer un ou plusieurs territoires** entre eux, à la **moyenne régionale** et à la zone **moyenne ± écart-type**.
 
 
 
@@ -46,5 +46,3 @@ Les maladies cardio-neuro-vasculaires (CNV) regroupent les pathologies qui affec
 > Qui sommes-nous ?
 Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).
 
-> Vidéo d'aide
-Pas de vidéo disponible pour l'instant. La vidéo présentera comment utiliser le dashboard. 

@@ -106,7 +106,7 @@ Outputs: map-graph.figure, map-stats-header-content, map-reading-guide,
 | 4 | **Exclusions spécifiques** (`Choropeth`) | EPCI grisés à cause d'une seule variable (si "highlight" actif) |
 | 5 | **Sélection Radar** (`Scattergeo`) | Contours rouges des EPCI sélectionnés pour le radar |
 | 6 | **Villes repères** (`Scattergeo`) | 13 préfectures et villes majeures ARA (points + labels) |
-| 7 | **Hôpitaux ARA** (`Scattergeo`) | Points roses (`#d6336c`) représentant les centres de soins de la région |
+| 7 | **Hôpitaux ARA** (`Scattergeo`) | *(Désactivé)* Points roses représentant les centres de soins |
 
 #### Tooltip des EPCI au survol
 
@@ -144,8 +144,7 @@ norm_val = (val - col_min) / (col_max - col_min)
 
 | Trace | Description |
 |:---|:---|
-| Zone σ (+) | Polygone gris clair = zone \[moyenne + 1 écart-type\] |
-| Zone σ (−) | Polygone masque = zone sous \[moyenne − 1 écart-type\] |
+| Zone Moyenne ± σ | Polygone gris clair = zone \[moyenne ± 1 écart-type\] |
 | Ligne Région | Moyenne régionale en gris, fermée en boucle |
 | EPCI 1...N | Polygones colorés (jusqu'à 8), un par territoire |
 

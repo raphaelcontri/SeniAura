@@ -29,7 +29,7 @@ MantineProvider
     │       ├── Section Offre de Soins   → MultiSelect + RangeSliders dynamiques
     │       ├── Section Environnement    → MultiSelect + RangeSliders dynamiques
     │       ├── MultiSelect — Sélection EPCI pour Radar
-    │       └── Footer "HEC Capstone v3.0"
+    │       └── Footer "Équipe du projet - 2026"
     │
     ├── AppShellMain
     │   └── ScrollArea → Container (fluid) → #page-content

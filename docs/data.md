@@ -110,7 +110,7 @@ HOSP_PATH     = DATA_DIR + "/hospitals_ara.csv"
 
 ---
 
-## Données Hospitalières (Centres de soins)
+## Données Hospitalières (Centres de soins) — [DÉSACTIVÉ]
 
 Le dashboard affiche les établissements de santé (hôpitaux et centres spécialisés) de la région AURA comme repères visuels sur la carte.
 
@@ -122,5 +122,6 @@ Le dashboard affiche les établissements de santé (hôpitaux et centres spécia
     - `lat` / `lon` : Coordonnées géographiques.
 
 ### Intégration
-Contrairement aux variables EPCI qui sont chargées dans `src/data.py`, les hôpitaux sont lus directement dans le callback `update_map` de `exploration.py` pour un affichage en couche de points (`go.Scattergeo`).
+!!! note "État actuel"
+    Cette fonctionnalité a été **désactivée** dans l'interface finale pour simplifier la lecture de la carte. Cependant, le jeu de données `hospitals_ara.csv` et la logique de rendu dans `exploration.py` sont conservés pour permettre une réactivation facile si nécessaire.
 

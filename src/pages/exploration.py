@@ -67,14 +67,15 @@ layout = dmc.Container(
                             style={"flex": 1, "minHeight": 0},
                             children=[
                                 dmc.GridCol(
-                                    span={"base": 12, "md": 8},
+                                    span=8,
                                     children=[
                                         dmc.Group(justify="flex-end", mb="xs", children=[
                                             dmc.Switch(
                                                 id="show-hospitals-switch",
                                                 label="Afficher les hôpitaux",
-                                                checked=True,
-                                                size="xs"
+                                                checked=False, # Default to False
+                                                size="xs",
+                                                style={"display": "none"} # Hide the switch
                                             ),
                                         ]),
                                         dcc.Graph(
@@ -91,7 +92,7 @@ layout = dmc.Container(
                                 ),
                                 # New vertical stats box
                                 dmc.GridCol(
-                                    span={"base": 12, "md": 4},
+                                    span=4,
                                     children=[
                                         dmc.Paper(
                                             withBorder=True, p="md", radius="md", bg="#f8f9fa",
@@ -175,7 +176,7 @@ layout = dmc.Container(
                             style={"flex": 1, "minHeight": 0},
                             children=[
                                 dmc.GridCol(
-                                    span={"base": 12, "md": 8},
+                                    span=8,
                                     children=[
                                         html.Div(
                                             id='radar-placeholder',
@@ -198,28 +199,29 @@ layout = dmc.Container(
                                                                 style={"letterSpacing": "1px", "textTransform": "uppercase"}
                                                             ),
                                                             dmc.Text(
-                                                                "Sélectionnez au moins un territoire (EPCI) sur la carte pour générer son profil cardio-vasculaire comparatif.",
-                                                                size="sm", c="dimmed", ta="center", fw=500
+                                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
+                                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                                style={"lineHeight": "1.6"}
                                                             )
                                                         ]
                                                     )
                                                 ])
                                             )
                                         ),
-                                        dcc.Graph(
-                                            id='radar-chart', 
-                                            style={'display': 'none', 'height': '600px'}, 
-                                            config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}
-                                        ),
+                                        dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
                                     ]
                                 ),
                                 dmc.GridCol(
-                                    span={"base": 12, "md": 4},
+                                    span=4,
                                     children=[
                                         html.Div(
                                             style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
                                             children=[
-                                                html.Div(id='radar-reading-guide', style={'fontSize': '12px', 'marginTop': '10px'})
+                                                dmc.Group(justify="space-between", mb="xs", children=[
+                                                    dmc.Text("Guide de lecture (Radar) :", size="lg", fw=800, tt="uppercase", c="dark"),
+                                                    html.Div(id='radar-guide-header', style={'fontSize': '11px', 'color': 'gray'})
+                                                ]),
+                                                html.Div(id='radar-reading-guide'),
                                             ]
                                         )
                                     ]
@@ -536,7 +538,8 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
             showlegend=False
         ))
 
-        if not df_hosp.empty and show_hospitals:
+        # Hospital layer (Disabled but code preserved)
+        if False and not df_hosp.empty and show_hospitals:
             fig.add_trace(go.Scattergeo(
                 lon=df_hosp['lon'],
                 lat=df_hosp['lat'],
@@ -785,7 +788,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
         fill='toself', 
         fillcolor='rgba(200,200,200,0.3)', 
         line=dict(color='rgba(0,0,0,0)'), 
-        name="Zone d'acceptabilité (écart type)",
+        name="Moyenne ± écart type",
         hoverinfo='skip' # On ne veut pas survoler la zone d'écart type
     ))
     fig.add_trace(go.Scatterpolar(

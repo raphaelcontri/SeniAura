@@ -13,7 +13,7 @@
 
 * Les **variables** sélectionnées pour la carte sont **gardées en mémoire** et utilisées sur le radar comparatif.
 * Le radar s'active dès qu'au moins **un territoire est sélectionné** et **trois variables choisies**. 
-* Il permet de **comparer** un ou plusieurs territoires entre eux, à la **moyenne régionale** et à une **zone d'acceptabilité (écart-type régional)**.
+* Il permet de **comparer** un ou plusieurs territoires entre eux, à la **moyenne régionale** et à la zone **moyenne ± écart-type régional**.
 
 ---
 
