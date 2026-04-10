@@ -478,10 +478,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture-haut-niveau" class="md-nav__link">
+  <a href="#architecture-detaillee" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture haut niveau
+        Architecture détaillée
       
     </span>
   </a>
@@ -729,10 +729,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture-haut-niveau" class="md-nav__link">
+  <a href="#architecture-detaillee" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture haut niveau
+        Architecture détaillée
       
     </span>
   </a>
@@ -838,21 +838,59 @@
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└── gunicorn                  # Serveur WSGI de production
 </code></pre></div>
 <hr />
-<h2 id="architecture-haut-niveau">Architecture haut niveau</h2>
-<pre class="mermaid"><code>graph LR
-    A[GeoJSON EPCI] --&gt; D[load_data]
-    B[Excel Dataset] --&gt; D
-    C[Dictionnaire CSV] --&gt; D
-    D --&gt; E[GeoDataFrame fusionné]
-    E --&gt; F[app_v2.py — AppShell Layout]
-    F --&gt; G[exploration.py — Carte + Radar]
-    F --&gt; H[home.py — Page Accueil]
-    F --&gt; I[leviers.py — Leviers d'action]
-    F --&gt; K[methodology.py — Méthodologie]
-    G --&gt; J[Utilisateur Final]
-    H --&gt; J
-    I --&gt; J
-    K --&gt; J</code></pre>
+<h2 id="architecture-detaillee">Architecture détaillée</h2>
+<pre class="mermaid"><code>graph TD
+    subgraph "Sourcing &amp; Données"
+        Raw[Données Brutes\nINSEE, DREES, FINESS]
+        Excel["Dataset Central\n(Excel / CSV)"]
+        GeoJSON["Contours Géo\n(epci-ara.geojson)"]
+        Raw --&gt;|Traitement| Excel
+    end
+
+    subgraph "Cœur de l'Application (Python/Dash)"
+        DataPy["src/data.py\n(Chargement &amp; Fusion)"]
+        AppV2["app_v2.py\n(Routage &amp; Layout Global)"]
+
+        subgraph "Modules de Présentation"
+            Home["home.py\n(Accueil &amp; Intro)"]
+            Explo["exploration.py\n(Carte &amp; Radar)"]
+            Methodo["methodology.py\n(Méthodologie)"]
+        end
+
+        Excel --&gt; DataPy
+        GeoJSON --&gt; DataPy
+        DataPy --&gt; Explo
+        DataPy --&gt; Methodo
+        AppV2 --&gt; Home
+        AppV2 --&gt; Explo
+        AppV2 --&gt; Methodo
+    end
+
+    subgraph "Analyse &amp; Sorties"
+        Map["Carte Interactive\n(Plotly Choropleth)"]
+        Radar["Radar Chart\n(Profils Territoriaux)"]
+        Analysis["Analyse Narrative\n(Génération de texte)"]
+
+        Explo --&gt; Map
+        Explo --&gt; Radar
+        Explo --&gt; Analysis
+    end
+
+    subgraph "Infrastructure &amp; CI/CD"
+        Git["GitHub\n(Code Source)"]
+        Render["Render.com\n(Hébergement Dashboard)"]
+        MkDocs["GitHub Pages\n(Site de Documentation)"]
+        SEO["SEO &amp; Référencement\n(Robots.txt, Metatags)"]
+
+        Git --&gt; Render
+        Git --&gt; MkDocs
+        Render --&gt; SEO
+    end
+
+    Utilisateur((👤 Utilisateur Final))
+    Utilisateur --&gt;|Consulte le Dashboard| Render
+    Utilisateur --&gt;|Lit la Documentation| MkDocs
+    Analysis -.-&gt;|Aide à la décision| Utilisateur</code></pre>
 <hr />
 <h2 id="navigation-dans-la-documentation">Navigation dans la documentation</h2>
 <table>
