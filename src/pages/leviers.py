@@ -14,7 +14,7 @@ except Exception as e:
 
 layout = dmc.Container(
     fluid=True,
-    p="xl",
+    p=0,
     children=[
         dmc.Title("Leviers d'action et littérature", order=1, mb="xs", style={"color": "#2c3e50"}),
         dmc.Text(

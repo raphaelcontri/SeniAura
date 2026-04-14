@@ -40,7 +40,7 @@ MARKER_COLORS = ['#e03131', '#1971c2', '#2b8a3e', '#e67700', '#9c36b5', '#0b7285
 
 layout = dmc.Container(
     fluid=True,
-    p="md",
+    p=0,
     style={"display": "flex", "flexDirection": "column", "gap": "15px"},
     children=[
         # (Le titre et le bouton Aide sont désormais fixés dans le Header global)
@@ -192,43 +192,44 @@ layout = dmc.Container(
                             DashIconify(icon="solar:chart-2-linear", color="#339af0"),
                             dmc.Text("Profil Comparatif", id='radar-dynamic-title', fw=700),
                         ]),
+                        html.Div(
+                            id='radar-placeholder',
+                            style={'display': 'flex', 'height': '600px'},
+                            children=dmc.Center(
+                                style={"width": "100%", "height": "100%"},
+                                children=dmc.Stack(align="center", gap="xl", children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
+                                        size=140, radius=100, variant="light", color="blue"
+                                    ),
+                                    dmc.Paper(
+                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
+                                        shadow="sm", maw=600,
+                                        style={"border": "2px dashed #339af0"},
+                                        children=[
+                                            dmc.Text(
+                                                "Action Requise", 
+                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
+                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                            ),
+                                            dmc.Text(
+                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
+                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                style={"lineHeight": "1.6"}
+                                            )
+                                        ]
+                                    )
+                                ])
+                            )
+                        ),
                         dmc.Grid(
+                            id='radar-main-grid',
                             gutter="md",
-                            style={"flex": 1, "minHeight": 0},
+                            style={"flex": 1, "minHeight": 0, "display": "none"},
                             children=[
                                 dmc.GridCol(
                                     span=8,
                                     children=[
-                                        html.Div(
-                                            id='radar-placeholder',
-                                            style={'display': 'flex', 'height': '600px'},
-                                            children=dmc.Center(
-                                                style={"width": "100%", "height": "100%"},
-                                                children=dmc.Stack(align="center", gap="xl", children=[
-                                                    dmc.ThemeIcon(
-                                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
-                                                        size=140, radius=100, variant="light", color="blue"
-                                                    ),
-                                                    dmc.Paper(
-                                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
-                                                        shadow="sm", maw=600,
-                                                        style={"border": "2px dashed #339af0"},
-                                                        children=[
-                                                            dmc.Text(
-                                                                "Action Requise", 
-                                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
-                                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
-                                                            ),
-                                                            dmc.Text(
-                                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
-                                                                size="md", fw=700, ta="center", c="#1a1b1e",
-                                                                style={"lineHeight": "1.6"}
-                                                            )
-                                                        ]
-                                                    )
-                                                ])
-                                            )
-                                        ),
                                         dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
                                     ]
                                 ),
@@ -735,6 +736,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
 @callback(
     [Output('radar-chart', 'figure'),
      Output('radar-chart', 'style'),
+     Output('radar-main-grid', 'style'),
      Output('radar-placeholder', 'style'),
      Output('radar-guide-paper', 'style'),
      Output('radar-reading-guide', 'children'),
@@ -758,7 +760,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     
     # Revert to original: only show if at least 3 variables are selected
     if len(selected_vars_unique) < 3:
-        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'flex': 1}, {'display': 'none'}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées"
+        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées"
     
     selected_vars = selected_vars_unique
     
@@ -771,7 +773,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     dynamic_title = f"Radar comparatif{names_str} par rapport à la moyenne régionale des variables sélectionnées"
 
     if not selected_vars: 
-        return go.Figure(), {'display': 'none'}, {'display': 'flex', 'height': '600px'}, "", dynamic_title
+        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", dynamic_title
     
     fig = go.Figure()
     
@@ -1039,7 +1041,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             dmc.Text("Sélectionnez des territoires et des variables dans le menu à gauche pour afficher l'analyse comparative détaillée.", size="sm", fs="italic", c="dimmed", ta="center", mt="xl")
         )
 
-    return fig, {'display': 'block', 'height': '600px'}, {'display': 'none'}, {'display': 'block', 'backgroundColor': '#f8f9fa'}, guide, dynamic_title
+    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, guide, dynamic_title
 
 # --- Scroll Affordance Callback ---
 clientside_callback(

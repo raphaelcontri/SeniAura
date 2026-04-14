@@ -1,4 +1,4 @@
-# 🫀 SeniAura — Documentation Technique
+# 🫀 CardiAura — Documentation Technique
 
 > **Version** : 3.0 — Mars/Avril 2026  
 > **Framework** : Python · Dash · Dash Mantine Components (v7) · Plotly  
@@ -8,7 +8,7 @@
 
 ## Présentation du projet
 
-**CardiAura** (anciennement SeniAura) est un tableau de bord interactif médical permettant d'explorer, de filtrer et d'analyser les déterminants des **maladies cardio-neuro-vasculaires (CNR)** à l'échelle des Établissements Publics de Coopération Intercommunale (EPCI) de la région Auvergne-Rhône-Alpes.
+**CardiAura** est un tableau de bord interactif médical permettant d'explorer, de filtrer et d'analyser les déterminants des **maladies cardio-neuro-vasculaires (CNR)** à l'échelle des Établissements Publics de Coopération Intercommunale (EPCI) de la région Auvergne-Rhône-Alpes.
 
 Il a été développé dans le cadre d'un **projet Capstone HEC** en partenariat avec des acteurs de santé régionaux.
 

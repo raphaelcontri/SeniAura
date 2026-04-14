@@ -107,7 +107,7 @@ sante_vars = get_vars_by_category('Santé')
 
 layout = dmc.Container(
     fluid=True,
-    p="xl",
+    p=0,
     children=[
         dmc.Title("Liste des variables et méthodologie", order=1, mb="xs", style={"color": "#2c3e50"}),
         dmc.Text(
@@ -125,6 +125,7 @@ layout = dmc.Container(
                 # --- Main Tabs Navigation ---
                 dmc.TabsList([
                     dmc.TabsTab("Liste des variables", value="variables"),
+                    dmc.TabsTab("Sources des datasets", value="sources", leftSection=DashIconify(icon="solar:link-bold-duotone", width=18)),
                     dmc.TabsTab("Documentation Technique", value="documentation", leftSection=DashIconify(icon="solar:document-bold-duotone", width=18)),
                 ]),
                 
@@ -193,6 +194,135 @@ layout = dmc.Container(
                                     dmc.ScrollArea(children=make_var_table(sante_vars))
                                 ])
                             ]),
+                        ]
+                    )
+                ]),
+
+                # --- Dataset Sources Panel ---
+                dmc.TabsPanel(value='sources', children=[
+                    dmc.Paper(
+                        withBorder=True, p="xl", radius="md", shadow="sm", mt="md",
+                        children=[
+                            dmc.Title("Sources des Datasets", order=2, mb="xs", c="#2c3e50"),
+                            dmc.Text("Accédez aux sources originales des données utilisées dans ce tableau de bord.", c="dimmed", mb="xl"),
+                            
+                            dmc.Stack(gap="xl", children=[
+                                # --- Subsection: Indicateurs de Santé ---
+                                dmc.Stack(gap="xs", children=[
+                                    dmc.Group([
+                                        DashIconify(icon="solar:heart-pulse-bold-duotone", width=24, color="red"),
+                                        dmc.Text("Indicateurs de Santé", fw=700, size="lg")
+                                    ]),
+                                    dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                        dmc.Group([
+                                            dmc.Text("Odissée CNV : Maladies cardio-neuro-vasculaires (taux standardisés)", fw=500),
+                                            html.A(
+                                                dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                href="https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-epci/information/?flg=fr-fr&disjunctive.type_patho&disjunctive.libreg&disjunctive.libdep",
+                                                target="_blank"
+                                            )
+                                        ], justify="space-between")
+                                    ])
+                                ]),
+
+                                # --- Subsection: Offre de Soins ---
+                                dmc.Stack(gap="xs", children=[
+                                    dmc.Group([
+                                        DashIconify(icon="solar:medical-kit-bold-duotone", width=24, color="blue"),
+                                        dmc.Text("Offre de Soins", fw=700, size="lg")
+                                    ]),
+                                    dmc.Stack(gap="md", children=[
+                                        dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                            dmc.Group([
+                                                dmc.Text("Balises : Structures de santé (AURA)", fw=500, size="sm"),
+                                                html.A(
+                                                    dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                    href="https://www.balises-auvergne-rhone-alpes.org/data/les_bases.php?acces-aux-donnees",
+                                                    target="_blank"
+                                                )
+                                            ], justify="space-between")
+                                        ]),
+                                        dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                            dmc.Group([
+                                                dmc.Text("DREES : Accessibilité (APL)", fw=500, size="sm"),
+                                                html.A(
+                                                    dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                    href="https://www.data.gouv.fr/datasets/laccessibilite-potentielle-localisee-apl",
+                                                    target="_blank"
+                                                )
+                                            ], justify="space-between")
+                                        ])
+                                    ])
+                                ]),
+
+                                # --- Subsection: Déterminants Sociaux ---
+                                dmc.Stack(gap="xs", children=[
+                                    dmc.Group([
+                                        DashIconify(icon="solar:users-group-rounded-bold-duotone", width=24, color="orange"),
+                                        dmc.Text("Déterminants Sociaux & Démographie", fw=700, size="lg")
+                                    ]),
+                                    dmc.Stack(gap="sm", children=[
+                                        dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                            dmc.Group([
+                                                dmc.Text("Balises : Indice Fdep", size="sm", fw=500),
+                                                html.A(
+                                                    dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                    href="https://www.balises-auvergne-rhone-alpes.org//OSE.php", 
+                                                    target="_blank"
+                                                )
+                                            ], justify="space-between")
+                                        ]),
+                                        dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                            dmc.Group([
+                                                dmc.Text("INSEE : Revenus & Pauvreté (Filosofi)", size="sm", fw=500),
+                                                html.A(
+                                                    dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                    href="https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC", 
+                                                    target="_blank"
+                                                )
+                                            ], justify="space-between")
+                                        ]),
+                                        dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                            dmc.Group([
+                                                dmc.Text("INSEE : PCS & Emploi", size="sm", fw=500),
+                                                html.A(
+                                                    dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                    href="https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP", 
+                                                    target="_blank"
+                                                )
+                                            ], justify="space-between")
+                                        ]),
+                                        dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                            dmc.Group([
+                                                dmc.Text("INSEE : Niveaux d'études", size="sm", fw=500),
+                                                html.A(
+                                                    dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                    href="https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC", 
+                                                    target="_blank"
+                                                )
+                                            ], justify="space-between")
+                                        ]),
+                                    ])
+                                ]),
+
+                                # --- Subsection: Environnement ---
+                                dmc.Stack(gap="xs", children=[
+                                    dmc.Group([
+                                        DashIconify(icon="solar:leaf-bold-duotone", width=24, color="green"),
+                                        dmc.Text("Déterminants Environnementaux", fw=700, size="lg")
+                                    ]),
+                                    dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                        dmc.Group([
+                                            dmc.Text("Balises : Observatoire Santé Environnement (OSE)", fw=500),
+                                            html.A(
+                                                dmc.Button("Consulter", variant="light", size="sm", leftSection=DashIconify(icon="solar:link-linear")),
+                                                href="https://www.balises-auvergne-rhone-alpes.org//OSE.php",
+                                                target="_blank"
+                                            )
+                                        ], justify="space-between")
+                                    ])
+                                ]),
+                            ])
                         ]
                     )
                 ]),

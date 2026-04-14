@@ -125,3 +125,25 @@ Le dashboard affiche les établissements de santé (hôpitaux et centres spécia
 !!! note "État actuel"
     Cette fonctionnalité a été **désactivée** dans l'interface finale pour simplifier la lecture de la carte. Cependant, le jeu de données `hospitals_ara.csv` et la logique de rendu dans `exploration.py` sont conservés pour permettre une réactivation facile si nécessaire.
 
+---
+
+## Sources des données
+
+Retrouvez ci-dessous les sources originales des jeux de données utilisés dans CardiAura.
+
+### 🏥 Indicateurs de Santé
+- **Odissée CNV** (Santé Publique France) : [Maladies cardio-neuro-vasculaires (taux standardisés)](https://odisse.santepubliquefrance.fr/explore/dataset/maladies-cardio-neuro-vasculaires-taux-standardises-epci/information/?flg=fr-fr&disjunctive.type_patho&disjunctive.libreg&disjunctive.libdep)
+
+### ⚕️ Offre de Soins
+- **Balises (AURA)** : [Structures de santé en région](https://www.balises-auvergne-rhone-alpes.org/data/les_bases.php?acces-aux-donnees)
+- **DREES (Data.gouv)** : [Accessibilité Potentielle Localisée (APL)](https://www.data.gouv.fr/datasets/laccessibilite-potentielle-localisee-apl)
+
+### 👥 Déterminants Sociaux & Démographie
+- **Balises** : [Indice de défavorisation Fdep](https://www.balises-auvergne-rhone-alpes.org//OSE.php)
+- **Odissé** : [Indice F-EDI 2021 (Communes)](https://odisse.santepubliquefrance.fr/explore/dataset/french-european-deprivation-index-f-edi-2021-par-commune/export/?disjunctive.reglib&disjunctive.libgeo)
+- **INSEE (Filosofi)** : [Médiane du niveau de vie, Rapport D9/D1, Taux de pauvreté](https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC)
+- **INSEE (Recensement)** : [PCS (Professions et Catégories Socioprofessionnelles)](https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP)
+- **INSEE (Recensement)** : [Niveaux d'études & Diplômes](https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_PRINC)
+
+### 🌿 Déterminants Environnementaux
+- **Balises** : [Observatoire Santé Environnement (OSE)](https://www.balises-auvergne-rhone-alpes.org//OSE.php)

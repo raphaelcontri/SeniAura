@@ -157,12 +157,12 @@ def load_data():
     cols_F_65_plus = ['SEXE2_AGEPYR1065_taux', 'SEXE2_AGEPYR1080_taux']
 
     demo_configs = [
-        ('H_0_24', cols_H_0_24, 'Part des hommes 0-24 ans (%)', "Part des hommes âgés de 0 à 24 ans", -1),
-        ('F_0_24', cols_F_0_24, 'Part des femmes 0-24 ans (%)', "Part des femmes âgées de 0 à 24 ans", -1),
-        ('H_25_64', cols_H_25_64, 'Part des hommes 25-64 ans (%)', "Part des hommes principaux (25-64 ans)", -1),
-        ('F_25_64', cols_F_25_64, 'Part des femmes 25-64 ans (%)', "Part des femmes principales (25-64 ans)", -1),
-        ('H_65_plus', cols_H_65_plus, 'Part des hommes 65 ans et + (%)', "Part des hommes âgés de 65 ans et plus", 1),
-        ('F_65_plus', cols_F_65_plus, 'Part des femmes 65 ans et + (%)', "Part des femmes âgées de 65 ans et plus", 1),
+        ('H_0_24', cols_H_0_24, 'Part des hommes 0-24 ans (%)', "Part des hommes âgés de 0 à 24 ans", 1),
+        ('F_0_24', cols_F_0_24, 'Part des femmes 0-24 ans (%)', "Part des femmes âgées de 0 à 24 ans", 1),
+        ('H_25_64', cols_H_25_64, 'Part des hommes 25-64 ans (%)', "Part des hommes principaux (25-64 ans)", 1),
+        ('F_25_64', cols_F_25_64, 'Part des femmes 25-64 ans (%)', "Part des femmes principales (25-64 ans)", 1),
+        ('H_65_plus', cols_H_65_plus, 'Part des hommes 65 ans et + (%)', "Part des hommes âgés de 65 ans et plus", -1),
+        ('F_65_plus', cols_F_65_plus, 'Part des femmes 65 ans et + (%)', "Part des femmes âgées de 65 ans et plus", -1),
     ]
 
     for v_code, cols, v_label, v_desc, v_sens in demo_configs:

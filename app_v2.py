@@ -411,10 +411,13 @@ header = dmc.AppShellHeader(
                             radius="md",
                             size="sm",
                             style={
-                                "display": "none",
+                                "backgroundColor": "#f3f0ff", 
                                 "fontWeight": 700,
+                                "border": "1px solid #845ef7",
+                                "color": "#6741d9",
+                                "visibility": "hidden"
                             }
-                        )
+                        ),
                     ]
                 ),
             ]
@@ -432,18 +435,24 @@ app.layout = dmc.MantineProvider(
             header={"height": 90}, 
             navbar={"width": 350, "breakpoint": "sm", "collapsed": {"mobile": True, "desktop": False}},
             aside={"width": 450, "breakpoint": "md", "collapsed": {"desktop": True, "mobile": True}}, # Aside configuré mais masqué
-            padding="md",
+            padding=0,
             children=[
                 header,
                 sidebar,
                 dmc.AppShellMain(
                     children=[
                                         dmc.Container(
-                                            size="2000px", # Wide enough for dashboard, but limits infinite stretch
+                                            size="2000px", 
                                             fluid=False,
                                             px=0,
                                             children=[
-                                                html.Div(id='page-content', style={'padding': '20px'})
+                                                html.Div(
+                                                    id='page-content', 
+                                                    style={
+                                                        'padding': '32px', 
+                                                        'minHeight': '100%'
+                                                    }
+                                                )
                                             ]
                                         )
                     ],
@@ -530,25 +539,18 @@ def display_page(pathname):
 
 @app.callback(
     Output('exploration-guide-btn', 'style'),
-    Input('url', 'pathname')
+    [Input('url', 'pathname'),
+     Input('aside-opened-store', 'data')],
+    State('exploration-guide-btn', 'style')
 )
-def toggle_guide_button(pathname):
+def toggle_guide_button(pathname, aside_opened, current_style):
     is_explor = pathname in ['/exploration', '/carte', '/radar']
-    base_style = {
-        "backgroundColor": "#f3f0ff", 
-        "borderColor": "#845ef7", 
-        "color": "#6741d9",
-        "border": "1px solid #845ef7",
-        "borderRadius": "12px",
-        "fontWeight": 700,
-        "paddingLeft": "15px",
-        "paddingRight": "15px"
-    }
-    if is_explor:
-        base_style["display"] = "block"
+    new_style = current_style.copy()
+    if is_explor and not aside_opened:
+        new_style["visibility"] = "visible"
     else:
-        base_style["display"] = "none"
-    return base_style
+        new_style["visibility"] = "hidden"
+    return new_style
 
 # --- Aside Toggle Callbacks ---
 
