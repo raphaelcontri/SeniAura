@@ -1041,7 +1041,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             dmc.Text("Sélectionnez des territoires et des variables dans le menu à gauche pour afficher l'analyse comparative détaillée.", size="sm", fs="italic", c="dimmed", ta="center", mt="xl")
         )
 
-    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, guide, dynamic_title
+    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, {'display': 'block'}, guide, dynamic_title
 
 # --- Scroll Affordance Callback ---
 clientside_callback(
