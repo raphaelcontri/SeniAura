@@ -224,7 +224,7 @@ sidebar = dmc.AppShellNavbar(
                                     dmc.Text("Socio-Économie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
                                     dmc.Tooltip(
                                         multiline=True, w=220, withArrow=True,
-                                        label="Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
+                                        label="Une fois les filtres socio-économiques sélectionnés, vous pouvez changer les valeurs des filtres avec les sliders qui s'affichent automatiquement. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
                                         children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
                                     )
                                 ]
@@ -249,7 +249,7 @@ sidebar = dmc.AppShellNavbar(
                                     dmc.Text("Offre de Soins", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
                                     dmc.Tooltip(
                                         multiline=True, w=220, withArrow=True,
-                                        label="Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
+                                        label="Une fois les filtres d'offre de soins sélectionnés, vous pouvez changer les valeurs des filtres avec les sliders qui s'affichent automatiquement. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
                                         children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
                                     )
                                 ]
@@ -274,7 +274,7 @@ sidebar = dmc.AppShellNavbar(
                                     dmc.Text("Environnement", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
                                     dmc.Tooltip(
                                         multiline=True, w=220, withArrow=True,
-                                        label="Vous pouvez changer les valeurs des filtres. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
+                                        label="Une fois les filtres environnementaux sélectionnés, vous pouvez changer les valeurs des filtres avec les sliders qui s'affichent automatiquement. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
                                         children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
                                     )
                                 ]

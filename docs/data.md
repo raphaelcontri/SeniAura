@@ -25,6 +25,36 @@ unit_dict, gdf_deps, source_dict, classement_dict = load_data()
 | `source_dict` | `dict[str, str]` | `{code_variable → institution_source}` |
 | `classement_dict` | `dict[str, str]` | `{code_variable → classement}` |
 
+### Gestion de la Polarité (Sens des variables)
+
+Le champ **Sens** issu de `dictionnaire_variables.csv` (stocké dans `sens_dict`) définit si une valeur élevée est un atout ou une vulnérabilité. Le système s'appuie sur un **classement relatif régional** (`rank(pct=True)`) situant chaque EPCI sur une échelle de **0 à 100%**.
+
+#### Seuils et Déclenchement des Alertes (Quantiles & Déciles)
+
+Le dashboard analyse la position de l'EPCI dans la distribution régionale selon les tranches suivantes (explications basées sur les blocs `if/elif` de `exploration.py`) :
+
+| Tranche Percentile | Qualification Statistique | Badge UI | Interprétation |
+|:---|:---|:---:|:---|
+| **0 - 10%** | **1er Décile** | 🔴 / 🎉 | Zone d'alerte critique / Point fort majeur |
+| **10 - 25%** | **1er Quartile** | 🟠 / 🟢 | Zone d'attention / Atout significatif |
+| **25 - 75%** | **Zone Médiane** | ⚪ | Équilibré (Autour de la médiane régionale) |
+| **75 - 90%** | **3ème Quartile** | 🟢 / 🟠 | Atout significatif / Zone d'attention |
+| **90 - 100%** | **9ème Décile** | 🎉 / 🔴 | Point fort majeur / Zone d'alerte critique |
+
+#### Détail par Sens de la variable
+
+L'interprétation change selon que la variable est "positive" (Sens 1) ou "négative" (Sens -1) :
+
+| Position | Sens = 1 (ex: Revenu, Médecins) | Sens = -1 (ex: Chômage, Pollution) |
+|:---|:---|:---|
+| **Tranche 1 (0-10%)** | 🔴 **Alerte** (Sous le 1er décile) | 🎉 **Point fort** (Top 10% les plus bas) |
+| **Tranche 2 (10-25%)** | 🟠 **Attention** (Sous le 1er quartile) | 🟢 **Atout** (Dans les 25% les plus bas) |
+| **Tranche 3 (75-90%)** | 🟢 **Atout** (Sur le 3ème quartile) | 🟠 **Attention** (Dans les 25% les plus hauts) |
+| **Tranche 4 (90-100%)** | 🎉 **Point fort** (Sur le 9ème décile) | 🔴 **Alerte** (Supérieur au 9ème décile) |
+
+!!! note "L'intermédiaire (ex: entre 10% et 25%)"
+    Si un EPCI est à 15%, il n'est plus en "Alerte Rouge" (qui s'arrête strictement à 10%) mais reste en "Attention Orange" car il est toujours sous le seuil du 1er quartile (25%). Les badges sont mutuellement exclusifs et prioritaires selon la gravité du diagnostic (le Rouge prime sur l'Orange).
+
 ---
 
 ## Pipeline de chargement (5 étapes)

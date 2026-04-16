@@ -1,14 +1,12 @@
-| Thématique | Levier d'action | Source institutionnelle | Lien direct et ressources |
+| Catégorie | Levier d'action | Source | Lien |
 | :--- | :--- | :--- | :--- |
-| **Socio-économique** | Déploiement de la médiation en santé en quartiers prioritaires | Promotion Santé Auvergne-Rhône-Alpes (ex IREPS ARA) | [Accéder aux outils de médiation 6](https://www.promotion-sante-ara.org/) |
-| **Socio-économique** | Dépistage hors-les-murs de l'hypertension (HTA) et du diabète | ARS AURA / GIP Ma Région Ma Santé | [Expérimentation Médicobus](https://www.auvergne-rhone-alpes.ars.sante.fr/experimentation-medicobus)|
-| **Socio-économique** | Prescription médicale d'activité physique adaptée (APA) | ARS / DRAJES / Portail Sport-Santé | [Portail Sport-Santé ARA](https://sport-sante.auvergne-rhone-alpes.ars.sante.fr/)|
-| **Environnement** | Urbanisme favorable à la santé et îlots de fraîcheur | PRSE 4 AURA / Agences d'urbanisme | [Axe 3 - PRSE ARA](https://www.auvergne-rhone-alpes.prse.fr/axe-3-mobiliser-les-territoires-en-sante-a256.html)|
-| **Environnement** | Développement de mobilités actives (pistes cyclables, marche) | Atmo AURA / DREAL ARA | [Transport et mobilité - Atmo](https://www.atmo-auvergnerhonealpes.fr/article/transport-et-mobilite) |
-| **Environnement** | Limitation des particules fines (ZFE) et risques vasculaires | ARS / Atmo / Métropoles | [Pollution de l'air - ARS](https://www.auvergne-rhone-alpes.ars.sante.fr/pollution-de-lair-impacts-sur-la-sante-et-bons-gestes)|
-| **Accès aux soins** | Coordination ville-hôpital post-AVC et soutien aux CPTS | ARS Auvergne-Rhône-Alpes | [CPTS en ARA](https://www.auvergne-rhone-alpes.ars.sante.fr/les-communautes-professionnelles-territoriales-de-sante-cpts-en-auvergne-rhone-alpes)|
-| **Accès aux soins** | Télémédecine et télé-expertise en cardiologie rurale | GCS Sara / MonSisra | [Télé-expertise GCS Sara](https://www.sante-ara.fr/services/teleexpertise/)|
-| **Accès aux soins** | Optimisation du parcours PRADO (Retour à domicile) | Assurance Maladie (Ameli) | [PRADO - Ameli](https://www.ameli.fr/medecin/exercice-liberal/services-patients/prado)|
-| **Prévention** | Campagnes de reconnaissance des signes d'AVC | France AVC / ARS | [France AVC](https://www.franceavc.com/)|
-| **Prévention** | Lutte contre le tabagisme : Mois sans tabac | Promotion Santé AURA / ARS | [Mois sans tabac - PS AURA](https://www.promotion-sante-ara.org/thematiques/addictions-et-mois-sans-tabac/)|
-| **Prévention** | Promotion de l'alimentation saine et Nutri-Score | Santé Publique France | [Nutrition et Activité Physique](https://www.santepubliquefrance.fr/determinants-de-sante/nutrition-et-activite-physique)|
+| Socio-économique | Médiation en santé : Interface de proximité facilitant l'accès aux droits et aux soins des publics vulnérables | Promotion Santé ARA | [Médiation en santé](https://www.auvergne-rhone-alpes.ars.sante.fr/la-mediation-en-sante-en-auvergne-rhone-alpes) |
+| | Médicobus : Cabinet médical mobile pour assurer des consultations de proximité en zones rurales isolées | ARS / GIP Ma Région Ma Santé | [Médicobus](https://www.auvergne-rhone-alpes.ars.sante.fr/experimentation-medicobus) |
+| | Dispositif DAHLIR : Accompagnement individualisé vers une pratique d'activité physique adaptée (Sport-Santé) | Association DAHLIR | [Dispositif DAHLIR](https://www.dahlir.fr/sante/dapap/) |
+| | Interprétariat : Utilisation d'outils de traduction en consultation pour lever les barrières linguistiques | CPTS de Bron | [CPTS Bron](https://www.auvergne-rhone-alpes.ars.sante.fr/acces-aux-soins-dans-le-rhone-creation-de-la-communaute-professionnelle-territoriale-de-sante-1) |
+| Santé | Parcours Traceur AVC : Analyse pluriprofessionnelle ville-hôpital pour sécuriser les étapes de prise en charge | HAS / CPTS O'Tours | [Projet AVC](https://cptsotours.fr/projet-parcours-traceur-avc/) |
+| | Télé-expertise : Demande d'avis spécialisé (cardiologie, neurologie) sécurisée via l'outil régional MonSisra | GCS Sara | [Télé-expertise](https://www.sante-ara.fr/services/teleexpertise/) |
+| | Suivi PRADO : Accompagnement infirmier et éducation thérapeutique à domicile après hospitalisation | Assurance Maladie | [Prado](https://www.ameli.fr/seine-et-marne/infirmier/exercice-liberal/service-patient/prado) |
+| Environnement | Plan Canopée : Végétalisation urbaine pour réduire les îlots de chaleur et protéger les cardiaques | Métropole de Lyon | [Climat Lyon](https://www.grandlyon.com/fileadmin/user_upload/media/pdf/environnement/plan-climat_2030.pdf) |
+| | Urbanisme Santé : Intégration des enjeux de santé dans les documents de planification | PRSE 4 / ARS | [Urbanisme Santé](https://www.auvergne-rhone-alpes.prse.fr/axe-3-mobiliser-les-territoires-en-sante-a290.html?lang=fr) |
+| | Zones à Faibles Émissions (ZFE) : Régulation du trafic routier pour limiter l'inflammation vasculaire liée à l'air | Atmo ARA | [Air & ZFE](https://www.atmo-auvergnerhonealpes.fr/article/qualite-de-lair-et-mobilite-les-zones-faibles-emissions-zfe) |

@@ -19,20 +19,20 @@
 
 ### 3. Comment lire les phrases d'interprétation ? (Détail algorithmique)
 
-Pour chaque variable du radar, le territoire est comparé aux 172 EPCI de la région. Son rang, combiné au "sens" de la variable (selon si une valeur haute est désirable ou non), conditionne le code couleur des phrases affichées :
+Pour chaque variable du radar, le territoire est comparé aux 172 EPCI de la région. Son rang (quartiles et décile 1 et 9), combiné au "sens" de la variable (selon si une valeur haute augmente la vulnérabilité de l'EPCI ou non), conditionne le code couleur des phrases affichées :
 
 **Cas 1 : Variables où une forte valeur est un ATOUT (Ex: Offre de soins, Revenus)**
-*   🎉 **Teal Vert Foncé (Top 10%)** : "Point fort" (valeur très haute, rare)
-*   🟢 **Cyan Vert Clair (Top 25%)** : "Atout" (valeur haute)
-*   ⚪ **Gris (Médian 50%)** : "Équilibré" (proche de la moyenne)
-*   🟠 **Orange (Bas 25%)** : "Attention" (valeur faible vis-à-vis des autres) => **VuLnéraBilité**
-*   🔴 **Rouge (Bas 10%)** : "Alerte" (valeur très faible, critique) => **VULNÉRABILITÉ**
+*   **Vert Foncé (Top 10%)** : "Point fort" (valeur très haute, rare)
+*   **Cyan Vert Clair (Top 25%)** : "Atout" (valeur haute)
+*   **Gris (Médian 50%)** : "Équilibré" (proche de la médiane)
+*   **Orange (Bas 25%)** : "Attention" (valeur faible vis-à-vis des autres) => **VuLnéraBilité**
+*   **Rouge (Bas 10%)** : "Alerte" (valeur très faible, critique) => **VULNÉRABILITÉ**
 
 **Cas 2 : Variables où une forte valeur est une VULNÉRABILITÉ (Ex: Pollution, Mortalité, Chômage)**
-*   🎉 **Teal Vert Foncé (Bas 10%)** : "Point fort" (valeur très basse, excellent)
-*   🟢 **Cyan Vert Clair (Bas 25%)** : "Atout" (valeur basse)
-*   ⚪ **Gris (Médian 50%)** : "Équilibré" (proche de la moyenne)
-*   🟠 **Orange (Haut 25%)** : "Attention" (valeur haute) => **VULNÉRABILITÉ**
-*   🔴 **Rouge (Haut 10%)** : "Alerte" (valeur très haute) => **VULNÉRABILITÉ**
+*   **Vert Foncé (Bas 10%)** : "Point fort" (valeur très basse, excellent)
+*   **Cyan Vert Clair (Bas 25%)** : "Atout" (valeur basse)
+*   **Gris (Médian 50%)** : "Équilibré" (proche de la médiane)
+*   **Orange (Haut 25%)** : "Attention" (valeur haute) => **VULNÉRABILITÉ**
+*   **Rouge (Haut 10%)** : "Alerte" (valeur très haute) => **VULNÉRABILITÉ**
 
 💡 Dès qu'un de vos territoires affiche au moins un indicateur "Orange" ou "Rouge" dans votre sélection, le système affichera un bouton *"Leviers d'action"* correspondant à la thématique problématique pour agir.

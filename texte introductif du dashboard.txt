@@ -1,8 +1,8 @@
-Cet outil a pour objectif d'**établir un diagnostic de l'état de santé de la population d'Auvergne-Rhône-Alpes** pour guider l'identification de **leviers d'actions concrets** et guider les politiques publiques à une échelle fine (EPCI).
-Le diagnostic porte sur les maladies cardio-neuro-vasculaires (CNV), car elles sont fortement liées à des déterminants sociaux et environnementaux, ainsi qu'aux disparités d'accès aux soins.
-Elle s'organise autour de deux outils principaux (accessible sur l'onglet exploration) :
-- une carte interactive
-- un radar comparatif
+**CardiAura** est un outil de pilotage et de diagnostic territorial dédié à l'**Auvergne-Rhône-Alpes**. Il permet d'identifier des **leviers d'actions concrets** pour les politiques publiques à l'échelle fine des EPCI. 
+
+Centré sur les maladies **cardio-neuro-vasculaires (CNV)** - enjeux de santé majeurs liés aux déterminants sociaux et environnementaux de santé - le dispositif s'articule autour de deux outils (onglet Exploration) :
+- Une **carte interactive** pour visualiser les indicateurs et filtres.
+- Un **radar comparatif** pour analyser les profils territoriaux.
 
 
 > Quel est l'objectif de ce dashboard ? 
@@ -45,4 +45,6 @@ Les maladies cardio-neuro-vasculaires (CNV) regroupent les pathologies qui affec
 
 > Qui sommes-nous ?
 Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).
+
+Voici la page de l'outil sur data.gouv : https://www.data.gouv.fr/reuses/cardiaura
 

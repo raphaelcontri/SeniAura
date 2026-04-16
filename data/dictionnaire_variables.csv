@@ -173,4 +173,4 @@ DIPLOME_600_RP_rate,Part niveau Licence,,Socioéco,"Part des personnes dont le d
 DIPLOME_700_RP_rate,Part niveau >=Master,,Socioéco,Part des personnes dont le diplôme le plus élevé déclaré par l'individu est diplôme de niveau bac + 5 ou plus.,,INSEE,%,0.02,0.17,0,"INSEE, population active et chomage, données 2021"
 Part de personnes isolées 60 ans et plus,Part personnes isolées >=60ans,,Socioéco,Part de personnes isolées 60 ans et plus,,INSEE,%,7.46,12.86,-1,"INSEE, Couples - Familles - Ménages, données 2022 "
 Taux de chomeurs_2022,Taux chômeurs (2022),,Socioéco,Taux de chomeurs en 2022,2022,INSEE,%,0.03,0.22,-1,"INSEE, population active et chomage, données 2021"
-APL_Cardio_EPCI,APL de Cardiologues ,67,Offre de soins,APL de Cardiologues 2019,2019,IRDES (Veronique LUCAS),,,,,
+APL_Cardio_EPCI,APL de Cardiologues ,67,Offre de soins,APL de Cardiologues 2019,2019,IRDES (Veronique LUCAS),,,,1,

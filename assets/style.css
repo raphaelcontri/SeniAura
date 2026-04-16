@@ -634,7 +634,8 @@ label {
 
 /* ---- Methodology Tabs (mirror sidebar button style) ---- */
 #methodo-tabs-main .mantine-Tabs-tab,
-#variables-sub-tabs .mantine-Tabs-tab {
+#variables-sub-tabs .mantine-Tabs-tab,
+#levers-tabs .mantine-Tabs-tab {
     border-radius: 12px;
     border: 1px solid #e9ecef;
     color: #2c3e50;
@@ -644,7 +645,8 @@ label {
 }
 
 #methodo-tabs-main .mantine-Tabs-tab:hover,
-#variables-sub-tabs .mantine-Tabs-tab:hover {
+#variables-sub-tabs .mantine-Tabs-tab:hover,
+#levers-tabs .mantine-Tabs-tab:hover {
     background-color: #f1f3f5 !important;
     border-color: #339af0 !important;
     color: #339af0 !important;
@@ -679,7 +681,8 @@ label {
 }
 
 #methodo-tabs-main .mantine-Tabs-tab[data-active],
-#variables-sub-tabs .mantine-Tabs-tab[data-active] {
+#variables-sub-tabs .mantine-Tabs-tab[data-active],
+#levers-tabs .mantine-Tabs-tab[data-active] {
     background-color: #339af0 !important;
     border-color: #1c7ed6 !important;
     color: white !important;

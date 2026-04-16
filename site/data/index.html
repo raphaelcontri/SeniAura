@@ -540,6 +540,45 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#gestion-de-la-polarite-sens-des-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gestion de la Polarité (Sens des variables)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gestion de la Polarité (Sens des variables)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seuils-et-declenchement-des-alertes-quantiles-deciles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seuils et Déclenchement des Alertes (Quantiles &amp; Déciles)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detail-par-sens-de-la-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Détail par Sens de la variable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -888,6 +927,45 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#gestion-de-la-polarite-sens-des-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gestion de la Polarité (Sens des variables)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gestion de la Polarité (Sens des variables)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seuils-et-declenchement-des-alertes-quantiles-deciles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seuils et Déclenchement des Alertes (Quantiles &amp; Déciles)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detail-par-sens-de-la-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Détail par Sens de la variable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1135,6 +1213,89 @@
 </tr>
 </tbody>
 </table>
+<h3 id="gestion-de-la-polarite-sens-des-variables">Gestion de la Polarité (Sens des variables)</h3>
+<p>Le champ <strong>Sens</strong> issu de <code>dictionnaire_variables.csv</code> (stocké dans <code>sens_dict</code>) définit si une valeur élevée est un atout ou une vulnérabilité. Le système s'appuie sur un <strong>classement relatif régional</strong> (<code>rank(pct=True)</code>) situant chaque EPCI sur une échelle de <strong>0 à 100%</strong>.</p>
+<h4 id="seuils-et-declenchement-des-alertes-quantiles-deciles">Seuils et Déclenchement des Alertes (Quantiles &amp; Déciles)</h4>
+<p>Le dashboard analyse la position de l'EPCI dans la distribution régionale selon les tranches suivantes (explications basées sur les blocs <code>if/elif</code> de <code>exploration.py</code>) :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tranche Percentile</th>
+<th style="text-align: left;">Qualification Statistique</th>
+<th style="text-align: center;">Badge UI</th>
+<th style="text-align: left;">Interprétation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>0 - 10%</strong></td>
+<td style="text-align: left;"><strong>1er Décile</strong></td>
+<td style="text-align: center;">🔴 / 🎉</td>
+<td style="text-align: left;">Zone d'alerte critique / Point fort majeur</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>10 - 25%</strong></td>
+<td style="text-align: left;"><strong>1er Quartile</strong></td>
+<td style="text-align: center;">🟠 / 🟢</td>
+<td style="text-align: left;">Zone d'attention / Atout significatif</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>25 - 75%</strong></td>
+<td style="text-align: left;"><strong>Zone Médiane</strong></td>
+<td style="text-align: center;">⚪</td>
+<td style="text-align: left;">Équilibré (Autour de la médiane régionale)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>75 - 90%</strong></td>
+<td style="text-align: left;"><strong>3ème Quartile</strong></td>
+<td style="text-align: center;">🟢 / 🟠</td>
+<td style="text-align: left;">Atout significatif / Zone d'attention</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>90 - 100%</strong></td>
+<td style="text-align: left;"><strong>9ème Décile</strong></td>
+<td style="text-align: center;">🎉 / 🔴</td>
+<td style="text-align: left;">Point fort majeur / Zone d'alerte critique</td>
+</tr>
+</tbody>
+</table>
+<h4 id="detail-par-sens-de-la-variable">Détail par Sens de la variable</h4>
+<p>L'interprétation change selon que la variable est "positive" (Sens 1) ou "négative" (Sens -1) :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Position</th>
+<th style="text-align: left;">Sens = 1 (ex: Revenu, Médecins)</th>
+<th style="text-align: left;">Sens = -1 (ex: Chômage, Pollution)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Tranche 1 (0-10%)</strong></td>
+<td style="text-align: left;">🔴 <strong>Alerte</strong> (Sous le 1er décile)</td>
+<td style="text-align: left;">🎉 <strong>Point fort</strong> (Top 10% les plus bas)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tranche 2 (10-25%)</strong></td>
+<td style="text-align: left;">🟠 <strong>Attention</strong> (Sous le 1er quartile)</td>
+<td style="text-align: left;">🟢 <strong>Atout</strong> (Dans les 25% les plus bas)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tranche 3 (75-90%)</strong></td>
+<td style="text-align: left;">🟢 <strong>Atout</strong> (Sur le 3ème quartile)</td>
+<td style="text-align: left;">🟠 <strong>Attention</strong> (Dans les 25% les plus hauts)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tranche 4 (90-100%)</strong></td>
+<td style="text-align: left;">🎉 <strong>Point fort</strong> (Sur le 9ème décile)</td>
+<td style="text-align: left;">🔴 <strong>Alerte</strong> (Supérieur au 9ème décile)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">L'intermédiaire (ex: entre 10% et 25%)</p>
+<p>Si un EPCI est à 15%, il n'est plus en "Alerte Rouge" (qui s'arrête strictement à 10%) mais reste en "Attention Orange" car il est toujours sous le seuil du 1er quartile (25%). Les badges sont mutuellement exclusifs et prioritaires selon la gravité du diagnostic (le Rouge prime sur l'Orange).</p>
+</div>
 <hr />
 <h2 id="pipeline-de-chargement-5-etapes">Pipeline de chargement (5 étapes)</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Étape 1 : GeoJSON (epci-ara.geojson)
@@ -1295,7 +1456,6 @@
 <h3 id="determinants-sociaux-demographie">👥 Déterminants Sociaux &amp; Démographie</h3>
 <ul>
 <li><strong>Balises</strong> : <a href="https://www.balises-auvergne-rhone-alpes.org//OSE.php">Indice de défavorisation Fdep</a></li>
-<li><strong>Odissé</strong> : <a href="https://odisse.santepubliquefrance.fr/explore/dataset/indice-de-defavorisation-sociale-fdep-par-iris/information/?flg=fr-fr">Fdep par IRIS</a></li>
 <li><strong>Odissé</strong> : <a href="https://odisse.santepubliquefrance.fr/explore/dataset/french-european-deprivation-index-f-edi-2021-par-commune/export/?disjunctive.reglib&amp;disjunctive.libgeo">Indice F-EDI 2021 (Communes)</a></li>
 <li><strong>INSEE (Filosofi)</strong> : <a href="https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_FILOSOFI_CC">Médiane du niveau de vie, Rapport D9/D1, Taux de pauvreté</a></li>
 <li><strong>INSEE (Recensement)</strong> : <a href="https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DS_RP_EMPLOI_LR_COMP">PCS (Professions et Catégories Socioprofessionnelles)</a></li>

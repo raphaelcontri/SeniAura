@@ -166,21 +166,21 @@ L'algorithme de positionnement analyse vos territoires finement via le **sens de
 
 | Badge | Couleur | Signification |
 |:---|:---|:---|
-| Top 10% | 🎉 **Teal** (Vert Foncé) | Point fort : Top 10% régional |
-| Top 25% | 🟢 **Cyan** (Vert Clair) | Atout : Top 25% régional |
-| Médian | ⚪ **Gris** | Équilibré : Moyenne régionale |
-| Bas 25% | 🟠 **Orange** | Attention : Dans les 25% les plus bas (Vulnérabilité) |
-| Bas 10% | 🔴 **Rouge** | Alerte : Plus bas que 90% des territoires (Alerte critique) |
+| Top 10% | 🎉 **Teal** (Vert Foncé) | Point fort : Supérieur au 9ème décile |
+| Top 25% | 🟢 **Cyan** (Vert Clair) | Atout : Supérieur au 3ème quartile |
+| Médian | ⚪ **Gris** | Équilibré : Proche de la médiane régionale |
+| Bas 25% | 🟠 **Orange** | Attention : Sous le 1er quartile (Vulnérabilité) |
+| Bas 10% | 🔴 **Rouge** | Alerte : Sous le 1er décile (Alerte critique) |
 
 **Cas 2 : Variables où une forte valeur est une VULNÉRABILITÉ (Sens "-1", ex: Polluants, Précarité, Mortalité)**
 
 | Badge | Couleur | Signification |
 |:---|:---|:---|
-| Bas 10% | 🎉 **Teal** (Vert Foncé) | Point fort : Top 10% régional (très bas) |
-| Bas 25% | 🟢 **Cyan** (Vert Clair) | Atout : Top 25% régional |
-| Médian | ⚪ **Gris** | Équilibré : Moyenne régionale |
-| Haut 25% | 🟠 **Orange** | Attention : Dans les 25% les plus élevés (Vulnérabilité) |
-| Haut 10% | 🔴 **Rouge** | Alerte : Plus élevé que 90% des territoires (Alerte critique) |
+| Bas 10% | 🎉 **Teal** (Vert Foncé) | Point fort : Inférieur au 1er décile |
+| Bas 25% | 🟢 **Cyan** (Vert Clair) | Atout : Inférieur au 1er quartile |
+| Médian | ⚪ **Gris** | Équilibré : Proche de la médiane régionale |
+| Haut 25% | 🟠 **Orange** | Attention : Supérieur au 3ème quartile (Vulnérabilité) |
+| Haut 10% | 🔴 **Rouge** | Alerte : Supérieur au 9ème décile (Alerte critique) |
 
 > **Génération de Leviers** : Si au moins une variable d'un territoire tombe dans la zone Rouge ou Orange, le dashboard identifie la catégorie de la variable (Accès aux Soins, Environnement...) et génère sur le champ des liens vers les `'Leviers d'action'` adéquats.
 

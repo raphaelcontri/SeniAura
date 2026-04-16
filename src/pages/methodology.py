@@ -111,7 +111,7 @@ layout = dmc.Container(
     children=[
         dmc.Title("Liste des variables et méthodologie", order=1, mb="xs", style={"color": "#2c3e50"}),
         dmc.Text(
-            "Explorez les indicateurs pilotant les analyses de CardiAURA ainsi que la rigueur méthodologique du projet.", 
+            "Retrouvez ici une liste complète des variables disponibles dans ce dashboard. Cette page contient également des liens vers la documentation et le code source de ce dashboard.", 
             c="dimmed", size="lg", mb="xl"
         ),
         
@@ -139,14 +139,14 @@ layout = dmc.Container(
                                 dmc.Text("• Description : Détails de la mesure de l'indicateur.", size="xs"),
                             ]),
                             dmc.Stack(gap=2, children=[
-                                dmc.Text(" ", size="sm"),
+                                dmc.Text(" ", size="sm"),
                                 dmc.Text("• Unité : Unité de mesure (%, taux, nombre...).", size="xs"),
                                 dmc.Text("• Source : Organisme producteur de la donnée.", size="xs"),
                             ]),
                             dmc.Stack(gap=2, children=[
-                                dmc.Text(" ", size="sm"),
+                                dmc.Text(" ", size="sm"),
                                 dmc.Text("• Polarité : Impact d'une hausse de la valeur sur la vulnérabilité.", size="xs"),
-                                dmc.Text(" ", size="xs"),
+                                dmc.Text(" ", size="xs"),
                             ]),
                         ])
                     ]),

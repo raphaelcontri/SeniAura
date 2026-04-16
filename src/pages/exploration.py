@@ -264,22 +264,10 @@ layout = dmc.Container(
 def update_aside_content(pathname):
     if pathname in ['/exploration', '/carte', '/radar']:
         try:
-            # Try to read Aide.txt (usually in the project root)
             with open("Aide.txt", "r", encoding="utf-8") as f:
                 content = f.read()
             return dmc.Stack(gap="md", children=[
-                dcc.Markdown(content, style={"fontSize": "14px", "lineHeight": "1.6"}),
-                dcc.Link(
-                    dmc.Button(
-                        "Consulter les leviers d'action", 
-                        variant="light", 
-                        radius="md", 
-                        fullWidth=True,
-                        leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=18),
-                        className="premium-hover"
-                    ),
-                    href="/methodologie#leviers"
-                )
+                dcc.Markdown(content, style={"fontSize": "14px", "lineHeight": "1.6"})
             ])
         except Exception:
             # Fallback if file not found
@@ -630,7 +618,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
                                 leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=16),
                                 className="premium-hover"
                             ),
-                            href="/methodologie#leviers"
+                            href="/leviers"
                         )
                     ]
                 )
@@ -938,15 +926,16 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                         col = "gray"
                         phrase = f"Équilibré : Moyenne régionale"
                         
-                if is_vuln:
-                    cat = category_dict.get(v, "autre").lower()
-                    if "socio" in cat: cat_str = "Socio-économique"
-                    elif "env" in cat: cat_str = "Environnement"
-                    elif "offre" in cat or "soins" in cat: cat_str = "Accès aux soins"
-                    elif "santé" in cat or "demog" in cat: cat_str = "Prévention"
-                    else: cat_str = "Généraux"
-                    if cat_str not in suggested_levers:
-                        suggested_levers.append(cat_str)
+                    if is_vuln:
+                        cat = category_dict.get(v, "autre").lower()
+                        if "socio" in cat: cat_str = "Socio-économique"; hash_val = "#socio"
+                        elif "env" in cat: cat_str = "Environnement"; hash_val = "#env"
+                        elif "offre" in cat or "soins" in cat or "santé" in cat or "demog" in cat or "prev" in cat: 
+                            cat_str = "Santé"; hash_val = "#sante"
+                        else: cat_str = "Généraux"; hash_val = ""
+                        
+                        if (cat_str, hash_val) not in suggested_levers:
+                            suggested_levers.append((cat_str, hash_val))
                 
                 epci_quantiles.append(dmc.Grid(align="center", mb=8, children=[
                     dmc.GridCol(span=4, children=[dmc.Text(label_name, size="sm", fw=700)]),
@@ -975,8 +964,8 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             lever_elements = []
             if suggested_levers:
                 lever_elements.append(dmc.Text("Leviers recommandés pour combler ces facteurs de vulnérabilité :", size="sm", fw=600, mt="sm", c="indigo"))
-                for cl in suggested_levers:
-                    link = "/leviers"
+                for cl, h in suggested_levers:
+                    link = f"/leviers{h}"
                     lever_elements.append(
                         dmc.Group(gap="xs", mb=5, children=[
                             DashIconify(icon="solar:arrow-right-bold-duotone", color="#339af0", width=14),
@@ -1029,7 +1018,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
                         leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=16),
                         className="premium-hover"
                     ),
-                    href="/methodologie#leviers"
+                    href="/leviers"
                 )
             ]
         )
