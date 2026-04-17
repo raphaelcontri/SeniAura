@@ -430,16 +430,6 @@ show_migration = os.environ.get("SHOW_MIGRATION_BANNER", "False").lower() == "tr
 app.layout = dmc.MantineProvider(
     theme={"primaryColor": "blue", "fontFamily": "'Inter', sans-serif"},
     children=[
-        html.Div([
-            dmc.Alert(
-                "Ce dashboard va bientôt être désactivé. Veuillez utiliser la nouvelle URL : https://votre-nouveau-dash.onrender.com",
-                title="Migration en cours",
-                color="orange",
-                variant="filled",
-                withCloseButton=True,
-                style={"marginBottom": 20, "margin": 20}
-            ) if show_migration else None,
-        ]),
         dcc.Location(id='url', refresh=False),
         dcc.Store(id='aside-opened-store', data=False), # Store pour l'état du panneau latéral
         dmc.AppShell(
@@ -453,20 +443,30 @@ app.layout = dmc.MantineProvider(
                 sidebar,
                 dmc.AppShellMain(
                     children=[
-                                        dmc.Container(
-                                            size="2000px", 
-                                            fluid=False,
-                                            px=0,
-                                            children=[
-                                                html.Div(
-                                                    id='page-content', 
-                                                    style={
-                                                        'padding': '32px', 
-                                                        'minHeight': '100%'
-                                                    }
-                                                )
-                                            ]
-                                        )
+                        html.Div([
+                            dmc.Alert(
+                                children="Cette URL va bientôt être désactivée. Veuillez utiliser la nouvelle URL : https://cardiaura.onrender.com",
+                                title="Migration en cours",
+                                color="orange",
+                                variant="filled",
+                                withCloseButton=True,
+                                style={"marginBottom": 20, "margin": 20}
+                            )
+                        ]) if show_migration else None,
+                        dmc.Container(
+                            size="2000px", 
+                            fluid=False,
+                            px=0,
+                            children=[
+                                html.Div(
+                                    id='page-content', 
+                                    style={
+                                        'padding': '32px', 
+                                        'minHeight': '100%'
+                                    }
+                                )
+                            ]
+                        )
                     ],
                     style={'backgroundColor': '#f8f9fa'}
                 ),
