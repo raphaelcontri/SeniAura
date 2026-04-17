@@ -425,9 +425,21 @@ header = dmc.AppShellHeader(
     ]
 )
 
+show_migration = os.environ.get("SHOW_MIGRATION_BANNER", "False").lower() == "true"
+
 app.layout = dmc.MantineProvider(
     theme={"primaryColor": "blue", "fontFamily": "'Inter', sans-serif"},
     children=[
+        html.Div([
+            dmc.Alert(
+                "Ce dashboard va bientôt être désactivé. Veuillez utiliser la nouvelle URL : https://votre-nouveau-dash.onrender.com",
+                title="Migration en cours",
+                color="orange",
+                variant="filled",
+                withCloseButton=True,
+                style={"marginBottom": 20, "margin": 20}
+            ) if show_migration else None,
+        ]),
         dcc.Location(id='url', refresh=False),
         dcc.Store(id='aside-opened-store', data=False), # Store pour l'état du panneau latéral
         dmc.AppShell(

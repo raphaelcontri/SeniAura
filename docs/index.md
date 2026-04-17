@@ -2,7 +2,7 @@
 
 > **Version** : 3.0 — Mars/Avril 2026  
 > **Framework** : Python · Dash · Dash Mantine Components (v7) · Plotly  
-> **Couverture géographique** : Région Auvergne-Rhône-Alpes (ARA) — 132+ EPCI
+> **Couverture géographique** : Région Auvergne-Rhône-Alpes (ARA) — 172+ EPCI
 
 ---
 
