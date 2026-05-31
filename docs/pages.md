@@ -42,19 +42,17 @@ Container (fluid)
 │   ├── dcc.Graph #map-graph (600px)
 │   └── Grid (Interprétations + Statistiques d'exclusions)
 │
-└── Paper #container-tabs
-    └── dmc.Tabs #exploration-tabs
-        ├── TabsList (Profil Radar, Clustering & Typologie)
-        │
-        ├── TabsPanel "radar" (Profil Comparatif Radar)
-        │   ├── Placeholder (si < 3 variables actives)
-        │   ├── dcc.Graph #radar-chart (Scatterpolar)
-        │   └── #radar-reading-guide : Interprétations + Quantiles régionaux
-        │
-        └── TabsPanel "cluster" (Clustering Territorial K-Means)
-            ├── Placeholder (si aucune variable active)
-            ├── dcc.Graph #cluster-chart (Centroïdes / Bar chart)
-            └── #cluster-reading-guide : Profils types + Recommandations d'action
+├── Paper #container-radar
+│   ├── Titre dynamique (#radar-dynamic-title)
+│   ├── Placeholder (si < 3 variables actives)
+│   ├── dcc.Graph #radar-chart (Scatterpolar)
+│   └── #radar-reading-guide : Interprétations + Quantiles régionaux
+│
+└── Paper #container-cluster
+    ├── Titre dynamique (#cluster-dynamic-title)
+    ├── Placeholder (si aucune variable active)
+    ├── dcc.Graph #cluster-chart (Centroïdes / Bar chart)
+    └── #cluster-reading-guide : Profils types + Recommandations d'action
 ```
 
 ### Callback 1 : `update_sliders`

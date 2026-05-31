@@ -184,165 +184,133 @@ layout = dmc.Container(
                     ]
                 ),
 
-                # Radar & Clustering Section (Tabs)
+                # Radar Section
                 dmc.Paper(
-                    id='container-tabs',
+                    id='container-radar',
                     withBorder=True, shadow="sm", p="md", radius="md",
                     style={"minHeight": "650px"},
                     children=[
-                        dmc.Tabs(
-                            id="exploration-tabs",
-                            value="radar",
-                            variant="pills",
-                            radius="md",
-                            styles={
-                                "tab": {
-                                    "fontWeight": 600,
-                                    "padding": "8px 16px",
-                                    "transition": "all 200ms ease",
-                                    "backgroundColor": "#f8f9fa",
-                                    "border": "1px solid #dee2e6",
-                                    "color": "#495057",
-                                },
-                                "tab[data-active]": {
-                                    "backgroundColor": "#339af0 !important",
-                                    "borderColor": "#339af0 !important",
-                                    "color": "white !important"
-                                }
-                            },
-                            children=[
-                                dmc.TabsList([
-                                    dmc.TabsTab("Profil Radar", value="radar", leftSection=DashIconify(icon="solar:chart-2-linear", width=18)),
-                                    dmc.TabsTab("Clustering & Typologie", value="cluster", leftSection=DashIconify(icon="solar:widget-linear", width=18)),
-                                ], mb="lg"),
-                                
-                                # Tab 1: Radar Chart
-                                dmc.TabsPanel(
-                                    value="radar",
-                                    children=[
-                                        dmc.Group(gap="xs", mb="md", children=[
-                                            DashIconify(icon="solar:chart-2-linear", color="#339af0"),
-                                            dmc.Text("Profil Comparatif Radar", id='radar-dynamic-title', fw=700),
-                                        ]),
-                                        html.Div(
-                                            id='radar-placeholder',
-                                            style={'display': 'flex', 'height': '600px'},
-                                            children=dmc.Center(
-                                                style={"width": "100%", "height": "100%"},
-                                                children=dmc.Stack(align="center", gap="xl", children=[
-                                                    dmc.ThemeIcon(
-                                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
-                                                        size=140, radius=100, variant="light", color="blue"
-                                                    ),
-                                                    dmc.Paper(
-                                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
-                                                        shadow="sm", maw=600,
-                                                        style={"border": "2px dashed #339af0"},
-                                                        children=[
-                                                            dmc.Text(
-                                                                "Action Requise", 
-                                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
-                                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
-                                                            ),
-                                                            dmc.Text(
-                                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
-                                                                size="md", fw=700, ta="center", c="#1a1b1e",
-                                                                style={"lineHeight": "1.6"}
-                                                            )
-                                                        ]
-                                                    )
-                                                ])
+                        dmc.Group(gap="xs", mb="md", children=[
+                            DashIconify(icon="solar:chart-2-linear", color="#339af0"),
+                            dmc.Text("Profil Comparatif Radar", id='radar-dynamic-title', fw=700),
+                        ]),
+                        html.Div(
+                            id='radar-placeholder',
+                            style={'display': 'flex', 'height': '600px'},
+                            children=dmc.Center(
+                                style={"width": "100%", "height": "100%"},
+                                children=dmc.Stack(align="center", gap="xl", children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
+                                        size=140, radius=100, variant="light", color="blue"
+                                    ),
+                                    dmc.Paper(
+                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
+                                        shadow="sm", maw=600,
+                                        style={"border": "2px dashed #339af0"},
+                                        children=[
+                                            dmc.Text(
+                                                "Action Requise", 
+                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
+                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                            ),
+                                            dmc.Text(
+                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
+                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                style={"lineHeight": "1.6"}
                                             )
-                                        ),
-                                        dmc.Grid(
-                                            id='radar-main-grid',
-                                            gutter="md",
-                                            style={"flex": 1, "minHeight": 0, "display": "none"},
+                                        ]
+                                    )
+                                ])
+                            )
+                        ),
+                        dmc.Grid(
+                            id='radar-main-grid',
+                            gutter="md",
+                            style={"flex": 1, "minHeight": 0, "display": "none"},
+                            children=[
+                                dmc.GridCol(
+                                    span=8,
+                                    children=[
+                                        dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
+                                    ]
+                                ),
+                                dmc.GridCol(
+                                    span=4,
+                                    children=[
+                                        html.Div(
+                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
                                             children=[
-                                                dmc.GridCol(
-                                                    span=8,
-                                                    children=[
-                                                        dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
-                                                    ]
-                                                ),
-                                                dmc.GridCol(
-                                                    span=4,
-                                                    children=[
-                                                        html.Div(
-                                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
-                                                            children=[
-                                                                html.Div(id='radar-guide-header', style={'display': 'none'}),
-                                                                html.Div(id='radar-reading-guide'),
-                                                                html.Div(id='radar-guide-paper', style={'display': 'none'}),
-                                                            ]
-                                                        )
-                                                    ]
-                                                )
+                                                html.Div(id='radar-guide-header', style={'display': 'none'}),
+                                                html.Div(id='radar-reading-guide'),
+                                                html.Div(id='radar-guide-paper', style={'display': 'none'}),
                                             ]
                                         )
                                     ]
-                                ),
-                                
-                                # Tab 2: Clustering K-Means
-                                dmc.TabsPanel(
-                                    value="cluster",
-                                    children=[
-                                        dmc.Group(gap="xs", mb="md", children=[
-                                            DashIconify(icon="solar:widget-linear", color="#339af0"),
-                                            dmc.Text("Profiler de Clustering Territorial (K-Means)", id='cluster-dynamic-title', fw=700),
-                                        ]),
-                                        html.Div(
-                                            id='cluster-placeholder',
-                                            style={'display': 'flex', 'height': '600px'},
-                                            children=dmc.Center(
-                                                style={"width": "100%", "height": "100%"},
-                                                children=dmc.Stack(align="center", gap="xl", children=[
-                                                    dmc.ThemeIcon(
-                                                        DashIconify(icon="solar:widget-bold-duotone", width=100),
-                                                        size=140, radius=100, variant="light", color="indigo"
-                                                    ),
-                                                    dmc.Paper(
-                                                        p="xl", radius="lg", withBorder=True, bg="indigo.0",
-                                                        shadow="sm", maw=600,
-                                                        style={"border": "2px dashed #4c6ef5"},
-                                                        children=[
-                                                            dmc.Text(
-                                                                "Clustering Régional", 
-                                                                fw=900, size="lg", c="indigo.9", ta="center", mb=10,
-                                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
-                                                            ),
-                                                            dmc.Text(
-                                                                "Sélectionnez au moins un territoire et des variables dans la barre latérale pour activer le profiler de clustering K-Means.",
-                                                                size="md", fw=700, ta="center", c="#1a1b1e",
-                                                                style={"lineHeight": "1.6"}
-                                                            )
-                                                        ]
-                                                    )
-                                                ])
+                                )
+                            ]
+                        )
+                    ]
+                ),
+
+                # Clustering Section
+                dmc.Paper(
+                    id='container-cluster',
+                    withBorder=True, shadow="sm", p="md", radius="md",
+                    style={"minHeight": "650px"},
+                    children=[
+                        dmc.Group(gap="xs", mb="md", children=[
+                            DashIconify(icon="solar:widget-linear", color="#339af0"),
+                            dmc.Text("Profiler de Clustering Territorial (K-Means)", id='cluster-dynamic-title', fw=700),
+                        ]),
+                        html.Div(
+                            id='cluster-placeholder',
+                            style={'display': 'flex', 'height': '600px'},
+                            children=dmc.Center(
+                                style={"width": "100%", "height": "100%"},
+                                children=dmc.Stack(align="center", gap="xl", children=[
+                                    dmc.ThemeIcon(
+                                        DashIconify(icon="solar:widget-bold-duotone", width=100),
+                                        size=140, radius=100, variant="light", color="indigo"
+                                    ),
+                                    dmc.Paper(
+                                        p="xl", radius="lg", withBorder=True, bg="indigo.0",
+                                        shadow="sm", maw=600,
+                                        style={"border": "2px dashed #4c6ef5"},
+                                        children=[
+                                            dmc.Text(
+                                                "Clustering Régional", 
+                                                fw=900, size="lg", c="indigo.9", ta="center", mb=10,
+                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                            ),
+                                            dmc.Text(
+                                                "Sélectionnez au moins un territoire et des variables dans la barre latérale pour activer le profiler de clustering K-Means.",
+                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                style={"lineHeight": "1.6"}
                                             )
-                                        ),
-                                        dmc.Grid(
-                                            id='cluster-main-grid',
-                                            gutter="md",
-                                            style={"flex": 1, "minHeight": 0, "display": "none"},
+                                        ]
+                                    )
+                                ])
+                            )
+                        ),
+                        dmc.Grid(
+                            id='cluster-main-grid',
+                            gutter="md",
+                            style={"flex": 1, "minHeight": 0, "display": "none"},
+                            children=[
+                                dmc.GridCol(
+                                    span=7,
+                                    children=[
+                                        dcc.Graph(id='cluster-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False}),
+                                    ]
+                                ),
+                                dmc.GridCol(
+                                    span=5,
+                                    children=[
+                                        html.Div(
+                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
                                             children=[
-                                                dmc.GridCol(
-                                                    span=7,
-                                                    children=[
-                                                        dcc.Graph(id='cluster-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False}),
-                                                    ]
-                                                ),
-                                                dmc.GridCol(
-                                                    span=5,
-                                                    children=[
-                                                        html.Div(
-                                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
-                                                            children=[
-                                                                html.Div(id='cluster-reading-guide'),
-                                                            ]
-                                                        )
-                                                    ]
-                                                )
+                                                html.Div(id='cluster-reading-guide'),
                                             ]
                                         )
                                     ]
