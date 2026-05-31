@@ -10,15 +10,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # dashboa
 PROJECT_ROOT = os.path.dirname(BASE_DIR) # projet_2
 
 DATA_DIR_DASH = os.path.join(BASE_DIR, "data")
-GEOJSON_PATH = os.path.join(DATA_DIR_DASH, "epci-ara.geojson")
-# Using the path observed in app.py
-# Using the path observed in app.py
-DATASET_PATH = os.path.join(DATA_DIR_DASH, "FINAL-DATASET-epci-11.xlsx")
+GEOJSON_SIMPLIFIED_PATH = os.path.join(DATA_DIR_DASH, "epci-ara-simplified.geojson")
+GEOJSON_ORIGINAL_PATH = os.path.join(DATA_DIR_DASH, "epci-ara.geojson")
+DATASET_PARQUET_PATH = os.path.join(DATA_DIR_DASH, "FINAL-DATASET-epci-11.parquet")
+DATASET_EXCEL_PATH = os.path.join(DATA_DIR_DASH, "FINAL-DATASET-epci-11.xlsx")
 METADATA_PATH = os.path.join(PROJECT_ROOT, "data", "table_variables.csv")
 
 def load_data():
     """
-    Loads and merges the GeoJSON and Excel data.
+    Loads and merges the GeoJSON and Excel/Parquet data.
     Returns:
         gdf_merged (GeoDataFrame): The merged data ready for visualization.
         variable_dict (dict): Dictionary mapping column names to human-readable labels.
@@ -27,18 +27,25 @@ def load_data():
         description_dict (dict): Dictionary mapping column names to their descriptions.
     """
 
-    # 1. Load GeoJSON
-    if not os.path.exists(GEOJSON_PATH):
-        raise FileNotFoundError(f"GeoJSON not found at {GEOJSON_PATH}")
+    # 1. Load GeoJSON (Simplified preferred)
+    if os.path.exists(GEOJSON_SIMPLIFIED_PATH):
+        geojson_path_to_load = GEOJSON_SIMPLIFIED_PATH
+    elif os.path.exists(GEOJSON_ORIGINAL_PATH):
+        geojson_path_to_load = GEOJSON_ORIGINAL_PATH
+    else:
+        raise FileNotFoundError(f"GeoJSON not found at {GEOJSON_SIMPLIFIED_PATH} or {GEOJSON_ORIGINAL_PATH}")
     
-    gdf_epci = gpd.read_file(GEOJSON_PATH)
+    gdf_epci = gpd.read_file(geojson_path_to_load)
     gdf_epci['EPCI_CODE'] = gdf_epci['EPCI_CODE'].astype(str)
 
-    # 2. Load Excel Dataset
-    if not os.path.exists(DATASET_PATH):
-        raise FileNotFoundError(f"Dataset not found at {DATASET_PATH}")
+    # 2. Load Dataset (Parquet preferred)
+    if os.path.exists(DATASET_PARQUET_PATH):
+        df = pd.read_parquet(DATASET_PARQUET_PATH)
+    elif os.path.exists(DATASET_EXCEL_PATH):
+        df = pd.read_excel(DATASET_EXCEL_PATH)
+    else:
+        raise FileNotFoundError(f"Dataset not found at {DATASET_PARQUET_PATH} or {DATASET_EXCEL_PATH}")
     
-    df = pd.read_excel(DATASET_PATH) # engine='openpyxl' is default for xlsx
     df['CODE_EPCI'] = df['CODE_EPCI'].astype(str).str.replace('.0', '', regex=False)
 
     # 3. Load Metadata for Dictionary & Categories

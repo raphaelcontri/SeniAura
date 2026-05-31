@@ -11,3 +11,4 @@ scikit-learn
 numpy
 dash-mantine-components
 dash-iconify
+pyarrow

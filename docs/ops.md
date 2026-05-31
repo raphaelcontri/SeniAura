@@ -33,6 +33,24 @@ gunicorn app_v2:server -b 0.0.0.0:8050 --workers 4
 
 ---
 
+## Pipeline ETL & Benchmark de Performance
+
+Pour nettoyer, catégoriser vos variables et optimiser vos données d'analyse (simplification géométrique de 9.3% du GeoJSON et conversion en Parquet pour un chargement **3.7x plus rapide**), un pipeline ETL est disponible.
+
+### Exécuter le pipeline ETL
+Cette commande met à jour automatiquement les livrables optimisés (`.parquet` et GeoJSON simplifié) à partir de vos fichiers sources (`.xlsx`, GeoJSON d'origine) :
+```bash
+python src/etl/pipeline.py
+```
+
+### Lancer le benchmark de performance
+Pour mesurer scientifiquement le gain de temps obtenu grâce au format Parquet et à la simplification de la carte :
+```bash
+python src/etl/benchmark.py
+```
+
+---
+
 ## Prérequis de fichiers
 
 | Fichier | Chemin relatif | Format |
