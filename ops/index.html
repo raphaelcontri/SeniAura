@@ -629,6 +629,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pipeline-etl-benchmark-de-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline ETL &amp; Benchmark de Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline ETL &amp; Benchmark de Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executer-le-pipeline-etl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exécuter le pipeline ETL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lancer-le-benchmark-de-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lancer le benchmark de performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prerequis-de-fichiers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -790,6 +829,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pipeline-etl-benchmark-de-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline ETL &amp; Benchmark de Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline ETL &amp; Benchmark de Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executer-le-pipeline-etl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exécuter le pipeline ETL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lancer-le-benchmark-de-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lancer le benchmark de performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prerequis-de-fichiers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -939,6 +1017,17 @@
 <p>L'application est hébergée sur <a href="https://render.com">Render</a>. Le <code>Procfile</code> ou la commande de démarrage doit pointer vers <code>gunicorn app_v2:server</code>.</p>
 </div>
 <hr />
+<h2 id="pipeline-etl-benchmark-de-performance">Pipeline ETL &amp; Benchmark de Performance</h2>
+<p>Pour nettoyer, catégoriser vos variables et optimiser vos données d'analyse (simplification géométrique de 9.3% du GeoJSON et conversion en Parquet pour un chargement <strong>3.7x plus rapide</strong>), un pipeline ETL est disponible.</p>
+<h3 id="executer-le-pipeline-etl">Exécuter le pipeline ETL</h3>
+<p>Cette commande met à jour automatiquement les livrables optimisés (<code>.parquet</code> et GeoJSON simplifié) à partir de vos fichiers sources (<code>.xlsx</code>, GeoJSON d'origine) :
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>src/etl/pipeline.py
+</code></pre></div></p>
+<h3 id="lancer-le-benchmark-de-performance">Lancer le benchmark de performance</h3>
+<p>Pour mesurer scientifiquement le gain de temps obtenu grâce au format Parquet et à la simplification de la carte :
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>src/etl/benchmark.py
+</code></pre></div></p>
+<hr />
 <h2 id="prerequis-de-fichiers">Prérequis de fichiers</h2>
 <table>
 <thead>
@@ -978,8 +1067,8 @@
 </table>
 <hr />
 <h2 id="deployer-la-documentation-github-pages">Déployer la documentation (GitHub Pages)</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># À partir de la racine du projet, une seule commande suffit :</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>mkdocs<span class="w"> </span>gh-deploy
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># À partir de la racine du projet, une seule commande suffit :</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>mkdocs<span class="w"> </span>gh-deploy
 </code></pre></div>
 <p>Cela construit le site et le pousse sur la branche <code>gh-pages</code> du dépôt.
 La documentation sera disponible à :
@@ -1002,10 +1091,10 @@ La documentation sera disponible à :
 <hr />
 <h3 id="comment-ajouter-une-ville-sur-la-carte">Comment ajouter une ville sur la carte ?</h3>
 <p>Modifier la liste <code>cities</code> dans <code>update_map()</code> dans <code>exploration.py</code> :</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">cities</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lyon&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">45.764</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">4.836</span><span class="p">},</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Nouvelle Ville&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="n">XX</span><span class="o">.</span><span class="n">XXX</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="n">Y</span><span class="o">.</span><span class="n">YYY</span><span class="p">},</span>  <span class="c1"># ← Ajouter ici</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">cities</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lyon&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">45.764</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">4.836</span><span class="p">},</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Nouvelle Ville&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="n">XX</span><span class="o">.</span><span class="n">XXX</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="n">Y</span><span class="o">.</span><span class="n">YYY</span><span class="p">},</span>  <span class="c1"># ← Ajouter ici</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">]</span>
 </code></pre></div>
 <hr />
 <h3 id="pourquoi-le-radar-necessite-t-il-au-moins-3-variables">Pourquoi le radar nécessite-t-il au moins 3 variables ?</h3>
@@ -1021,9 +1110,9 @@ Les sections sont délimitées par <code>\n&gt;</code> suivi du titre. Le parsin
 <li>Des <code>RangeSliders</code> sont générés dynamiquement pour chaque variable</li>
 <li>À chaque interaction, un masque booléen est calculé :</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">mask</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">))</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span> <span class="ow">in</span> <span class="n">active_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">mask</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">lo</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">mask</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">))</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span> <span class="ow">in</span> <span class="n">active_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">mask</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">lo</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="p">)</span>
 </code></pre></div>
 <p>Un EPCI est <strong>inclus</strong> (coloré) s'il satisfait <strong>tous</strong> les filtres simultanément.<br />
 Un EPCI est <strong>exclu</strong> (grisé) dès qu'il sort de la plage d'<strong>au moins une</strong> variable.</p>
