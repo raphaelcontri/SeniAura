@@ -31,7 +31,7 @@ Chaque section devient un `AccordionItem` avec une icône contextuelle automatiq
 
 ## 5.2 — Page Exploration (`exploration.py`)
 
-**Taille** : ~890 lignes — **cœur fonctionnel de l'application**
+**Taille** : ~1150 lignes — **cœur fonctionnel de l'application**
 
 ### Layout
 
@@ -39,16 +39,22 @@ Chaque section devient un `AccordionItem` avec une icône contextuelle automatiq
 Container (fluid)
 ├── Paper #container-map
 │   ├── Titre dynamique (#map-dynamic-title)
-│   ├── dcc.Graph #map-graph (550px)
-│   └── Group (stats + narration)
-│       ├── Paper bg=#f8f9fa : Interprétations + Narratif + Descriptions
-│       └── Paper (caché) : Sélecteur d'exclusion par variable
+│   ├── dcc.Graph #map-graph (600px)
+│   └── Grid (Interprétations + Statistiques d'exclusions)
 │
-└── Paper #container-radar
-    ├── Titre dynamique (#radar-dynamic-title)
-    ├── Placeholder (affiché si < 3 variables actives)
-    ├── dcc.Graph #radar-chart (Scatterpolar)
-    └── #radar-reading-guide : Interprétations + Quantiles régionaux
+└── Paper #container-tabs
+    └── dmc.Tabs #exploration-tabs
+        ├── TabsList (Profil Radar, Clustering & Typologie)
+        │
+        ├── TabsPanel "radar" (Profil Comparatif Radar)
+        │   ├── Placeholder (si < 3 variables actives)
+        │   ├── dcc.Graph #radar-chart (Scatterpolar)
+        │   └── #radar-reading-guide : Interprétations + Quantiles régionaux
+        │
+        └── TabsPanel "cluster" (Clustering Territorial K-Means)
+            ├── Placeholder (si aucune variable active)
+            ├── dcc.Graph #cluster-chart (Centroïdes / Bar chart)
+            └── #cluster-reading-guide : Profils types + Recommandations d'action
 ```
 
 ### Callback 1 : `update_sliders`
@@ -183,6 +189,32 @@ L'algorithme de positionnement analyse vos territoires finement via le **sens de
 | Haut 10% | 🔴 **Rouge** | Alerte : Supérieur au 9ème décile (Alerte critique) |
 
 > **Génération de Leviers** : Si au moins une variable d'un territoire tombe dans la zone Rouge ou Orange, le dashboard identifie la catégorie de la variable (Accès aux Soins, Environnement...) et génère sur le champ des liens vers les `'Leviers d'action'` adéquats.
+
+### Callback 6 : `update_cluster`
+
+```
+Inputs : sidebar-filter-social, sidebar-filter-offre, sidebar-filter-env,
+         sidebar-epci-radar, map-indic-select, map-patho-select
+Outputs: cluster-chart.figure, cluster-chart.style, cluster-main-grid.style,
+         cluster-placeholder.style, cluster-reading-guide.children,
+         cluster-dynamic-title.children
+```
+
+#### Logique de Machine Learning en temps réel (K-Means)
+
+Pour simplifier la complexité géographique (172 EPCI) et statistique (~100 variables), l'application réalise une classification automatique en direct :
+1.  **Extraction & Imputation** : Extrait les variables sélectionnées dans le menu de gauche pour tous les EPCI de la région. Si certaines valeurs sont manquantes (`NaN`), elles sont automatiquement imputées par la médiane de la colonne.
+2.  **Standardisation (Scaling)** : Z-score normalisation de chaque variable (`StandardScaler`) pour que toutes les dimensions pèsent de façon équivalente dans la distance euclidienne de K-Means.
+3.  **Classification ($K=4$)** : Répartition de tous les territoires de la région en 4 profils distincts via l'algorithme K-Means.
+4.  **Profils de Centroïdes** : Représente graphiquement la valeur moyenne (Z-Score) de chaque variable pour les 4 clusters (diagramme à barres groupées).
+
+#### Aide à la décision & Recommandations ciblées
+
+L'application identifie automatiquement à quel cluster appartient l'EPCI sélectionné par l'utilisateur et met en évidence sa fiche profil avec des recommandations d'action publique sur mesure :
+*   *Vulnérabilité cardiovasculaire élevée* ➡️ Parcours de soins et éducation thérapeutique.
+*   *Forte précarité sociale* ➡️ Actions d'aller-vers et prévention ciblée (QPV).
+*   *Accès aux soins critique* ➡️ Création de Maisons de Santé Pluriprofessionnelles (MSP).
+*   *Environnement dégradé* ➡️ Intégration de plans air-bruit-santé dans les contrats locaux de santé (CLS).
 
 ---
 

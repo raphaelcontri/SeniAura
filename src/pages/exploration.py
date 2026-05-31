@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 import random
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 from src.data import load_data
 
 try:
@@ -182,67 +184,165 @@ layout = dmc.Container(
                     ]
                 ),
 
-                # Radar Section
+                # Radar & Clustering Section (Tabs)
                 dmc.Paper(
-                    id='container-radar',
+                    id='container-tabs',
                     withBorder=True, shadow="sm", p="md", radius="md",
                     style={"minHeight": "650px"},
                     children=[
-                        dmc.Group(gap="xs", mb="md", children=[
-                            DashIconify(icon="solar:chart-2-linear", color="#339af0"),
-                            dmc.Text("Profil Comparatif", id='radar-dynamic-title', fw=700),
-                        ]),
-                        html.Div(
-                            id='radar-placeholder',
-                            style={'display': 'flex', 'height': '600px'},
-                            children=dmc.Center(
-                                style={"width": "100%", "height": "100%"},
-                                children=dmc.Stack(align="center", gap="xl", children=[
-                                    dmc.ThemeIcon(
-                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
-                                        size=140, radius=100, variant="light", color="blue"
-                                    ),
-                                    dmc.Paper(
-                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
-                                        shadow="sm", maw=600,
-                                        style={"border": "2px dashed #339af0"},
-                                        children=[
-                                            dmc.Text(
-                                                "Action Requise", 
-                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
-                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
-                                            ),
-                                            dmc.Text(
-                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
-                                                size="md", fw=700, ta="center", c="#1a1b1e",
-                                                style={"lineHeight": "1.6"}
-                                            )
-                                        ]
-                                    )
-                                ])
-                            )
-                        ),
-                        dmc.Grid(
-                            id='radar-main-grid',
-                            gutter="md",
-                            style={"flex": 1, "minHeight": 0, "display": "none"},
+                        dmc.Tabs(
+                            id="exploration-tabs",
+                            value="radar",
+                            variant="pills",
+                            radius="md",
+                            styles={
+                                "tab": {
+                                    "fontWeight": 600,
+                                    "padding": "8px 16px",
+                                    "transition": "all 200ms ease",
+                                    "backgroundColor": "#f8f9fa",
+                                    "border": "1px solid #dee2e6",
+                                    "color": "#495057",
+                                },
+                                "tab[data-active]": {
+                                    "backgroundColor": "#339af0 !important",
+                                    "borderColor": "#339af0 !important",
+                                    "color": "white !important"
+                                }
+                            },
                             children=[
-                                dmc.GridCol(
-                                    span=8,
+                                dmc.TabsList([
+                                    dmc.TabsTab("Profil Radar", value="radar", leftSection=DashIconify(icon="solar:chart-2-linear", width=18)),
+                                    dmc.TabsTab("Clustering & Typologie", value="cluster", leftSection=DashIconify(icon="solar:widget-linear", width=18)),
+                                ], mb="lg"),
+                                
+                                # Tab 1: Radar Chart
+                                dmc.TabsPanel(
+                                    value="radar",
                                     children=[
-                                        dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
+                                        dmc.Group(gap="xs", mb="md", children=[
+                                            DashIconify(icon="solar:chart-2-linear", color="#339af0"),
+                                            dmc.Text("Profil Comparatif Radar", id='radar-dynamic-title', fw=700),
+                                        ]),
+                                        html.Div(
+                                            id='radar-placeholder',
+                                            style={'display': 'flex', 'height': '600px'},
+                                            children=dmc.Center(
+                                                style={"width": "100%", "height": "100%"},
+                                                children=dmc.Stack(align="center", gap="xl", children=[
+                                                    dmc.ThemeIcon(
+                                                        DashIconify(icon="solar:chart-2-bold-duotone", width=100),
+                                                        size=140, radius=100, variant="light", color="blue"
+                                                    ),
+                                                    dmc.Paper(
+                                                        p="xl", radius="lg", withBorder=True, bg="blue.0",
+                                                        shadow="sm", maw=600,
+                                                        style={"border": "2px dashed #339af0"},
+                                                        children=[
+                                                            dmc.Text(
+                                                                "Action Requise", 
+                                                                fw=900, size="lg", c="blue.9", ta="center", mb=10,
+                                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                                            ),
+                                                            dmc.Text(
+                                                                "Sélectionnez au moins 2 variables et un territoire pour activer le radar comparatif. La variable d'indicateur de santé sera ajoutée par défaut.",
+                                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                                style={"lineHeight": "1.6"}
+                                                            )
+                                                        ]
+                                                    )
+                                                ])
+                                            )
+                                        ),
+                                        dmc.Grid(
+                                            id='radar-main-grid',
+                                            gutter="md",
+                                            style={"flex": 1, "minHeight": 0, "display": "none"},
+                                            children=[
+                                                dmc.GridCol(
+                                                    span=8,
+                                                    children=[
+                                                        dcc.Graph(id='radar-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False}),
+                                                    ]
+                                                ),
+                                                dmc.GridCol(
+                                                    span=4,
+                                                    children=[
+                                                        html.Div(
+                                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
+                                                            children=[
+                                                                html.Div(id='radar-guide-header', style={'display': 'none'}),
+                                                                html.Div(id='radar-reading-guide'),
+                                                                html.Div(id='radar-guide-paper', style={'display': 'none'}),
+                                                            ]
+                                                        )
+                                                    ]
+                                                )
+                                            ]
+                                        )
                                     ]
                                 ),
-                                dmc.GridCol(
-                                    span=4,
+                                
+                                # Tab 2: Clustering K-Means
+                                dmc.TabsPanel(
+                                    value="cluster",
                                     children=[
+                                        dmc.Group(gap="xs", mb="md", children=[
+                                            DashIconify(icon="solar:widget-linear", color="#339af0"),
+                                            dmc.Text("Profiler de Clustering Territorial (K-Means)", id='cluster-dynamic-title', fw=700),
+                                        ]),
                                         html.Div(
-                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
+                                            id='cluster-placeholder',
+                                            style={'display': 'flex', 'height': '600px'},
+                                            children=dmc.Center(
+                                                style={"width": "100%", "height": "100%"},
+                                                children=dmc.Stack(align="center", gap="xl", children=[
+                                                    dmc.ThemeIcon(
+                                                        DashIconify(icon="solar:widget-bold-duotone", width=100),
+                                                        size=140, radius=100, variant="light", color="indigo"
+                                                    ),
+                                                    dmc.Paper(
+                                                        p="xl", radius="lg", withBorder=True, bg="indigo.0",
+                                                        shadow="sm", maw=600,
+                                                        style={"border": "2px dashed #4c6ef5"},
+                                                        children=[
+                                                            dmc.Text(
+                                                                "Clustering Régional", 
+                                                                fw=900, size="lg", c="indigo.9", ta="center", mb=10,
+                                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
+                                                            ),
+                                                            dmc.Text(
+                                                                "Sélectionnez au moins un territoire et des variables dans la barre latérale pour activer le profiler de clustering K-Means.",
+                                                                size="md", fw=700, ta="center", c="#1a1b1e",
+                                                                style={"lineHeight": "1.6"}
+                                                            )
+                                                        ]
+                                                    )
+                                                ])
+                                            )
+                                        ),
+                                        dmc.Grid(
+                                            id='cluster-main-grid',
+                                            gutter="md",
+                                            style={"flex": 1, "minHeight": 0, "display": "none"},
                                             children=[
-                                                html.Div(id='radar-guide-header', style={'display': 'none'}),
-                                                html.Div(id='radar-reading-guide'),
-                                                # Hidden element to keep the callback ID valid
-                                                html.Div(id='radar-guide-paper', style={'display': 'none'}),
+                                                dmc.GridCol(
+                                                    span=7,
+                                                    children=[
+                                                        dcc.Graph(id='cluster-chart', style={'display': 'none', 'height': '600px'}, config={'displayModeBar': False}),
+                                                    ]
+                                                ),
+                                                dmc.GridCol(
+                                                    span=5,
+                                                    children=[
+                                                        html.Div(
+                                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
+                                                            children=[
+                                                                html.Div(id='cluster-reading-guide'),
+                                                            ]
+                                                        )
+                                                    ]
+                                                )
                                             ]
                                         )
                                     ]
@@ -1042,5 +1142,187 @@ clientside_callback(
     Input("scroll-to-radar-indicator", "n_clicks"),
     prevent_initial_call=True
 )
+
+
+# --- Clustering K-Means Callback ---
+@callback(
+    [Output('cluster-chart', 'figure'),
+     Output('cluster-chart', 'style'),
+     Output('cluster-main-grid', 'style'),
+     Output('cluster-placeholder', 'style'),
+     Output('cluster-reading-guide', 'children'),
+     Output('cluster-dynamic-title', 'children')],
+    [Input('sidebar-filter-social', 'value'), 
+     Input('sidebar-filter-offre', 'value'), 
+     Input('sidebar-filter-env', 'value'),
+     Input('sidebar-epci-radar', 'value'),
+     Input('map-indic-select', 'value'), Input('map-patho-select', 'value')]
+)
+def update_cluster(social, offre, env, epci_codes, ind, patho):
+    target = f"{ind}_{patho}"
+    if target not in gdf_merged.columns and target == 'INCI_CNR' and 'Taux_CNR' in gdf_merged.columns: 
+        target = 'Taux_CNR'
+    
+    # 1. Sélectionner les variables actives pour le clustering
+    selected_vars = [target] + (social or []) + (offre or []) + (env or [])
+    # Garder uniquement les valeurs uniques tout en préservant l'ordre
+    seen = set()
+    selected_vars = [x for x in selected_vars if not (x in seen or seen.add(x))]
+    
+    # Titre dynamique de l'onglet
+    names_str = ""
+    if epci_codes:
+        names = gdf_merged[gdf_merged['EPCI_CODE'].isin(epci_codes)]['nom_EPCI'].tolist()
+        names_str = f" - Position de {', '.join(names)}"
+    dynamic_title = f"Profiler de Clustering Territorial (K-Means){names_str}"
+
+    # Si pas assez de variables, on utilise un jeu par défaut intelligent pour que l'onglet ne soit pas vide
+    if len(selected_vars) < 2:
+        defaults = ['Taux_CNR', 'FDep_2021', 'APL-med_general_2023', 'AIR01']
+        selected_vars = [v for v in defaults if v in gdf_merged.columns]
+
+    # Extraction des données d'analyse
+    df_cluster = gdf_merged[['EPCI_CODE', 'nom_EPCI'] + selected_vars].copy()
+    
+    # Gestion des valeurs manquantes (imputation par la médiane de colonne)
+    for col in selected_vars:
+        if df_cluster[col].isnull().any():
+            median_val = df_cluster[col].median()
+            df_cluster[col] = df_cluster[col].fillna(median_val if pd.notna(median_val) else 0.0)
+
+    # 2. Normalisation standardisée (Z-score)
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(df_cluster[selected_vars])
+
+    # 3. K-Means (fixé à 4 profils territoriaux pour la clarté opérationnelle)
+    n_clusters = 4
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    df_cluster['Cluster'] = kmeans.fit_predict(X_scaled)
+
+    # 4. Construction de la figure Plotly (Groupe de Barres des Centroïdes)
+    fig = go.Figure()
+    cluster_means = []
+    labels_z = [variable_dict.get(v, v) for v in selected_vars]
+    
+    for c in range(n_clusters):
+        c_df = df_cluster[df_cluster['Cluster'] == c]
+        # Moyenne des Z-scores pour ce cluster spécifique
+        c_mean_z = X_scaled[df_cluster['Cluster'] == c].mean(axis=0)
+        cluster_means.append(c_mean_z)
+        
+        fig.add_trace(go.Bar(
+            x=labels_z,
+            y=c_mean_z,
+            name=f"Profil {c + 1} ({len(c_df)} EPCIs)",
+            marker_color=MARKER_COLORS[c % len(MARKER_COLORS)]
+        ))
+        
+    fig.update_layout(
+        barmode='group',
+        xaxis=dict(title="Variables analysées", gridcolor="#e9ecef", tickangle=-15),
+        yaxis=dict(title="Écart à la moyenne régionale (Z-Score)", gridcolor="#e9ecef"),
+        margin={"t":40,"b":80,"l":40,"r":40},
+        height=600,
+        legend=dict(orientation="h", y=-0.25, x=0.5, xanchor="center"),
+        paper_bgcolor='white',
+        plot_bgcolor='white'
+    )
+
+    # 5. Identifier le cluster de l'EPCI sélectionné
+    selected_epci_code = epci_codes[0] if (epci_codes and len(epci_codes) > 0) else None
+    epci_cluster_id = None
+    epci_name = ""
+    if selected_epci_code:
+        row_epci = df_cluster[df_cluster['EPCI_CODE'] == selected_epci_code]
+        if not row_epci.empty:
+            epci_cluster_id = row_epci['Cluster'].values[0]
+            epci_name = row_epci['nom_EPCI'].values[0]
+
+    # 6. Génération narrative des profils et leviers d'action
+    cluster_cards = []
+    for c in range(n_clusters):
+        c_df = df_cluster[df_cluster['Cluster'] == c]
+        c_mean_z = cluster_means[c]
+        
+        # Trouver la dimension la plus forte et la plus faible de ce profil
+        idx_high = np.argmax(c_mean_z)
+        idx_low = np.argmin(c_mean_z)
+        
+        var_high = selected_vars[idx_high]
+        var_low = selected_vars[idx_low]
+        
+        label_high = variable_dict.get(var_high, var_high)
+        label_low = variable_dict.get(var_low, var_low)
+        
+        z_high = c_mean_z[idx_high]
+        z_low = c_mean_z[idx_low]
+        
+        # Titre et badge
+        is_target_cluster = (epci_cluster_id == c)
+        badge = None
+        card_style = {
+            "padding": "15px", 
+            "borderRadius": "8px", 
+            "border": "1px solid #dee2e6", 
+            "marginBottom": "10px",
+            "backgroundColor": "#ffffff",
+            "transition": "all 200ms ease"
+        }
+        
+        if is_target_cluster:
+            card_style.update({
+                "backgroundColor": "#e7f5ff", 
+                "borderColor": "#339af0", 
+                "borderWidth": "2px",
+                "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.15)"
+            })
+            badge = dmc.Badge(f"Territoire cible : {epci_name}", color="blue", variant="filled", size="sm")
+            
+        # Recommandations automatiques basées sur la variable la plus critique
+        rec = "Renforcer la prévention territoriale générale."
+        # Si indicateur de santé très élevé
+        if "INCI" in var_high or "MORT" in var_high or "Taux_CNR" in var_high:
+            rec = f"🎯 Action Requise : Vulnérabilité cardiovasculaire élevée. Priorité absolue aux parcours de soins coordonnés et à l'éducation thérapeutique."
+        # Si précarité sociale très élevée
+        elif "FDep" in var_high or "Revenu" in var_low or "Precarite" in var_high:
+            rec = f"🤝 Action Sociale : Précarité forte. Mettre en place des actions d'aller-vers et de prévention en santé dans les quartiers prioritaires (QPV) ou zones isolées."
+        # Si offre de soins très faible
+        elif "APL" in var_low or "Officines" in var_low:
+            rec = f"🏥 Offre Médicale : Accès aux soins critique. Soutenir la création de Maisons de Santé Pluriprofessionnelles (MSP) ou l'accueil de internes."
+        # Si environnement dégradé
+        elif "AIR" in var_high or "BRUIT" in var_high:
+            rec = f"🌿 OSE / Environnement : Forte exposition aux nuisances. Articuler les contrats locaux de santé (CLS) avec des plans de réduction des émissions de polluants."
+
+        cluster_cards.append(html.Div(style=card_style, children=[
+            dmc.Group([
+                dmc.Text(f"Typologie {c + 1} - {len(c_df)} EPCIs", fw=700, size="sm", c=MARKER_COLORS[c % len(MARKER_COLORS)]),
+                badge
+            ], justify="space-between", mb=6),
+            dmc.Text([
+                "Description : Valeurs typiquement élevées pour ", 
+                dmc.Text(label_high, fw=600, span=True), f" (Z-score moyen = {z_high:+.2f}) et particulièrement faibles pour ",
+                dmc.Text(label_low, fw=600, span=True), f" (Z-score moyen = {z_low:+.2f})."
+            ], size="xs", c="gray.7", mb=8),
+            dmc.Text(rec, size="xs", fw=700, c="blue.8" if is_target_cluster else "gray.8")
+        ]))
+
+    # Guide global d'analyse
+    guide = dmc.Stack(gap="md", children=[
+        dmc.Group([
+            dmc.Group([
+                html.Div(style={"width":12,"height":12,"backgroundColor":"#e7f5ff","border":"2px solid #339af0","borderRadius":"3px"}), 
+                dmc.Text("Territoire sélectionné", size="xs", fw=500)
+            ]),
+            dmc.Text("Z-Score = 0 représente la moyenne exacte de la région AURA", size="xs", c="dimmed", fs="italic"),
+        ], gap="xl"),
+        dmc.SimpleGrid(
+            cols={"base": 1, "sm": 1},
+            spacing="md",
+            children=cluster_cards
+        )
+    ])
+
+    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, guide, dynamic_title
+
 
 
