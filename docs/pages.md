@@ -193,26 +193,28 @@ L'algorithme de positionnement analyse vos territoires finement via le **sens de
 ```
 Inputs : sidebar-filter-social, sidebar-filter-offre, sidebar-filter-env,
          sidebar-epci-radar, map-indic-select, map-patho-select
-Outputs: cluster-chart.figure, cluster-chart.style, cluster-main-grid.style,
+Outputs: cluster-map-graph.figure, cluster-chart.figure, cluster-main-grid.style,
          cluster-placeholder.style, cluster-reading-guide.children,
-         cluster-dynamic-title.children
+         cluster-twins-table-container.children, cluster-dynamic-title.children,
+         cluster-active-badge-container.children
 ```
 
-#### Logique de Machine Learning en temps réel (K-Means)
+#### Logique de Machine Learning Transparente & Vérifiable (K-Means & Similarité)
 
-Pour simplifier la complexité géographique (172 EPCI) et statistique (~100 variables), l'application réalise une classification automatique en direct :
-1.  **Extraction & Imputation** : Extrait les variables sélectionnées dans le menu de gauche pour tous les EPCI de la région. Si certaines valeurs sont manquantes (`NaN`), elles sont automatiquement imputées par la médiane de la colonne.
-2.  **Standardisation (Scaling)** : Z-score normalisation de chaque variable (`StandardScaler`) pour que toutes les dimensions pèsent de façon équivalente dans la distance euclidienne de K-Means.
-3.  **Classification ($K=4$)** : Répartition de tous les territoires de la région en 4 profils distincts via l'algorithme K-Means.
-4.  **Profils de Centroïdes** : Représente graphiquement la valeur moyenne (Z-Score) de chaque variable pour les 4 clusters (diagramme à barres groupées).
+Pour simplifier la complexité géographique (172 EPCI) et statistique de la région AURA, l'application réalise une classification automatique stable en direct :
+1.  **4 Typologies Thématiques Fixes** : Le modèle actif est automatiquement sélectionné selon les filtres choisis par l'utilisateur dans la barre latérale (Santé par défaut, Socio-économique, Offre de Soins ou Environnement). Les variables de chaque modèle sont pré-sélectionnées de manière rigoureuse et stable.
+2.  **Imputation & Standardisation** : Imputation robuste des valeurs manquantes par la médiane de colonne et normalisation Z-Score transparente :
+    $$Z = \frac{x - \mu}{\sigma}$$
+3.  **Classification ($K=4$) & Tri Anti-Label Switching** : Les territoires sont groupés en 4 clusters. Pour garantir une constance visuelle absolue, les clusters sont triés par niveau de vulnérabilité globale. Le Cluster 1 est le plus vulnérable (Rouge) et le Cluster 4 le plus favorable (Vert).
+4.  **Recherche géométrique de « Jumeaux Territoriaux »** : L'algorithme calcule la distance euclidienne directe dans l'espace standardisé pour identifier les 3 EPCI les plus proches (semblables) du territoire sélectionné pour le benchmark.
 
-#### Aide à la décision & Recommandations ciblées
+#### Rendu Interactif & Connexion Directe aux Leviers d'Action
 
-L'application identifie automatiquement à quel cluster appartient l'EPCI sélectionné par l'utilisateur et met en évidence sa fiche profil avec des recommandations d'action publique sur mesure :
-*   *Vulnérabilité cardiovasculaire élevée* ➡️ Parcours de soins et éducation thérapeutique.
-*   *Forte précarité sociale* ➡️ Actions d'aller-vers et prévention ciblée (QPV).
-*   *Accès aux soins critique* ➡️ Création de Maisons de Santé Pluriprofessionnelles (MSP).
-*   *Environnement dégradé* ➡️ Intégration de plans air-bruit-santé dans les contrats locaux de santé (CLS).
+Le callback génère un diagnostic territorial complet sous forme de grille interactive :
+*   **Mini-Carte Régionale des Clusters** (`cluster-map-graph`) : Affiche la répartition spatiale réelle des 4 typologies sur toute la région AURA avec mise en valeur de la cible.
+*   **Profil Hybride** (`cluster-chart`) : Un graphique à barres groupées montrant le profil moyen du Cluster ciblé (les centroïdes), sur lequel est superposée la ligne noire des scores exacts de l'EPCI actif. Cela permet d'identifier immédiatement les écarts locaux spécifiques.
+*   **Jumeaux Territoriaux** (`cluster-twins-table-container`) : Un tableau listant les 3 EPCI « jumeaux » avec leur similarité géométrique et des raccourcis de navigation pour le benchmarking CPTS/CLS.
+*   **Fiches Narratives d'Interprétation** (`cluster-reading-guide`) : Affiche le titre clinique/sociologique du cluster (ex: *"Surtaux Généralisé & Alerte Clinique"*, *"Désertification Médicale Critique"*) ainsi qu'un **bouton d'action direct avec ancre d'URL** (`/leviers#sante`, `/leviers#socio`, `/leviers#env`) ouvrant automatiquement le bon onglet sur la page des leviers d'action.
 
 ---
 
