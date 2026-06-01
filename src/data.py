@@ -3,6 +3,8 @@ import pandas as pd
 import geopandas as gpd
 import os
 import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 
 # Paths
 # Assumes this file is in src/, so we go up one level to dashboard interactif, then up/down to data
@@ -198,7 +200,48 @@ def load_data():
     # Merge
     gdf_merged = gdf_epci.merge(df, left_on='EPCI_CODE', right_on='CODE_EPCI', how='left')
 
-    # 5. Create Department boundaries for overlay
+    # 5. Pre-calculate static K-Means clusters (Anti-label switching)
+    themes = {
+        'sante': ['INCI_AVC', 'INCI_CardIsch', 'INCI_InsuCard', 'MORT_AVC', 'MORT_CardIsch', 'MORT_InsuCard', 'PREV_AVC', 'PREV_CardIsch', 'PREV_InsuCard'],
+        'socio': ['FDep_2021', 'MED_SL', 'PR_MD60', 'Part de personnes isolées 60 ans et plus', 'Taux de chomeurs_2022'],
+        'offre': ['APL-med_general_2023', 'APL_Cardio_EPCI', 'Officines_2025', 'Centres_Sante_2025', 'Maisons_Sante_2025'],
+        'env': ['AIR01', 'AIR02', 'BRUIT01', 'BRUIT02']
+    }
+    
+    for theme_name, selected_vars in themes.items():
+        df_cluster = gdf_merged[['EPCI_CODE'] + selected_vars].copy()
+        
+        # Impute missing values with column median
+        for col in selected_vars:
+            if col not in df_cluster.columns:
+                df_cluster[col] = 0.0
+            if df_cluster[col].isnull().any():
+                median_val = df_cluster[col].median()
+                df_cluster[col] = df_cluster[col].fillna(median_val if pd.notna(median_val) else 0.0)
+                
+        # Standardize data
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(df_cluster[selected_vars])
+        
+        # Run K-Means with K=4
+        n_clusters = 4
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        raw_clusters = kmeans.fit_predict(X_scaled)
+        
+        # Anti-Label Switching: Sort clusters by average vulnerability direction
+        directions = np.array([sens_dict.get(v, -1) for v in selected_vars])
+        cluster_vulnerability = []
+        for c in range(n_clusters):
+            c_mean_z = X_scaled[raw_clusters == c].mean(axis=0)
+            vuln_score = np.sum(c_mean_z * (-directions))
+            cluster_vulnerability.append((c, vuln_score))
+            
+        sorted_clusters = sorted(cluster_vulnerability, key=lambda x: x[1], reverse=True)
+        label_mapping = {raw_c: new_c for new_c, (raw_c, _) in enumerate(sorted_clusters)}
+        
+        gdf_merged[f'Cluster_{theme_name}'] = pd.Series(raw_clusters, index=df_cluster.index).map(label_mapping)
+
+    # 6. Create Department boundaries for overlay
     # Dissolve by department name to get department shapes
     gdf_deps = gdf_epci.dissolve(by='DEPARTEMEN')
     

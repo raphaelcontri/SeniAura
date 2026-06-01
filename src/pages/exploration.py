@@ -448,6 +448,17 @@ layout = dmc.Container(
                             gutter="md",
                             style={"flex": 1, "minHeight": 0, "display": "flex"}, # Always displayed
                             children=[
+                                # Non-interactive static map (5 columns wide)
+                                dmc.GridCol(
+                                    span=5,
+                                    children=[
+                                        dcc.Graph(
+                                            id='cluster-map-graph',
+                                            style={'height': '420px'},
+                                            config={'staticPlot': True, 'displayModeBar': False}
+                                        ),
+                                    ]
+                                ),
                                 # Profile chart (7 columns wide for clear view of relative percentage gaps)
                                 dmc.GridCol(
                                     span=7,
@@ -462,9 +473,9 @@ layout = dmc.Container(
                                         html.Div(id='cluster-reading-guide'),
                                     ]
                                 ),
-                                # Benchmark table (full width at the bottom, spacious and clear)
+                                # Benchmark table (7 columns wide)
                                 dmc.GridCol(
-                                    span=12,
+                                    span=7,
                                     children=[
                                         html.Div(id='cluster-twins-table-container'),
                                     ]
@@ -589,11 +600,10 @@ def update_highlight_options(social, offre, env):
      Input({'type': 'exploration-slider', 'index': ALL}, 'value'),
      Input('sidebar-epci-radar', 'value'),
      Input('highlight-variable-select', 'value'),
-     Input('show-hospitals-switch', 'checked'),
-     Input('cluster-theme-selector', 'value')],
+     Input('show-hospitals-switch', 'checked')],
     State({'type': 'exploration-slider', 'index': ALL}, 'id')
 )
-def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hospitals, cluster_theme, slider_ids):
+def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hospitals, slider_ids):
     try:
         click_instruction = "<i>Cliquez sur cet EPCI pour l'ajouter au radar chart et au profiler</i><br><br>"
         total_epci = len(gdf_merged)
@@ -604,189 +614,6 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
              demo_h = gdf_merged['H_65_plus'].apply(lambda x: f"{x:.1f}%" if pd.notna(x) else "N/A")
              demo_f = gdf_merged['F_65_plus'].apply(lambda x: f"{x:.1f}%" if pd.notna(x) else "N/A")
              demo_text_series = "<br><span style='font-size: 11.5px;'>👨 Hommes 65+ : <b>" + demo_h + "</b>  |  👩 Femmes 65+ : <b>" + demo_f + "</b></span>"
-
-        # ----------------------------------------------------
-        # CLUSTERING K-MEANS MAP MODE
-        # ----------------------------------------------------
-        if ind == 'CLUSTER':
-            # Theme metadata
-            meta = THEME_METADATA.get(cluster_theme, THEME_METADATA['sante'])
-            theme_label = meta['label']
-            badge_color = meta['badge_color']
-            selected_vars = meta['vars']
-            
-            dynamic_title = f"Carte typologique de la région AURA - {theme_label} (K-Means)"
-            
-            # Impute missing values with column median
-            df_cluster = gdf_merged[['EPCI_CODE', 'nom_EPCI'] + selected_vars].copy()
-            for col in selected_vars:
-                if df_cluster[col].isnull().any():
-                    median_val = df_cluster[col].median()
-                    df_cluster[col] = df_cluster[col].fillna(median_val if pd.notna(median_val) else 0.0)
-                    
-            # Standardize data
-            scaler = StandardScaler()
-            X_scaled = scaler.fit_transform(df_cluster[selected_vars])
-            
-            # Run K-Means with K=4
-            n_clusters = 4
-            kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-            raw_clusters = kmeans.fit_predict(X_scaled)
-            
-            # Anti-Label Switching: Sort clusters by average vulnerability direction
-            directions = np.array([sens_dict.get(v, -1) for v in selected_vars])
-            cluster_vulnerability = []
-            for c in range(n_clusters):
-                c_mean_z = X_scaled[raw_clusters == c].mean(axis=0)
-                vuln_score = np.sum(c_mean_z * (-directions))
-                cluster_vulnerability.append((c, vuln_score))
-                
-            sorted_clusters = sorted(cluster_vulnerability, key=lambda x: x[1], reverse=True)
-            label_mapping = {raw_c: new_c for new_c, (raw_c, _) in enumerate(sorted_clusters)}
-            
-            df_cluster['Cluster'] = pd.Series(raw_clusters).map(label_mapping)
-            
-            # Build figure
-            fig = go.Figure()
-            
-            # 1. Base Choropleth Layer colored by cluster ID (0 to 3)
-            cluster_group_names = {
-                0: "Groupe 1 - Alerte critique / Vulnérabilité maximale",
-                1: "Groupe 2 - Vulnérabilité forte",
-                2: "Groupe 3 - Vulnérabilité modérée",
-                3: "Groupe 4 - Profil favorable / Préservé"
-            }
-            cluster_names_mapped = df_cluster['Cluster'].map(cluster_group_names)
-            focus_text = df_cluster['nom_EPCI'] + demo_text_series.loc[df_cluster.index]
-            
-            fig.add_trace(go.Choropleth(
-                geojson=geojson_data,
-                locations=df_cluster.index.astype(str),
-                z=df_cluster['Cluster'],
-                colorscale=[[0, '#e03131'], [0.33, '#ff922b'], [0.66, '#fcc419'], [1, '#51cf66']],
-                showscale=False,
-                marker_line_width=0.5,
-                marker_line_color="rgba(255,255,255,0.8)",
-                hovertemplate=click_instruction + "<b>%{text}</b><br>Typologie : <b>%{customdata}</b><extra></extra>",
-                text=focus_text,
-                customdata=cluster_names_mapped,
-                name="Typologie de Cluster"
-            ))
-            
-            # 2. Department outlines
-            fig.add_trace(go.Choropleth(
-                geojson=geojson_deps,
-                locations=gdf_deps_4326.index.astype(str),
-                z=[0] * len(gdf_deps_4326),
-                colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
-                showscale=False,
-                marker_line_width=1.5,
-                marker_line_color='rgba(0,0,0,0.6)',
-                hoverinfo='skip'
-            ))
-            
-            # 3. Highlight selection
-            if epci_selection:
-                sel = epci_selection if isinstance(epci_selection, list) else [epci_selection]
-                hl = gdf_merged[gdf_merged['EPCI_CODE'].isin(sel)]
-                if not hl.empty:
-                    fig.add_trace(go.Choropleth(
-                        geojson=geojson_data,
-                        locations=hl.index.astype(str),
-                        z=[1] * len(hl),
-                        colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
-                        showscale=False,
-                        marker_line_width=2.5,
-                        marker_line_color='#2c3e50', # Deep dark grey contrast border for clustering selection
-                        hoverinfo='skip',
-                        name="Sélection"
-                    ))
-            
-            # 4. Major Cities
-            cities = [
-                {"name": "Lyon", "lat": 45.7640, "lon": 4.8357},
-                {"name": "Saint-Étienne", "lat": 45.4397, "lon": 4.3873},
-                {"name": "Grenoble", "lat": 45.1885, "lon": 5.7248},
-                {"name": "Clermont-Ferrand", "lat": 45.7772, "lon": 3.0870},
-                {"name": "Valence", "lat": 44.9333, "lon": 4.8917},
-                {"name": "Annecy", "lat": 45.8992, "lon": 6.1293},
-                {"name": "Chambéry", "lat": 45.5646, "lon": 5.9238},
-                {"name": "Bourg-en-Bresse", "lat": 46.2052, "lon": 5.2258},
-                {"name": "Montluçon", "lat": 46.3401, "lon": 2.6020},
-                {"name": "Aurillac", "lat": 44.9264, "lon": 2.4418},
-                {"name": "Le Puy-en-Velay", "lat": 45.0428, "lon": 3.8829},
-                {"name": "Moulins", "lat": 46.5667, "lon": 3.3333},
-                {"name": "Privas", "lat": 44.7333, "lon": 4.6000},
-            ]
-            
-            fig.add_trace(go.Scattergeo(
-                lat=[c["lat"] for c in cities],
-                lon=[c["lon"] for c in cities],
-                text=[c["name"] for c in cities],
-                mode="markers+text",
-                marker=dict(size=4, color="black", opacity=0.7),
-                textposition="top center",
-                textfont=dict(family="Inter, sans-serif", size=9, color="black"),
-                hoverinfo="text",
-                showlegend=False
-            ))
-            
-            fig.update_geos(fitbounds="locations", visible=False)
-            fig.update_layout(
-                margin={"r":0, "t":0, "l":0, "b":0},
-                paper_bgcolor='white', 
-                clickmode='event+select',
-                dragmode='pan'
-            )
-            
-            # Stats Header (Clustering Legend)
-            stats_header = dmc.Paper(
-                p="md", withBorder=True, radius="md", bg="indigo.0", mb="md",
-                children=[
-                    dmc.Stack(gap="xs", children=[
-                        dmc.Group(justify="space-between", align="center", children=[
-                            dmc.Text("Carte Typologique Active", fw=800, size="xs", c="indigo.9", tt="uppercase"),
-                            dmc.Badge(theme_label, color=badge_color, variant="filled")
-                        ]),
-                        dmc.Text([
-                            "La carte affiche la répartition géographique des ", dmc.Text("4 typologies de territoires (K-Means)", fw=700, span=True), 
-                            " pour la thématique active. Cliquez sur un territoire pour étudier son profil détaillé ci-dessous."
-                        ], size="sm", c="gray.9")
-                    ])
-                ]
-            )
-            
-            # Legend lists
-            legend_items = []
-            for c in range(4):
-                c_data = THEME_INTERPRETATIONS.get(cluster_theme, {}).get(c, {})
-                title_c = c_data.get('title', f"Typologie {c+1}")
-                desc_c = c_data.get('desc', "")
-                badge_style_color = CLUSTER_COLORS[c]
-                
-                legend_items.append(
-                    dmc.Paper(
-                        p="xs", radius="sm", withBorder=True, bg="white", mb="xs",
-                        style={"borderLeft": f"4px solid {badge_style_color}"},
-                        children=[
-                            dmc.Group(justify="space-between", mb=2, children=[
-                                dmc.Text(cluster_group_names[c], fw=700, size="xs", c="dark"),
-                                dmc.Badge(title_c, color="gray", variant="light", size="xs")
-                            ]),
-                            dmc.Text(desc_c, size="11px", c="dimmed", style={"lineHeight": "1.4"})
-                        ]
-                    )
-                )
-                
-            narrative_paper = dmc.Paper(
-                p="md", withBorder=True, radius="md", bg="gray.0",
-                children=[
-                    dmc.Text("Légende explicative des profils :", fw=800, size="xs", tt="uppercase", mb="xs", c="gray.7"),
-                    dmc.Stack(gap="xs", children=legend_items)
-                ]
-            )
-            
-            return fig, stats_header, narrative_paper, "Typologies K-Means", dynamic_title
 
         # ----------------------------------------------------
         # STANDARD DISEASE CHLOROPLETH MAP MODE
@@ -1594,6 +1421,7 @@ def make_twins_table(selected_epci_code, selected_vars, twins_list):
 
 @callback(
     [Output('cluster-chart', 'figure'),
+     Output('cluster-map-graph', 'figure'),
      Output('cluster-main-grid', 'style'),
      Output('cluster-placeholder', 'style'),
      Output('cluster-reading-guide', 'children'),
@@ -1601,10 +1429,9 @@ def make_twins_table(selected_epci_code, selected_vars, twins_list):
      Output('cluster-dynamic-title', 'children'),
      Output('cluster-active-badge-container', 'children')],
     [Input('cluster-theme-selector', 'value'), 
-     Input('sidebar-epci-radar', 'value'),
-     Input('map-indic-select', 'value'), Input('map-patho-select', 'value')]
+     Input('sidebar-epci-radar', 'value')]
 )
-def update_cluster(cluster_theme, epci_codes, ind, patho):
+def update_cluster(cluster_theme, epci_codes):
     meta = THEME_METADATA.get(cluster_theme, THEME_METADATA['sante'])
     theme_label = meta['label']
     badge_color = meta['badge_color']
@@ -1625,43 +1452,58 @@ def update_cluster(cluster_theme, epci_codes, ind, patho):
         leftSection=DashIconify(icon="solar:settings-bold-duotone", width=14)
     )
 
-    # Impute missing values with column median
+    # Load cluster dataframe and precalculated static clusters
     df_cluster = gdf_merged[['EPCI_CODE', 'nom_EPCI'] + selected_vars].copy()
+    df_cluster['Cluster'] = gdf_merged[f'Cluster_{cluster_theme}']
+    
+    # Impute missing values with column median
     for col in selected_vars:
         if df_cluster[col].isnull().any():
             median_val = df_cluster[col].median()
             df_cluster[col] = df_cluster[col].fillna(median_val if pd.notna(median_val) else 0.0)
             
-    # Standardize data
+    # Standardize data for Euclidean distance benchmark
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(df_cluster[selected_vars])
     
-    # Run K-Means with K=4
-    n_clusters = 4
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-    raw_clusters = kmeans.fit_predict(X_scaled)
-    
-    # Anti-Label Switching
-    directions = np.array([sens_dict.get(v, -1) for v in selected_vars])
-    cluster_vulnerability = []
-    for c in range(n_clusters):
-        c_mean_z = X_scaled[raw_clusters == c].mean(axis=0)
-        vuln_score = np.sum(c_mean_z * (-directions))
-        cluster_vulnerability.append((c, vuln_score))
-        
-    sorted_clusters = sorted(cluster_vulnerability, key=lambda x: x[1], reverse=True)
-    label_mapping = {raw_c: new_c for new_c, (raw_c, _) in enumerate(sorted_clusters)}
-    
-    df_cluster['Cluster'] = pd.Series(raw_clusters).map(label_mapping)
-    
     # ----------------------------------------------------
-    # PROFILE CHART IN PERCENT GAPS (vs regional average)
+    # STATIC NON-INTERACTIVE MAP GENERATION
     # ----------------------------------------------------
-    fig_chart = go.Figure()
-    labels_clean = [variable_dict.get(v, v) for v in selected_vars]
+    fig_map = go.Figure()
     
-    # Calculate regional means
-    reg_means = df_cluster[selected_vars].mean(axis=0)
+    cluster_group_names = {
+        0: "Groupe 1 - Alerte critique / Vulnérabilité maximale",
+        1: "Groupe 2 - Vulnérabilité forte",
+        2: "Groupe 3 - Vulnérabilité modérée",
+        3: "Groupe 4 - Profil favorable / Préservé"
+    }
+    cluster_names_mapped = df_cluster['Cluster'].map(cluster_group_names)
+    
+    # 1. Base Choropleth Layer colored by cluster ID
+    fig_map.add_trace(go.Choropleth(
+        geojson=geojson_data,
+        locations=df_cluster.index.astype(str),
+        z=df_cluster['Cluster'],
+        colorscale=[[0, '#e03131'], [0.33, '#ff922b'], [0.66, '#fcc419'], [1, '#51cf66']],
+        showscale=False,
+        marker_line_width=0.5,
+        marker_line_color="rgba(255,255,255,0.8)",
+        hoverinfo='skip',
+        customdata=cluster_names_mapped,
+        name="Typologie de Cluster"
+    ))
+    
+    # 2. Department outlines
+    fig_map.add_trace(go.Choropleth(
+        geojson=geojson_deps,
+        locations=gdf_deps_4326.index.astype(str),
+        z=[0] * len(gdf_deps_4326),
+        colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
+        showscale=False,
+        marker_line_width=1.2,
+        marker_line_color='rgba(0,0,0,0.5)',
+        hoverinfo='skip'
+    ))
     
     # Determine selection info
     selected_epci_code = epci_codes[0] if (epci_codes and len(epci_codes) > 0) else None
@@ -1673,7 +1515,65 @@ def update_cluster(cluster_theme, epci_codes, ind, patho):
         if not row_epci.empty:
             epci_cluster_id = int(row_epci['Cluster'].values[0])
             epci_name = row_epci['nom_EPCI'].values[0]
+            
+            # 3. Highlight selection
+            fig_map.add_trace(go.Choropleth(
+                geojson=geojson_data,
+                locations=[str(row_epci.index[0])],
+                z=[1],
+                colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
+                showscale=False,
+                marker_line_width=2.5,
+                marker_line_color='#2c3e50', # Deep dark grey contrast border
+                hoverinfo='skip'
+            ))
+            
+    # 4. Major Cities
+    cities = [
+        {"name": "Lyon", "lat": 45.7640, "lon": 4.8357},
+        {"name": "Saint-Étienne", "lat": 45.4397, "lon": 4.3873},
+        {"name": "Grenoble", "lat": 45.1885, "lon": 5.7248},
+        {"name": "Clermont-Ferrand", "lat": 45.7772, "lon": 3.0870},
+        {"name": "Valence", "lat": 44.9333, "lon": 4.8917},
+        {"name": "Annecy", "lat": 45.8992, "lon": 6.1293},
+        {"name": "Chambéry", "lat": 45.5646, "lon": 5.9238},
+        {"name": "Bourg-en-Bresse", "lat": 46.2052, "lon": 5.2258},
+        {"name": "Montluçon", "lat": 46.3401, "lon": 2.6020},
+        {"name": "Aurillac", "lat": 44.9264, "lon": 2.4418},
+        {"name": "Le Puy-en-Velay", "lat": 45.0428, "lon": 3.8829},
+        {"name": "Moulins", "lat": 46.5667, "lon": 3.3333},
+        {"name": "Privas", "lat": 44.7333, "lon": 4.6000},
+    ]
+    
+    fig_map.add_trace(go.Scattergeo(
+        lat=[c["lat"] for c in cities],
+        lon=[c["lon"] for c in cities],
+        text=[c["name"] for c in cities],
+        mode="markers+text",
+        marker=dict(size=4, color="black", opacity=0.7),
+        textposition="top center",
+        textfont=dict(family="Inter, sans-serif", size=8, color="black"),
+        hoverinfo="skip",
+        showlegend=False
+    ))
+    
+    fig_map.update_geos(fitbounds="locations", visible=False)
+    fig_map.update_layout(
+        margin={"r":0, "t":0, "l":0, "b":0},
+        paper_bgcolor='white',
+        dragmode=False
+    )
 
+    # ----------------------------------------------------
+    # PROFILE CHART IN PERCENT GAPS (vs regional average)
+    # ----------------------------------------------------
+    fig_chart = go.Figure()
+    labels_clean = [variable_dict.get(v, v) for v in selected_vars]
+    
+    # Calculate regional means
+    reg_means = df_cluster[selected_vars].mean(axis=0)
+    
+    n_clusters = 4
     for c in range(n_clusters):
         c_df = df_cluster[df_cluster['Cluster'] == c]
         c_col = CLUSTER_COLORS[c]
@@ -1822,7 +1722,7 @@ def update_cluster(cluster_theme, epci_codes, ind, patho):
         
     twins_table = make_twins_table(selected_epci_code, selected_vars, twins_list)
     
-    return fig_chart, {'display': 'flex'}, {'display': 'none'}, guide, twins_table, dynamic_title, active_badge
+    return fig_chart, fig_map, {'display': 'flex'}, {'display': 'none'}, guide, twins_table, dynamic_title, active_badge
 
 
 # --- Dynamic Selection Twin Benchmark Callback ---
@@ -1846,12 +1746,3 @@ def select_twin_epci(n_clicks_list, current_selection):
         return [twin_code]
     except Exception:
         return no_update
-
-
-# --- Disable Pathology Selector when Clustering active ---
-@callback(
-    Output('map-patho-select', 'disabled'),
-    Input('map-indic-select', 'value')
-)
-def disable_patho_select(indic):
-    return indic == 'CLUSTER'

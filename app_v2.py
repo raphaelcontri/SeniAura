@@ -186,8 +186,7 @@ sidebar = dmc.AppShellNavbar(
                                         data=[
                                             {'label': 'Incidence', 'value': 'INCI'},
                                             {'label': 'Prévalence', 'value': 'PREV'},
-                                            {'label': 'Mortalité', 'value': 'MORT'},
-                                            {'label': 'Typologie de Cluster (K-Means)', 'value': 'CLUSTER'}
+                                            {'label': 'Mortalité', 'value': 'MORT'}
                                         ], 
                                         value='INCI', size="sm", radius="md",
                                         comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},

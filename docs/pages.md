@@ -189,28 +189,27 @@ L'algorithme de positionnement analyse vos territoires finement via le **sens de
 ### Callback 6 : `update_cluster`
 
 ```
-Inputs : cluster-theme-selector.value, sidebar-epci-radar.value,
-         map-indic-select.value, map-patho-select.value
-Outputs: cluster-chart.figure, cluster-main-grid.style,
+Inputs : cluster-theme-selector.value, sidebar-epci-radar.value
+Outputs: cluster-chart.figure, cluster-map-graph.figure, cluster-main-grid.style,
          cluster-placeholder.style, cluster-reading-guide.children,
          cluster-twins-table-container.children, cluster-dynamic-title.children,
          cluster-active-badge-container.children
 ```
 
-#### Logique de Machine Learning Transparente & Vérifiable (K-Means & Similarité)
+#### Logique de Machine Learning Transparente & Rigoureuse (K-Means Statique & Similarité)
 
-Pour simplifier la complexité géographique (172 EPCI) et statistique de la région AURA, l'application réalise une classification automatique stable en direct :
-1.  **4 Typologies Thématiques avec Sélection Explicite** : L'utilisateur sélectionne explicitement la thématique active via un magnifique composant `dmc.SegmentedControl` au sommet de la carte (Santé, Socio-économie, Offre de Soins ou Environnement). Les variables de chaque modèle sont pré-sélectionnées de manière rigoureuse et stable.
-2.  **Imputation & Standardisation** : Imputation robuste des valeurs manquantes par la médiane de colonne et normalisation transparente pour l'algorithme K-Means.
-3.  **Classification ($K=4$) & Tri Anti-Label Switching** : Les territoires sont groupés en 4 clusters. Pour garantir une constance visuelle absolue, les clusters sont triés par niveau de vulnérabilité globale. Le Groupe 1 est le plus vulnérable (Rouge) et le Groupe 4 le plus favorable (Vert).
-4.  **Recherche géométrique de « Jumeaux Territoriaux » (Benchmark)** : L'algorithme calcule la distance euclidienne directe dans l'espace standardisé pour identifier les 3 EPCI les plus proches (semblables) du territoire sélectionné. Cette distance est ensuite convertie de manière transparente en un **Taux de ressemblance sur 100 (%)** pour en faciliter l'appropriation :
+Pour simplifier la complexité géographique (172 EPCI) et statistique de la région AURA, l'application réalise une classification automatique stable pré-calculée à froid dès le démarrage du serveur :
+1.  **4 Typologies Thématiques avec Sélection Explicite** : L'utilisateur sélectionne explicitement la thématique active via un magnifique composant `dmc.SegmentedControl` dédié en haut du module (Santé, Socio-économie, Offre de Soins ou Environnement). Les variables de chaque modèle sont fixes et pré-définies de manière transparente.
+2.  **Pré-calcul Statique Déterministe** : Le K-Means ($K=4$, `random_state=42`) est exécuté une seule fois à l'initialisation du serveur dans `src/data.py` sur les 172 EPCI de la région, évitant tout risque d'instabilité, de latence ou de recalcul en direct lors des interactions.
+3.  **Classification & Tri Anti-Label Switching** : Pour garantir une cohérence visuelle absolue (les couleurs ne changent jamais d'un thème ou d'une actualisation à l'autre), les clusters sont triés à froid selon leur indice de vulnérabilité globale. Le Groupe 1 représente la vulnérabilité maximale (Rouge) et le Groupe 4 le profil le plus favorable (Vert).
+4.  **Recherche de « Jumeaux Territoriaux » (Benchmark)** : L'algorithme calcule la distance euclidienne directe dans l'espace standardisé pour identifier les 3 EPCI les plus proches (semblables) du territoire sélectionné. Cette distance est ensuite convertie de manière transparente en un **Taux de ressemblance sur 100 (%)** pour en faciliter l'appropriation :
     $$\text{Taux (\%)} = \max(0, 100 - d \times 20)$$
 
-#### Rendu Interactif & Connexion Directe aux Leviers d'Action
+#### Rapport Visuel Statique & Connexion aux Leviers d'Action
 
-Le callback génère un diagnostic territorial complet sous forme de grille interactive unifiée :
-*   **Carte Régionale Unifiée** : La mini-carte redondante a été supprimée au profit d'une intégration complète. L'indicateur **"Typologie de Cluster (K-Means)"** est disponible directement dans le sélecteur principal de la carte du tableau de bord. La carte principale se colore alors dynamiquement selon les 4 typologies K-Means de la thématique active. Le sélecteur de pathologies s'estompe automatiquement pour plus de clarté.
-*   **Profil de Graphique en Écart Relatif (%)** : Le graphique en Z-Score, complexe pour des non-statisticiens, a été remplacé par un graphique à barres groupées représentant l'**écart relatif moyen du cluster par rapport à la moyenne régionale (0%)**. La ligne noire superpose le profil exact de l'EPCI actif avec des infobulles claires (ex. `+24.5% vs moyenne régionale`).
+Le callback génère un diagnostic territorial complet sous forme de grille visuelle unifiée :
+*   **Carte Choroplèthe Statique Non-Interactive** (`cluster-map-graph`) : La carte de clustering dédiée est rendue de manière totalement non interactive (`config={'staticPlot': True}`). Elle sert de pur rapport géographique visuel, stable et lisible d'un coup d'œil, sans survol distrayant ni zoom.
+*   **Profil de Graphique en Écart Relatif (%)** : Le graphique à barres groupées représente l'**écart relatif moyen du cluster par rapport à la moyenne régionale (0%)**. La ligne noire superpose le profil exact de l'EPCI actif avec des infobulles claires (ex. `+24.5% vs moyenne régionale`).
 *   **Jumeaux Territoriaux** (`cluster-twins-table-container`) : Un tableau premium liste les 3 EPCI jumeaux avec leur taux de ressemblance exact. Les boutons **"Analyser"** mettent à jour instantanément tout le tableau de bord pour se focaliser sur le territoire jumeau sélectionné, facilitant les échanges de bonnes pratiques CPTS/CLS.
 *   **Fiches Narratives d'Interprétation** (`cluster-reading-guide`) : Affiche le titre clinique/sociologique du cluster (ex: *"Surtaux Généralisé & Alerte Clinique"*, *"Désertification Médicale Critique"*) ainsi qu'un **bouton d'action direct avec ancre d'URL** (`/leviers#sante`, `/leviers#socio`, `/leviers#env`) ouvrant automatiquement le bon onglet sur la page des leviers d'action.
 
