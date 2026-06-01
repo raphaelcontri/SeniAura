@@ -186,14 +186,12 @@ L'algorithme de positionnement analyse vos territoires finement via le **sens de
 | Haut 25% | 🟠 **Orange** | Attention : Supérieur au 3ème quartile (Vulnérabilité) |
 | Haut 10% | 🔴 **Rouge** | Alerte : Supérieur au 9ème décile (Alerte critique) |
 
-> **Génération de Leviers** : Si au moins une variable d'un territoire tombe dans la zone Rouge ou Orange, le dashboard identifie la catégorie de la variable (Accès aux Soins, Environnement...) et génère sur le champ des liens vers les `'Leviers d'action'` adéquats.
-
 ### Callback 6 : `update_cluster`
 
 ```
-Inputs : sidebar-filter-social, sidebar-filter-offre, sidebar-filter-env,
-         sidebar-epci-radar, map-indic-select, map-patho-select
-Outputs: cluster-map-graph.figure, cluster-chart.figure, cluster-main-grid.style,
+Inputs : cluster-theme-selector.value, sidebar-epci-radar.value,
+         map-indic-select.value, map-patho-select.value
+Outputs: cluster-chart.figure, cluster-main-grid.style,
          cluster-placeholder.style, cluster-reading-guide.children,
          cluster-twins-table-container.children, cluster-dynamic-title.children,
          cluster-active-badge-container.children
@@ -202,18 +200,18 @@ Outputs: cluster-map-graph.figure, cluster-chart.figure, cluster-main-grid.style
 #### Logique de Machine Learning Transparente & Vérifiable (K-Means & Similarité)
 
 Pour simplifier la complexité géographique (172 EPCI) et statistique de la région AURA, l'application réalise une classification automatique stable en direct :
-1.  **4 Typologies Thématiques Fixes** : Le modèle actif est automatiquement sélectionné selon les filtres choisis par l'utilisateur dans la barre latérale (Santé par défaut, Socio-économique, Offre de Soins ou Environnement). Les variables de chaque modèle sont pré-sélectionnées de manière rigoureuse et stable.
-2.  **Imputation & Standardisation** : Imputation robuste des valeurs manquantes par la médiane de colonne et normalisation Z-Score transparente :
-    $$Z = \frac{x - \mu}{\sigma}$$
-3.  **Classification ($K=4$) & Tri Anti-Label Switching** : Les territoires sont groupés en 4 clusters. Pour garantir une constance visuelle absolue, les clusters sont triés par niveau de vulnérabilité globale. Le Cluster 1 est le plus vulnérable (Rouge) et le Cluster 4 le plus favorable (Vert).
-4.  **Recherche géométrique de « Jumeaux Territoriaux »** : L'algorithme calcule la distance euclidienne directe dans l'espace standardisé pour identifier les 3 EPCI les plus proches (semblables) du territoire sélectionné pour le benchmark.
+1.  **4 Typologies Thématiques avec Sélection Explicite** : L'utilisateur sélectionne explicitement la thématique active via un magnifique composant `dmc.SegmentedControl` au sommet de la carte (Santé, Socio-économie, Offre de Soins ou Environnement). Les variables de chaque modèle sont pré-sélectionnées de manière rigoureuse et stable.
+2.  **Imputation & Standardisation** : Imputation robuste des valeurs manquantes par la médiane de colonne et normalisation transparente pour l'algorithme K-Means.
+3.  **Classification ($K=4$) & Tri Anti-Label Switching** : Les territoires sont groupés en 4 clusters. Pour garantir une constance visuelle absolue, les clusters sont triés par niveau de vulnérabilité globale. Le Groupe 1 est le plus vulnérable (Rouge) et le Groupe 4 le plus favorable (Vert).
+4.  **Recherche géométrique de « Jumeaux Territoriaux » (Benchmark)** : L'algorithme calcule la distance euclidienne directe dans l'espace standardisé pour identifier les 3 EPCI les plus proches (semblables) du territoire sélectionné. Cette distance est ensuite convertie de manière transparente en un **Taux de ressemblance sur 100 (%)** pour en faciliter l'appropriation :
+    $$\text{Taux (\%)} = \max(0, 100 - d \times 20)$$
 
 #### Rendu Interactif & Connexion Directe aux Leviers d'Action
 
-Le callback génère un diagnostic territorial complet sous forme de grille interactive :
-*   **Mini-Carte Régionale des Clusters** (`cluster-map-graph`) : Affiche la répartition spatiale réelle des 4 typologies sur toute la région AURA avec mise en valeur de la cible.
-*   **Profil Hybride** (`cluster-chart`) : Un graphique à barres groupées montrant le profil moyen du Cluster ciblé (les centroïdes), sur lequel est superposée la ligne noire des scores exacts de l'EPCI actif. Cela permet d'identifier immédiatement les écarts locaux spécifiques.
-*   **Jumeaux Territoriaux** (`cluster-twins-table-container`) : Un tableau listant les 3 EPCI « jumeaux » avec leur similarité géométrique et des raccourcis de navigation pour le benchmarking CPTS/CLS.
+Le callback génère un diagnostic territorial complet sous forme de grille interactive unifiée :
+*   **Carte Régionale Unifiée** : La mini-carte redondante a été supprimée au profit d'une intégration complète. L'indicateur **"Typologie de Cluster (K-Means)"** est disponible directement dans le sélecteur principal de la carte du tableau de bord. La carte principale se colore alors dynamiquement selon les 4 typologies K-Means de la thématique active. Le sélecteur de pathologies s'estompe automatiquement pour plus de clarté.
+*   **Profil de Graphique en Écart Relatif (%)** : Le graphique en Z-Score, complexe pour des non-statisticiens, a été remplacé par un graphique à barres groupées représentant l'**écart relatif moyen du cluster par rapport à la moyenne régionale (0%)**. La ligne noire superpose le profil exact de l'EPCI actif avec des infobulles claires (ex. `+24.5% vs moyenne régionale`).
+*   **Jumeaux Territoriaux** (`cluster-twins-table-container`) : Un tableau premium liste les 3 EPCI jumeaux avec leur taux de ressemblance exact. Les boutons **"Analyser"** mettent à jour instantanément tout le tableau de bord pour se focaliser sur le territoire jumeau sélectionné, facilitant les échanges de bonnes pratiques CPTS/CLS.
 *   **Fiches Narratives d'Interprétation** (`cluster-reading-guide`) : Affiche le titre clinique/sociologique du cluster (ex: *"Surtaux Généralisé & Alerte Clinique"*, *"Désertification Médicale Critique"*) ainsi qu'un **bouton d'action direct avec ancre d'URL** (`/leviers#sante`, `/leviers#socio`, `/leviers#env`) ouvrant automatiquement le bon onglet sur la page des leviers d'action.
 
 ---

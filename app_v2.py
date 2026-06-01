@@ -183,7 +183,12 @@ sidebar = dmc.AppShellNavbar(
                                     dmc.Text("Type d'indicateur", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
                                     dmc.Select(
                                         id='map-indic-select', 
-                                        data=[{'label': 'Incidence', 'value': 'INCI'},{'label': 'Prévalence', 'value': 'PREV'},{'label': 'Mortalité', 'value': 'MORT'}], 
+                                        data=[
+                                            {'label': 'Incidence', 'value': 'INCI'},
+                                            {'label': 'Prévalence', 'value': 'PREV'},
+                                            {'label': 'Mortalité', 'value': 'MORT'},
+                                            {'label': 'Typologie de Cluster (K-Means)', 'value': 'CLUSTER'}
+                                        ], 
                                         value='INCI', size="sm", radius="md",
                                         comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
                                         styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}

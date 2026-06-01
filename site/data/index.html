@@ -585,10 +585,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pipeline-de-chargement-5-etapes" class="md-nav__link">
+  <a href="#pipeline-etl-automatise-pipelinepy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pipeline de chargement (5 étapes)
+        Pipeline ETL Automatisé (pipeline.py)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline ETL Automatisé (pipeline.py)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#le-processus-etl-4-etapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Le Processus ETL (4 Étapes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-de-chargement-de-lapplication-5-etapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline de chargement de l'application (5 étapes)
       
     </span>
   </a>
@@ -635,10 +663,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#chemins-de-fichiers" class="md-nav__link">
+  <a href="#chemins-de-fichiers-de-donnees" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Chemins de fichiers
+        Chemins de fichiers de données
       
     </span>
   </a>
@@ -972,10 +1000,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pipeline-de-chargement-5-etapes" class="md-nav__link">
+  <a href="#pipeline-etl-automatise-pipelinepy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pipeline de chargement (5 étapes)
+        Pipeline ETL Automatisé (pipeline.py)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline ETL Automatisé (pipeline.py)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#le-processus-etl-4-etapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Le Processus ETL (4 Étapes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-de-chargement-de-lapplication-5-etapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline de chargement de l'application (5 étapes)
       
     </span>
   </a>
@@ -1022,10 +1078,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#chemins-de-fichiers" class="md-nav__link">
+  <a href="#chemins-de-fichiers-de-donnees" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Chemins de fichiers
+        Chemins de fichiers de données
       
     </span>
   </a>
@@ -1297,25 +1353,50 @@
 <p>Si un EPCI est à 15%, il n'est plus en "Alerte Rouge" (qui s'arrête strictement à 10%) mais reste en "Attention Orange" car il est toujours sous le seuil du 1er quartile (25%). Les badges sont mutuellement exclusifs et prioritaires selon la gravité du diagnostic (le Rouge prime sur l'Orange).</p>
 </div>
 <hr />
-<h2 id="pipeline-de-chargement-5-etapes">Pipeline de chargement (5 étapes)</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Étape 1 : GeoJSON (epci-ara.geojson)
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>          → gdf_epci [GeoPandas, ~130 lignes, CRS WGS84]
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Étape 2 : Excel (FINAL-DATASET-epci-11.xlsx)
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>          → df [Pandas DataFrame, 30+ colonnes par EPCI]
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>          → Nettoyage des types numériques (force pd.to_numeric)
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>          → Fix spécifique pour IR_D9_D1_SL (confus avec une date par Excel)
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>Étape 3 : CSV Métadonnées (dictionnaire_variables.csv)
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>          → Peuple les 7 dictionnaires (variable_dict, category_dict, etc.)
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>          → Overrides codés en dur pour variables critiques sans entrée CSV
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>Étape 4 : Agrégats démographiques genrés (6 variables calculées)
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>          → Somme des taux bruts INSEE par sexe/tranche d&#39;âge * 100
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>Étape 5 : Merge &amp; Dissolve
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>          → gdf_epci ⟕ df sur EPCI_CODE = CODE_EPCI
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>          → Dissolve par département → gdf_deps (fond cartographique)
+<h2 id="pipeline-etl-automatise-pipelinepy">Pipeline ETL Automatisé (pipeline.py)</h2>
+<p>Un pipeline <strong>ETL (Extract-Transform-Load)</strong> moderne et automatisé a été intégré dans <code>src/etl/pipeline.py</code>. Il permet de préparer, nettoyer et optimiser l'ensemble des données d'analyse avant le démarrage du serveur de l'application.</p>
+<h3 id="le-processus-etl-4-etapes">⚙️ Le Processus ETL (4 Étapes)</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[ EXTRACTION ]
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>   ├── Fichier Excel d&#39;origine (FINAL-DATASET-epci-11.xlsx)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>   ├── GeoJSON des contours EPCI d&#39;origine (epci-ara.geojson)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>   └── Dictionnaire CSV (dictionnaire_variables.csv)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>         │
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>[ TRANSFORMATION ]
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>   ├── Standardisation &amp; Typage strict : Nettoyage des codes SIREN des EPCI,
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>   │   conversion de force des colonnes analytiques en numérique.
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>   ├── Calcul de variables composites : Calcul de Taux_CNR s&#39;il est manquant.
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>   ├── Simplification géométrique (GIS) : Réduction de 9.3% du nombre de sommets
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>   │   du GeoJSON (geopandas.simplify, tolérance 0.0015) pour fluidifier la carte.
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>   └── Nettoyage du dictionnaire : Catégorisation automatique des variables
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>       et correction des valeurs vides.
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>         │
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>[ CHARGEMENT (LOAD) ]
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>   ├── FINAL-DATASET-epci-11.parquet (Format binaire colonnes ultra-rapide)
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>   ├── epci-ara-simplified.geojson (Contours allégés pour la carte)
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>   └── dictionnaire_variables.csv (Mis à jour et standardisé)
+</code></pre></div>
+<hr />
+<h2 id="pipeline-de-chargement-de-lapplication-5-etapes">Pipeline de chargement de l'application (5 étapes)</h2>
+<p>Le module de chargement de l'application Dash dans <code>src/data.py</code> charge désormais en priorité absolue les livrables optimisés par le pipeline ETL, réduisant le temps de démarrage global de l'application de <strong>379 ms à 103 ms (gain de +72.8%)</strong>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Étape 1 : GeoJSON Simplifié (epci-ara-simplified.geojson)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>          → Chargé en priorité. Fallback automatique vers epci-ara.geojson
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>          → gdf_epci [GeoPandas, CRS WGS84]
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Étape 2 : Dataset Parquet (FINAL-DATASET-epci-11.parquet)
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>          → Chargé en priorité pour un temps de lecture de &lt;1 ms.
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>          │ Fallback automatique vers FINAL-DATASET-epci-11.xlsx en cas d&#39;absence.
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>          → df [Pandas DataFrame, 160+ colonnes par EPCI]
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>Étape 3 : CSV Métadonnées (dictionnaire_variables.csv)
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>          → Peuple les 7 dictionnaires (variable_dict, category_dict, etc.)
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>          → Overrides codés en dur pour variables critiques sans entrée CSV
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>Étape 4 : Agrégats démographiques genrés (6 variables calculées)
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>          → Somme des taux bruts INSEE par sexe/tranche d&#39;âge * 100
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>Étape 5 : Merge &amp; Dissolve
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>          → gdf_epci ⟕ df sur EPCI_CODE = CODE_EPCI
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>          → Dissolve par département → gdf_deps (fond cartographique)
 </code></pre></div>
 <hr />
 <h2 id="logique-de-classement">Logique de classement</h2>
@@ -1403,25 +1484,31 @@
 </tbody>
 </table>
 <p><strong>Formule</strong> :
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">df</span><span class="p">[</span><span class="s1">&#39;H_65_plus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">cols_H_65_plus</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># → [0, 100]%</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">df</span><span class="p">[</span><span class="s1">&#39;H_65_plus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">cols_H_65_plus</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># → [0, 100]%</span>
 </code></pre></div></p>
 <div class="admonition tip">
 <p class="admonition-title">Pertinence médicale</p>
 <p>La ventilation H/F est essentielle pour l'analyse CNR : les risques cardiovasculaires diffèrent substantiellement entre hommes et femmes (ex. facteurs de risque, âge d'apparition, accès aux soins).</p>
 </div>
 <hr />
-<h2 id="chemins-de-fichiers">Chemins de fichiers</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">BASE_DIR</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">DATA_DIR</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">GEOJSON_PATH</span>  <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/epci-ara.geojson&quot;</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">DATASET_PATH</span>  <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/FINAL-DATASET-epci-11.xlsx&quot;</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">DICT_PATH</span>     <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/dictionnaire_variables.csv&quot;</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">HOSP_PATH</span>     <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/hospitals_ara.csv&quot;</span>
+<h2 id="chemins-de-fichiers-de-donnees">Chemins de fichiers de données</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">BASE_DIR</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">DATA_DIR</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Fichiers optimisés (générés par le pipeline ETL)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">GEOJSON_SIMPLIFIED_PATH</span> <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/epci-ara-simplified.geojson&quot;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">DATASET_PARQUET_PATH</span>    <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/FINAL-DATASET-epci-11.parquet&quot;</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Fichiers sources d&#39;origine (fallbacks)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">GEOJSON_ORIGINAL_PATH</span>   <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/epci-ara.geojson&quot;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="n">DATASET_EXCEL_PATH</span>      <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/FINAL-DATASET-epci-11.xlsx&quot;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="n">DICT_PATH</span>               <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/dictionnaire_variables.csv&quot;</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="n">HOSP_PATH</span>               <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">+</span> <span class="s2">&quot;/hospitals_ara.csv&quot;</span>
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Prérequis de déploiement</p>
-<p>Les quatre fichiers de données doivent être présents au chemin relatif indiqué. Les données ne sont <strong>pas</strong> versionnées dans le dépôt Git public.</p>
+<p>Les fichiers de données (notamment Parquet et GeoJSON simplifié générés par le pipeline ETL) doivent être présents dans le dossier <code>data/</code>. Ils ne sont <strong>pas</strong> versionnés dans le dépôt Git public.</p>
 </div>
 <hr />
 <h2 id="donnees-hospitalieres-centres-de-soins-desactive">Données Hospitalières (Centres de soins) — [DÉSACTIVÉ]</h2>

@@ -760,6 +760,45 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#callback-6-update_cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callback 6 : update_cluster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Callback 6 : update_cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logique-de-machine-learning-transparente-verifiable-k-means-similarite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logique de Machine Learning Transparente &amp; Vérifiable (K-Means &amp; Similarité)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendu-interactif-connexion-directe-aux-leviers-daction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendu Interactif &amp; Connexion Directe aux Leviers d'Action
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1126,6 +1165,45 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#callback-6-update_cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callback 6 : update_cluster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Callback 6 : update_cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logique-de-machine-learning-transparente-verifiable-k-means-similarite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logique de Machine Learning Transparente &amp; Vérifiable (K-Means &amp; Similarité)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rendu-interactif-connexion-directe-aux-leviers-daction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendu Interactif &amp; Connexion Directe aux Leviers d'Action
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1252,21 +1330,25 @@
 </table>
 <hr />
 <h2 id="52-page-exploration-explorationpy">5.2 — Page Exploration (<code>exploration.py</code>)</h2>
-<p><strong>Taille</strong> : ~890 lignes — <strong>cœur fonctionnel de l'application</strong></p>
+<p><strong>Taille</strong> : ~1150 lignes — <strong>cœur fonctionnel de l'application</strong></p>
 <h3 id="layout">Layout</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Container (fluid)
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── Paper #container-map
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   ├── Titre dynamique (#map-dynamic-title)
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   ├── dcc.Graph #map-graph (550px)
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   └── Group (stats + narration)
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│       ├── Paper bg=#f8f9fa : Interprétations + Narratif + Descriptions
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│       └── Paper (caché) : Sélecteur d&#39;exclusion par variable
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>└── Paper #container-radar
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    ├── Titre dynamique (#radar-dynamic-title)
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    ├── Placeholder (affiché si &lt; 3 variables actives)
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    ├── dcc.Graph #radar-chart (Scatterpolar)
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    └── #radar-reading-guide : Interprétations + Quantiles régionaux
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   ├── dcc.Graph #map-graph (600px)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   └── Grid (Interprétations + Statistiques d&#39;exclusions)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>├── Paper #container-radar
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│   ├── Titre dynamique (#radar-dynamic-title)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│   ├── Placeholder (si &lt; 3 variables actives)
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   ├── dcc.Graph #radar-chart (Scatterpolar)
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│   └── #radar-reading-guide : Interprétations + Quantiles régionaux
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>└── Paper #container-cluster
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    ├── Titre dynamique (#cluster-dynamic-title)
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    ├── Placeholder (si aucune variable active)
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    ├── dcc.Graph #cluster-chart (Centroïdes / Bar chart)
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    └── #cluster-reading-guide : Profils types + Recommandations d&#39;action
 </code></pre></div>
 <h3 id="callback-1-update_sliders">Callback 1 : <code>update_sliders</code></h3>
 <p>Génère dynamiquement les <code>RangeSlider</code> pour chaque variable sélectionnée dans les MultiSelects.</p>
@@ -1488,16 +1570,34 @@
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p><strong>Génération de Leviers</strong> : Si au moins une variable d'un territoire tombe dans la zone Rouge ou Orange, le dashboard identifie la catégorie de la variable (Accès aux Soins, Environnement...) et génère sur le champ des liens vers les <code>'Leviers d'action'</code> adéquats.</p>
-</blockquote>
+<h3 id="callback-6-update_cluster">Callback 6 : <code>update_cluster</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Inputs : cluster-theme-selector.value, sidebar-epci-radar.value,
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>         map-indic-select.value, map-patho-select.value
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Outputs: cluster-chart.figure, cluster-main-grid.style,
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>         cluster-placeholder.style, cluster-reading-guide.children,
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>         cluster-twins-table-container.children, cluster-dynamic-title.children,
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>         cluster-active-badge-container.children
+</code></pre></div>
+<h4 id="logique-de-machine-learning-transparente-verifiable-k-means-similarite">Logique de Machine Learning Transparente &amp; Vérifiable (K-Means &amp; Similarité)</h4>
+<p>Pour simplifier la complexité géographique (172 EPCI) et statistique de la région AURA, l'application réalise une classification automatique stable en direct :
+1.  <strong>4 Typologies Thématiques avec Sélection Explicite</strong> : L'utilisateur sélectionne explicitement la thématique active via un magnifique composant <code>dmc.SegmentedControl</code> au sommet de la carte (Santé, Socio-économie, Offre de Soins ou Environnement). Les variables de chaque modèle sont pré-sélectionnées de manière rigoureuse et stable.
+2.  <strong>Imputation &amp; Standardisation</strong> : Imputation robuste des valeurs manquantes par la médiane de colonne et normalisation transparente pour l'algorithme K-Means.
+3.  <strong>Classification ($K=4$) &amp; Tri Anti-Label Switching</strong> : Les territoires sont groupés en 4 clusters. Pour garantir une constance visuelle absolue, les clusters sont triés par niveau de vulnérabilité globale. Le Groupe 1 est le plus vulnérable (Rouge) et le Groupe 4 le plus favorable (Vert).
+4.  <strong>Recherche géométrique de « Jumeaux Territoriaux » (Benchmark)</strong> : L'algorithme calcule la distance euclidienne directe dans l'espace standardisé pour identifier les 3 EPCI les plus proches (semblables) du territoire sélectionné. Cette distance est ensuite convertie de manière transparente en un <strong>Taux de ressemblance sur 100 (%)</strong> pour en faciliter l'appropriation :
+    $$\text{Taux (\%)} = \max(0, 100 - d \times 20)$$</p>
+<h4 id="rendu-interactif-connexion-directe-aux-leviers-daction">Rendu Interactif &amp; Connexion Directe aux Leviers d'Action</h4>
+<p>Le callback génère un diagnostic territorial complet sous forme de grille interactive unifiée :
+*   <strong>Carte Régionale Unifiée</strong> : La mini-carte redondante a été supprimée au profit d'une intégration complète. L'indicateur <strong>"Typologie de Cluster (K-Means)"</strong> est disponible directement dans le sélecteur principal de la carte du tableau de bord. La carte principale se colore alors dynamiquement selon les 4 typologies K-Means de la thématique active. Le sélecteur de pathologies s'estompe automatiquement pour plus de clarté.
+*   <strong>Profil de Graphique en Écart Relatif (%)</strong> : Le graphique en Z-Score, complexe pour des non-statisticiens, a été remplacé par un graphique à barres groupées représentant l'<strong>écart relatif moyen du cluster par rapport à la moyenne régionale (0%)</strong>. La ligne noire superpose le profil exact de l'EPCI actif avec des infobulles claires (ex. <code>+24.5% vs moyenne régionale</code>).
+*   <strong>Jumeaux Territoriaux</strong> (<code>cluster-twins-table-container</code>) : Un tableau premium liste les 3 EPCI jumeaux avec leur taux de ressemblance exact. Les boutons <strong>"Analyser"</strong> mettent à jour instantanément tout le tableau de bord pour se focaliser sur le territoire jumeau sélectionné, facilitant les échanges de bonnes pratiques CPTS/CLS.
+*   <strong>Fiches Narratives d'Interprétation</strong> (<code>cluster-reading-guide</code>) : Affiche le titre clinique/sociologique du cluster (ex: <em>"Surtaux Généralisé &amp; Alerte Clinique"</em>, <em>"Désertification Médicale Critique"</em>) ainsi qu'un <strong>bouton d'action direct avec ancre d'URL</strong> (<code>/leviers#sante</code>, <code>/leviers#socio</code>, <code>/leviers#env</code>) ouvrant automatiquement le bon onglet sur la page des leviers d'action.</p>
 <hr />
 <h2 id="53-page-methodologie-methodologypy">5.3 — Page Méthodologie (<code>methodology.py</code>)</h2>
 <p><strong>Taille</strong> : ~210 lignes</p>
 <h4 id="structure-en-onglets">Structure en onglets</h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Tabs (pills, variante bleue)
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>├── Onglet : Liste des variables  → Table des variables (Socioéco, Offre, Env, Santé)
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>└── Onglet : Documentation Technique → Boutons vers MkDocs et GitHub
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Tabs (pills, variante bleue)
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>├── Onglet : Liste des variables  → Table des variables (Socioéco, Offre, Env, Santé)
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>└── Onglet : Documentation Technique → Boutons vers MkDocs et GitHub
 </code></pre></div>
 <hr />
 <h2 id="54-page-leviers-daction-levierspy-new">5.4 — Page Leviers d'action (<code>leviers.py</code>) [NEW]</h2>
