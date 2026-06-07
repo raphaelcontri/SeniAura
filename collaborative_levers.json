@@ -1,0 +1,42 @@
+[
+  {
+    "id": "test_123",
+    "Catégorie": "Santé",
+    "Levier d'action": "Test Action",
+    "Source": "Test Source",
+    "Lien": "http://example.com",
+    "RatingSum": 19.0,
+    "Votes": 4,
+    "Rating": 4.8
+  },
+  {
+    "id": "lever_1780325042514",
+    "Catégorie": "Socio-économique",
+    "Levier d'action": "test",
+    "Source": "test",
+    "Lien": "",
+    "RatingSum": 19.8,
+    "Votes": 4,
+    "Rating": 5.0,
+    "voted_users": {
+      "anonymous": 4.8,
+      "Sfw94pPgcYMcsbqZTwI43P196rr2": 5.0,
+      "4yGJt08ZA2YyH0KxPemk0HFLnuE2": 5.0,
+      "local_user": 5.0
+    }
+  },
+  {
+    "id": "lever_1780578177760",
+    "Catégorie": "santé",
+    "Levier d'action": "Nouveau Levier Offline",
+    "Source": "Test local source",
+    "Lien": "http://example.local",
+    "owner_uid": "local_user",
+    "voted_users": {
+      "local_user": 4.0
+    },
+    "RatingSum": 4.0,
+    "Votes": 1,
+    "Rating": 4.0
+  }
+]

@@ -167,7 +167,7 @@ layout = dmc.Container(
                                 dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                                     dmc.Title("Variables socio-économiques", order=3, mb="xs", c="#2c3e50"),
                                     dmc.Text("Population, emploi, revenus et logement.", c="dimmed", mb="xl"),
-                                    dmc.ScrollArea(children=make_var_table(socioeco_vars))
+                                    dmc.ScrollArea(id='methodo-table-socioeco', children=make_var_table(socioeco_vars))
                                 ])
                             ]),
                             
@@ -175,7 +175,7 @@ layout = dmc.Container(
                                 dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                                     dmc.Title("Variables offre de soins", order=3, mb="xs", c="#2c3e50"),
                                     dmc.Text("Densité et accessibilité des professionnels de santé.", c="dimmed", mb="xl"),
-                                    dmc.ScrollArea(children=make_var_table(offre_vars))
+                                    dmc.ScrollArea(id='methodo-table-offre', children=make_var_table(offre_vars))
                                 ])
                             ]),
                             
@@ -183,7 +183,7 @@ layout = dmc.Container(
                                 dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                                     dmc.Title("Variables environnement", order=3, mb="xs", c="#2c3e50"),
                                     dmc.Text("Qualité de l'air, bruit et risques environnementaux.", c="dimmed", mb="xl"),
-                                    dmc.ScrollArea(children=make_var_table(env_vars))
+                                    dmc.ScrollArea(id='methodo-table-env', children=make_var_table(env_vars))
                                 ])
                             ]),
                             
@@ -191,7 +191,7 @@ layout = dmc.Container(
                                 dmc.Paper(withBorder=True, p="xl", radius="md", shadow="sm", children=[
                                     dmc.Title("Variables de santé", order=3, mb="xs", c="#2c3e50"),
                                     dmc.Text("Indicateurs cardiovasculaires (incidences et prévalences).", c="dimmed", mb="xl"),
-                                    dmc.ScrollArea(children=make_var_table(sante_vars))
+                                    dmc.ScrollArea(id='methodo-table-sante', children=make_var_table(sante_vars))
                                 ])
                             ]),
                         ]
@@ -375,16 +375,78 @@ layout = dmc.Container(
 )
 
 # --- URL Deep linking callback ---
+def get_vars_by_category_dynamic(target_cat, v_dict, c_dict, cl_dict, d_dict, u_dict, sd_dict, s_dict, g_df):
+    result = []
+    for var_code, label in v_dict.items():
+        if var_code not in g_df.columns:
+            continue
+        cat = str(c_dict.get(var_code, 'Autre')).lower()
+        if cat == target_cat.lower():
+            rank = str(cl_dict.get(var_code, ""))
+            if rank in ['0', '1', '2'] or (rank == '3' and cat != 'santé'):
+                continue
+                
+            desc = d_dict.get(var_code, "")
+            unit = u_dict.get(var_code, "-") or "-"
+            source = sd_dict.get(var_code, "-") or "-"
+            sens = s_dict.get(var_code, 0)
+            result.append({'code': var_code, 'label': label, 'desc': desc, 'unit': unit, 'source': source, 'sens': sens})
+    return sorted(result, key=lambda x: x['label'])
+
 @callback(
-    Output('methodo-tabs-main', 'value'),
-    Input('url', 'hash'),
-    prevent_initial_call=False
+    [Output('methodo-table-socioeco', 'children'),
+     Output('methodo-table-offre', 'children'),
+     Output('methodo-table-env', 'children'),
+     Output('methodo-table-sante', 'children')],
+    [Input('dataset-select', 'value')],
+    [State('available-datasets-store', 'data'),
+     State('url', 'pathname')]
 )
-def update_methodo_tab_from_url(hash_val):
-    if hash_val == '#leviers':
-        return 'leviers'
-    if hash_val == '#variables':
-        return 'variables'
-    if hash_val == '#construction':
-        return 'construction'
-    return dash.no_update
+def update_methodology_tables(dataset_value, available_datasets, pathname):
+    if pathname != '/methodologie':
+        raise dash.exceptions.PreventUpdate
+    if not dataset_value or dataset_value == 'default':
+        g, v, c, s, d, u, gd, sd, cl = load_data()
+    else:
+        dataset_meta = None
+        for d_item in available_datasets:
+            if d_item['file_path'] == dataset_value:
+                dataset_meta = d_item
+                break
+        
+        if not dataset_meta:
+            g, v, c, s, d, u, gd, sd, cl = load_data()
+        else:
+            scale = dataset_meta.get("scale", "epci")
+            columns_metadata = dataset_meta.get("columns_metadata", {})
+            clean_file_path = dataset_value.replace("raw/", "clean/")
+            
+            try:
+                from src.data import load_user_dataset
+                g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
+                    file_path_in_bucket=clean_file_path,
+                    scale=scale,
+                    columns_metadata=columns_metadata
+                )
+            except Exception:
+                try:
+                    from src.data import load_user_dataset
+                    g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
+                        file_path_in_bucket=dataset_value,
+                        scale=scale,
+                        columns_metadata=columns_metadata
+                    )
+                except Exception:
+                    g, v, c, s, d, u, gd, sd, cl = load_data()
+                    
+    socio_list = get_vars_by_category_dynamic('Socioéco', v, c, cl, d, u, sd, s, g)
+    offre_list = get_vars_by_category_dynamic('Offre de soins', v, c, cl, d, u, sd, s, g)
+    env_list = get_vars_by_category_dynamic('Environnement', v, c, cl, d, u, sd, s, g)
+    sante_list = get_vars_by_category_dynamic('Santé', v, c, cl, d, u, sd, s, g)
+    
+    return (
+        make_var_table(socio_list),
+        make_var_table(offre_list),
+        make_var_table(env_list),
+        make_var_table(sante_list)
+    )

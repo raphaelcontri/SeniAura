@@ -21,6 +21,7 @@
 7. [Flux de données et callbacks](#7-flux-de-données-et-callbacks)
 8. [Guide de déploiement](#8-guide-de-déploiement)
 9. [FAQ technique](#9-faq-technique)
+10. [Pipeline de Données Databricks & Supabase](#10-pipeline-de-données-databricks--supabase)
 
 ---
 
@@ -578,3 +579,45 @@ Le radar (`Scatterpolar`) nécessite au minimum 3 axes pour former un polygone l
 1.  **robots.txt** : Un fichier `assets/robots.txt` est présent pour guider les moteurs de recherche. Il est servi à la racine (`/robots.txt`) via une route Flask dédiée dans `app_v2.py`.
 2.  **Sitemap** : Le `robots.txt` pointe vers un sitemap (URL à adapter dans le fichier selon votre domaine Render).
 3.  **Validation Google Search Console** : La validation est effectuée via une balise `<meta name="google-site-verification">` configurée dans le constructeur `dash.Dash` de `app_v2.py`.
+
+
+## 10. Pipeline de Données Databricks & Supabase
+
+Afin de permettre l'intégration de jeux de données externes à la volée tout en conservant une puissance de calcul Big Data gratuite, CardiAURA exploite une architecture Data Lakehouse séparée.
+
+### 10.1 Architecture du Flux de Données
+
+1. **Dashboard (Render.com)** : L'utilisateur connecté importe son fichier CSV (à l'échelle EPCI ou Communale). Le dashboard le renomme et le dépose de manière privée et sécurisée sur **Supabase Storage**.
+2. **Databricks (Community Edition)** : Un Notebook PySpark s'exécute pour :
+   - Se connecter à Supabase via API.
+   - Télécharger le fichier CSV brut.
+   - Si les données sont à l'échelle communale, les **agréger automatiquement** à l'échelle EPCI en se connectant à l'API géographique nationale.
+   - Effectuer les jointures SQL avec la table de référence.
+   - Lancer un modèle de Machine Learning (Clustering K-Means sous PySpark ML).
+   - Réécrire le résultat propre sous forme de fichier CSV final dans le sous-dossier `clean/` de Supabase Storage.
+3. **Dashboard** : Lit le fichier propre via DuckDB/Pandas avec une URL signée temporaire pour mettre à jour les cartes.
+
+---
+
+### 10.2 Guide de Configuration de Databricks
+
+Pour configurer cette partie, suivez ces étapes :
+
+#### A. Le calcul Serverless
+Dans la nouvelle version **Free Edition** de Databricks, le calcul est entièrement **Serverless (sans serveur à gérer)**. Vous n'avez plus besoin de créer, configurer ou démarrer manuellement un cluster (ce qui explique pourquoi l'onglet "Compute" n'affiche que des options d'entrepôts SQL inactifs ou grisés).
+Databricks gère et alloue automatiquement la puissance de calcul nécessaire en arrière-plan lorsque vous exécutez votre Notebook.
+
+#### B. Importation des Données de Référence
+1. Allez dans l'onglet **Catalog** dans la barre latérale gauche.
+2. Cliquez sur le bouton **Create Table** (ou **Add Data** / **Add** en haut de page, puis **Upload files**).
+3. Déposez-y le fichier local `data/FINAL-DATASET-epci-11.xlsx`.
+4. Enregistrez-le sous la forme d'une table nommée précisément : `epci_base_referentiel`.
+
+#### C. Déploiement du Notebook de calcul
+1. Cliquez sur **New** (ou le bouton **+**) ➔ **Notebook**.
+2. Nommez-le `cardiaura_pipeline`.
+3. En haut à droite, vérifiez que le sélecteur de calcul est bien configuré sur **Serverless**.
+4. Copiez l'ensemble du code fourni dans le guide **`GUIDE_DATABRICKS.md`** situé à la racine de votre projet.
+5. Renseignez vos identifiants Supabase réels dans la première cellule (`SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`).
+6. Exécutez les cellules pour lancer le pipeline de données.
+

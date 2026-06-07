@@ -1,1 +1,7 @@
 ml_pipeline/
+.env
+__pycache__/
+.pytest_cache/
+data/local/
+scratch/
+site/

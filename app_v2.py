@@ -1,16 +1,16 @@
 import dash
-from dash import dcc, html, Input, Output, State, no_update
+from dash import dcc, html, Input, Output, State, no_update, ALL
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 import os
 import pandas as pd
 
 # Import layouts from pages
-from src.pages import home, methodology, exploration, leviers
-from src.data import load_data
+from src.pages import home, methodology, exploration, leviers, upload, espace_perso
+from src.data import load_data, load_user_dataset
 
 # Load data for filter options
-gdf_merged, variable_dict, category_dict, _, _, _, _, _, classement_dict = load_data()
+gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict = load_data()
 
 def get_options(target_cats):
     options = []
@@ -163,6 +163,50 @@ sidebar = dmc.AppShellNavbar(
 
                         # --- Filter Section (Hidden on Home/Methodology) ---
                         html.Div(id='sidebar-filters-section', children=[
+                            # Source de données
+                            dmc.Box(mb="md", children=[
+                                dmc.Group(
+                                    gap="xs", mb=5, align="center",
+                                    children=[
+                                        dmc.ThemeIcon(
+                                            DashIconify(icon="solar:database-bold", width=18),
+                                            variant="light", radius="md", size="md", color="blue"
+                                        ),
+                                        dmc.Text("Source de données", fw=700, size="sm", c="#2c3e50"),
+                                        dmc.Tooltip(
+                                            multiline=True, w=250, withArrow=True,
+                                            label="Sélectionnez le jeu de données actif. Vous pouvez choisir les données régionales par défaut ou vos imports nettoyés.",
+                                            children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                        )
+                                    ]
+                                ),
+                                dmc.Select(
+                                    id='dataset-select',
+                                    data=[{'label': '📊 Données régionales par défaut', 'value': 'default'}],
+                                    value='default',
+                                    size="sm",
+                                    radius="md",
+                                    comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
+                                    styles={"dropdown": {"backgroundColor": "#f8f9fa", "border": "1px solid #dee2e6"}}
+                                ),
+                                dcc.Link(
+                                    dmc.Button(
+                                        "Importer un CSV (local)",
+                                        id="aside-upload-btn",
+                                        variant="light",
+                                        color="blue",
+                                        fullWidth=True,
+                                        leftSection=DashIconify(icon="solar:cloud-upload-bold", width=14),
+                                        radius="md",
+                                        size="xs",
+                                        style={"marginTop": "5px"}
+                                    ),
+                                    href="/upload",
+                                    style={"textDecoration": "none"}
+                                ),
+                                html.Div(id='delete-dataset-btn-container', style={'marginTop': '10px'})
+                            ]),
+                            dmc.Divider(variant="solid", mb="md", c="gray.2"),
                             dmc.Group(
                                 gap="xs", mb=5, align="center",
                                 children=[
@@ -322,6 +366,20 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
+                            dmc.Button(
+                                "Télécharger le rapport PDF",
+                                id="download-pdf-btn",
+                                variant="light",
+                                color="indigo",
+                                fullWidth=True,
+                                leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
+                                radius="md",
+                                size="sm",
+                                className="premium-hover",
+                                disabled=True,
+                                style={"marginTop": "15px"}
+                            ),
+                            dcc.Download(id="download-pdf-data"),
                         ]),
                     ]
                 ),
@@ -422,6 +480,18 @@ header = dmc.AppShellHeader(
                                 "visibility": "hidden"
                             }
                         ),
+                        dmc.Button(
+                            "Mon Espace",
+                            id="header-auth-btn",
+                            variant="outline",
+                            color="blue",
+                            radius="md",
+                            size="sm",
+                            leftSection=DashIconify(icon="solar:user-bold", width=16),
+                            style={
+                                "display": "none"
+                            }
+                        )
                     ]
                 ),
             ]
@@ -436,6 +506,35 @@ app.layout = dmc.MantineProvider(
     children=[
         dcc.Location(id='url', refresh=False),
         dcc.Store(id='aside-opened-store', data=False), # Store pour l'état du panneau latéral
+        dcc.Store(id='session-store', data={"authenticated": False}, storage_type='session'), # Store pour l'état d'authentification
+        dcc.Store(id='available-datasets-store', data=[], storage_type='memory'), # Store pour stocker les métadonnées des jeux de données de l'utilisateur
+        dcc.Store(id='local-datasets-store', data=[], storage_type='session'), # Store pour stocker les métadonnées des jeux de données locaux
+        dcc.Store(id='delete-dataset-temp-store', data={}, storage_type='memory'),
+        dcc.Store(id='dataset-refresh-trigger', data=0, storage_type='memory'),
+        dmc.Modal(
+            title="Supprimer le jeu de données",
+            id="delete-dataset-modal",
+            opened=False,
+            padding="xl",
+            radius="lg",
+            size="md",
+            children=[
+                dmc.Stack(gap="md", children=[
+                    dmc.Text("Êtes-vous sûr de vouloir supprimer définitivement ce jeu de données ?"),
+                    dmc.Text(
+                        "Cette action supprimera le fichier de données brut, le fichier nettoyé, ainsi que toutes ses métadonnées. Le jeu de données ne sera plus disponible pour personne.",
+                        c="red",
+                        fw=600,
+                        size="sm"
+                    ),
+                    html.Div(id="delete-dataset-modal-alert"),
+                    dmc.Group(justify="flex-end", gap="sm", children=[
+                        dmc.Button("Annuler", id="cancel-delete-dataset-btn", color="gray", variant="light", radius="md"),
+                        dmc.Button("Supprimer", id="confirm-delete-dataset-btn", color="red", radius="md", leftSection=DashIconify(icon="solar:trash-bin-trash-bold", width=16))
+                    ])
+                ])
+            ]
+        ),
         dmc.AppShell(
             id="app-shell",
             header={"height": 90}, 
@@ -467,7 +566,15 @@ app.layout = dmc.MantineProvider(
                                     style={
                                         'padding': '32px', 
                                         'minHeight': '100%'
-                                    }
+                                    },
+                                    children=[
+                                        html.Div(id='page-home', children=home.layout, style={'display': 'block'}),
+                                        html.Div(id='page-exploration', children=exploration.layout, style={'display': 'none'}),
+                                        html.Div(id='page-leviers', children=leviers.layout, style={'display': 'none'}),
+                                        html.Div(id='page-methodology', children=methodology.layout, style={'display': 'none'}),
+                                        html.Div(id='page-espace-perso', children=espace_perso.layout, style={'display': 'none'}),
+                                        html.Div(id='page-upload', children=upload.layout, style={'display': 'none'}),
+                                    ]
                                 )
                             ]
                         )
@@ -516,6 +623,8 @@ def unified_navigation(url_path, tab_val, current_navbar):
         # Initial load
         is_explor = url_path in ['/exploration', '/carte', '/radar']
         current_navbar["collapsed"] = {"desktop": not is_explor, "mobile": True}
+        if url_path in ['/espace-perso', '/upload']:
+            return None, dash.no_update, current_navbar
         return url_path if url_path in ['/', '/exploration', '/leviers', '/methodologie'] else '/', dash.no_update, current_navbar
 
     trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -523,6 +632,10 @@ def unified_navigation(url_path, tab_val, current_navbar):
     if trigger_id == 'url':
         # URL changed (back button or link)
         target_tab = '/exploration' if url_path in ['/carte', '/radar'] else url_path
+        if target_tab in ['/espace-perso', '/upload']:
+            is_explor = False
+            current_navbar["collapsed"] = {"desktop": True, "mobile": True}
+            return None, dash.no_update, current_navbar
         if target_tab not in ['/', '/exploration', '/leviers', '/methodologie']: target_tab = '/'
         
         is_explor = target_tab == '/exploration'
@@ -535,23 +648,39 @@ def unified_navigation(url_path, tab_val, current_navbar):
         current_navbar["collapsed"] = {"desktop": not is_explor, "mobile": True}
         return dash.no_update, tab_val, current_navbar
 
+
     return dash.no_update, dash.no_update, dash.no_update
 
 @app.callback(
-    Output('page-content', 'children'),
-    Input('url', 'pathname')
+    [Output('page-home', 'style'),
+     Output('page-exploration', 'style'),
+     Output('page-leviers', 'style'),
+     Output('page-methodology', 'style'),
+     Output('page-espace-perso', 'style'),
+     Output('page-upload', 'style')],
+    [Input('url', 'pathname')]
 )
 def display_page(pathname):
+    styles = [{'display': 'none'} for _ in range(6)]
+    
     if pathname == '/':
-        return home.layout
+        styles[0] = {'display': 'block'}
     elif pathname in ['/exploration', '/carte', '/radar']:
-        return exploration.layout
+        styles[1] = {'display': 'block'}
     elif pathname == '/leviers':
-        return leviers.layout
+        styles[2] = {'display': 'block'}
     elif pathname == '/methodologie':
-        return methodology.layout
+        styles[3] = {'display': 'block'}
+    elif pathname == '/espace-perso':
+        styles[4] = {'display': 'block'}
+    elif pathname == '/upload':
+        styles[5] = {'display': 'block'}
     else:
-        return dmc.Center(dmc.Title("404 - Page non trouvée", order=1))
+        # Fallback to home page style
+        styles[0] = {'display': 'block'}
+        
+    return styles
+
 
 @app.callback(
     Output('exploration-guide-btn', 'style'),
@@ -603,5 +732,336 @@ def close_aside(n, pathname):
         return False
     return dash.no_update
 
+# --- Callbacks d'authentification du Header (Connexion / Déconnexion) ---
+
+@app.callback(
+    Output("url", "pathname", allow_duplicate=True),
+    Input("header-auth-btn", "n_clicks"),
+    prevent_initial_call=True
+)
+def handle_header_auth_clicks(n_clicks):
+    if n_clicks:
+        return "/espace-perso"
+    return dash.no_update
+
+
+# --- Callbacks pour la gestion dynamique des jeux de données utilisateur ---
+
+from src.services.firebase_service import get_available_datasets
+
+@app.callback(
+    [Output("available-datasets-store", "data"),
+     Output("dataset-select", "data")],
+    [Input("session-store", "data"),
+     Input("url", "pathname"),
+     Input("dataset-refresh-trigger", "data"),
+     Input("local-datasets-store", "data")]
+)
+def fetch_user_datasets(session_data, pathname, refresh_trigger, local_datasets):
+    default_opt = [{'label': '📊 Données régionales par défaut', 'value': 'default'}]
+    if not session_data or not session_data.get("authenticated"):
+        id_token = None
+        uid = None
+    else:
+        id_token = session_data.get("idToken")
+        uid = session_data.get("uid")
+        
+    # For local-offline flow, do not load online datasets.
+    # Keep the original firebase query code intact but do not execute it for the dropdown options.
+    # res = get_available_datasets(id_token=id_token, uid=uid)
+    # datasets = res.get("datasets", []) if res["success"] else []
+    datasets = []
+    
+    # Fusionner avec les datasets locaux
+    if local_datasets:
+        cloud_ids = {d.get("id") for d in datasets}
+        for ld in local_datasets:
+            if ld.get("id") not in cloud_ids:
+                datasets.append(ld)
+    
+    seen_paths = set()
+    unique_datasets = []
+    options = default_opt.copy()
+    
+    for d in datasets:
+        path = d.get('file_path')
+        if not path or path in seen_paths:
+            continue
+        seen_paths.add(path)
+        unique_datasets.append(d)
+        options.append({
+            'label': f"⭐ {d.get('name', d.get('dataset_name', 'Sans nom'))} ({d.get('scale', 'epci').upper()})",
+            'value': path
+        })
+        
+    return unique_datasets, options
+
+
+@app.callback(
+    [Output('sidebar-filter-social', 'data'),
+     Output('sidebar-filter-offre', 'data'),
+     Output('sidebar-filter-env', 'data'),
+     Output('map-indic-select', 'data')],
+    [Input('dataset-select', 'value')],
+    [State('available-datasets-store', 'data'),
+     State('session-store', 'data')]
+)
+def update_active_dataset_data(dataset_value, available_datasets, session_data):
+    global gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict
+    
+    import src.pages.exploration as explo
+    import src.pages.methodology as methodo
+    
+    if not dataset_value or dataset_value == 'default':
+        g, v, c, s, d, u, gd, sd, cl = load_data()
+    else:
+        dataset_meta = None
+        for d_item in available_datasets:
+            if d_item['file_path'] == dataset_value:
+                dataset_meta = d_item
+                break
+                
+        if not dataset_meta:
+            g, v, c, s, d, u, gd, sd, cl = load_data()
+        else:
+            scale = dataset_meta.get("scale", "epci")
+            columns_metadata = dataset_meta.get("columns_metadata", {})
+            clean_file_path = dataset_value.replace("raw/", "clean/")
+            
+            try:
+                g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
+                    file_path_in_bucket=clean_file_path,
+                    scale=scale,
+                    columns_metadata=columns_metadata
+                )
+            except Exception as ex:
+                print(f"Fichier propre non trouve ou erreur ({clean_file_path}): {ex}")
+                print("Tentative de chargement direct du fichier brut...")
+                try:
+                    g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
+                        file_path_in_bucket=dataset_value,  # Fallback sur le raw/
+                        scale=scale,
+                        columns_metadata=columns_metadata
+                    )
+                except Exception as ex2:
+                    print(f"Erreur de chargement du dataset brut ({dataset_value}): {ex2}")
+                    g, v, c, s, d, u, gd, sd, cl = load_data()
+                
+    gdf_merged = g
+    variable_dict = v
+    category_dict = c
+    sens_dict = s
+    description_dict = d
+    unit_dict = u
+    gdf_deps = gd
+    source_dict = sd
+    classement_dict = cl
+    
+    explo.gdf_merged = g
+    explo.variable_dict = v
+    explo.category_dict = c
+    explo.sens_dict = s
+    explo.description_dict = d
+    explo.unit_dict = u
+    explo.gdf_deps = gd
+    explo.source_dict = sd
+    explo.classement_dict = cl
+    
+    if g.crs is None:
+        g.set_crs(epsg=4326, inplace=True)
+    explo.gdf_4326 = g.to_crs(epsg=4326)
+    if gd.crs is None:
+        gd.set_crs(epsg=4326, inplace=True)
+    explo.gdf_deps_4326 = gd.to_crs(epsg=4326)
+    
+    methodo.gdf_merged = g
+    methodo.variable_dict = v
+    methodo.category_dict = c
+    methodo.sens_dict = s
+    methodo.description_dict = d
+    methodo.unit_dict = u
+    methodo.source_dict = sd
+    methodo.classement_dict = cl
+
+    social_opts = get_options(['socioéco'])
+    offre_opts = get_options(['offre de soins'])
+    env_opts = get_options(['environnement'])
+    
+    health_opts = [
+        {'label': 'Incidence', 'value': 'INCI'},
+        {'label': 'Prévalence', 'value': 'PREV'},
+        {'label': 'Mortalité', 'value': 'MORT'}
+    ]
+    user_health_vars = [var for var, cat in c.items() if cat == "santé" and var not in ['INCI_AVC', 'INCI_CardIsch', 'INCI_InsuCard', 'PREV_AVC', 'PREV_CardIsch', 'PREV_InsuCard', 'MORT_AVC', 'MORT_CardIsch', 'MORT_InsuCard', 'Taux_CNR']]
+    for h_var in user_health_vars:
+        label = v.get(h_var, h_var)
+        health_opts.append({'label': label, 'value': h_var})
+
+    return social_opts, offre_opts, env_opts, health_opts
+
+
+# --- Callbacks pour la suppression des jeux de données utilisateur ---
+
+@app.callback(
+    Output("delete-dataset-btn-container", "children"),
+    [Input("dataset-select", "value"),
+     Input("session-store", "data")],
+    [State("available-datasets-store", "data")]
+)
+def toggle_delete_dataset_button(dataset_value, session_data, available_datasets):
+    if not dataset_value or dataset_value == 'default':
+        return []
+        
+    # Trouver les métadonnées du dataset sélectionné
+    target_ds = None
+    for d in available_datasets:
+        if d.get("file_path") == dataset_value:
+            target_ds = d
+            break
+            
+    if not target_ds:
+        return []
+        
+    owner_uid = target_ds.get("owner_uid")
+    
+    # Mode offline : Si le dataset est local, n'importe quel utilisateur peut le supprimer
+    if owner_uid == "local":
+        return dmc.Button(
+            "Supprimer ce dataset",
+            id={"type": "open-delete-btn", "index": "sidebar"},
+            color="red",
+            variant="light",
+            size="xs",
+            fullWidth=True,
+            radius="md",
+            leftSection=DashIconify(icon="solar:trash-bin-trash-bold", width=14)
+        )
+        
+    # Sinon, vérifier l'authentification et le propriétaire (Cloud)
+    if session_data and session_data.get("authenticated"):
+        if owner_uid == session_data.get("uid"):
+            return dmc.Button(
+                "Supprimer ce dataset",
+                id={"type": "open-delete-btn", "index": "sidebar"},
+                color="red",
+                variant="light",
+                size="xs",
+                fullWidth=True,
+                radius="md",
+                leftSection=DashIconify(icon="solar:trash-bin-trash-bold", width=14)
+            )
+    return []
+
+
+@app.callback(
+    [Output("delete-dataset-modal", "opened"),
+     Output("delete-dataset-temp-store", "data"),
+     Output("delete-dataset-modal-alert", "children")],
+    [Input({"type": "open-delete-btn", "index": ALL}, "n_clicks"),
+     Input("cancel-delete-dataset-btn", "n_clicks")],
+    [State("dataset-select", "value"),
+     State("available-datasets-store", "data")],
+    prevent_initial_call=True
+)
+def manage_delete_modal(open_clicks_list, cancel_clicks, dataset_value, available_datasets):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return False, {}, []
+        
+    trigger_id_str = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    if trigger_id_str == "cancel-delete-dataset-btn":
+        return False, {}, []
+        
+    try:
+        trigger_id = json.loads(trigger_id_str)
+        if trigger_id.get("type") == "open-delete-btn":
+            if not open_clicks_list or not open_clicks_list[0]:
+                return False, {}, []
+                
+            # Find the target dataset metadata
+            target_dataset = {}
+            for d in available_datasets:
+                if d.get("file_path") == dataset_value:
+                    target_dataset = d
+                    break
+            return True, target_dataset, []
+    except Exception as e:
+        print(f"Error in manage_delete_modal: {e}")
+        
+    return False, {}, []
+
+
+@app.callback(
+    [Output("delete-dataset-modal", "opened", allow_duplicate=True),
+     Output("delete-dataset-modal-alert", "children", allow_duplicate=True),
+     Output("dataset-select", "value"),
+     Output("dataset-refresh-trigger", "data"),
+     Output("local-datasets-store", "data", allow_duplicate=True)],
+    Input("confirm-delete-dataset-btn", "n_clicks"),
+    [State("delete-dataset-temp-store", "data"),
+     State("session-store", "data"),
+     State("dataset-refresh-trigger", "data"),
+     State("local-datasets-store", "data")],
+    prevent_initial_call=True
+)
+def execute_dataset_deletion(confirm_clicks, target_dataset, session_data, current_refresh, local_datasets):
+    if not confirm_clicks or not target_dataset:
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        
+    owner_uid = target_dataset.get("owner_uid")
+    doc_id = target_dataset.get("id")
+    file_path = target_dataset.get("file_path")
+    
+    updated_local_datasets = (local_datasets or []).copy()
+    
+    # Mode offline : suppression locale
+    if owner_uid == "local":
+        try:
+            local_abs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", file_path)
+            if os.path.exists(local_abs_path):
+                os.remove(local_abs_path)
+        except Exception as e:
+            print(f"Error deleting local file {file_path}: {e}")
+            
+        updated_local_datasets = [d for d in updated_local_datasets if d.get("id") != doc_id]
+        next_refresh = (current_refresh or 0) + 1
+        return False, [], "default", next_refresh, updated_local_datasets
+        
+    # --- Mode Cloud existant ---
+    # Check authentication
+    if not session_data or not session_data.get("authenticated"):
+        return True, dmc.Alert("Session expirée. Veuillez vous reconnecter.", color="red", radius="md"), dash.no_update, dash.no_update, dash.no_update
+        
+    # Verify ownership
+    user_uid = session_data.get("uid")
+    if user_uid != owner_uid:
+        return True, dmc.Alert("Vous n'êtes pas le propriétaire de ce jeu de données.", color="red", radius="md"), dash.no_update, dash.no_update, dash.no_update
+        
+    id_token = session_data.get("idToken")
+    
+    # 1. Delete from Firestore metadata
+    from src.services.firebase_service import delete_dataset_metadata
+    meta_res = delete_dataset_metadata(id_token=id_token, doc_id=doc_id)
+    if not meta_res["success"]:
+        return True, dmc.Alert(f"Erreur lors de la suppression des métadonnées : {meta_res.get('error')}", color="red", radius="md"), dash.no_update, dash.no_update, dash.no_update
+        
+    # 2. Delete from Supabase Storage (raw and clean paths)
+    from src.services.supabase_service import delete_csv_file
+    raw_res = delete_csv_file(file_path)
+    clean_file_path = file_path.replace("raw/", "clean/")
+    clean_res = delete_csv_file(clean_file_path)
+    
+    if not raw_res["success"]:
+        print(f"Warning: Failed to delete raw file {file_path}: {raw_res.get('error')}")
+    if not clean_res["success"]:
+        print(f"Warning: Failed to delete clean file {clean_file_path}: {clean_res.get('error')}")
+        
+    next_refresh = (current_refresh or 0) + 1
+    return False, [], "default", next_refresh, updated_local_datasets
+
+
 if __name__ == '__main__':
+
+    # Trigger hot-reload after cleaning API key input logic
     app.run(debug=True, port=8050)

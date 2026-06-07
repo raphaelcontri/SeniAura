@@ -9,6 +9,7 @@ import random
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from src.data import load_data
+from src.utils.pdf_generator import generate_territory_pdf
 
 try:
     df_hosp = pd.read_csv("data/hospitals_ara.csv")
@@ -177,8 +178,6 @@ layout = dmc.Container(
     p=0,
     style={"display": "flex", "flexDirection": "column", "gap": "15px"},
     children=[
-        # (Le titre et le bouton Aide sont désormais fixés dans le Header global)
-
         # Main Interface
         html.Div(
             id='exploration-main-container',
@@ -224,10 +223,10 @@ layout = dmc.Container(
                                             id='map-graph',
                                             style={'height': "600px", "width": "100%", "borderRadius": "inherit"}, 
                                             config={
-                                                'displayModeBar': True, 
-                                                'scrollZoom': True,
-                                                'doubleClick': 'reset+autosize',
-                                                'showTips': True
+                                                'displayModeBar': False, 
+                                                'scrollZoom': False,
+                                                'doubleClick': False,
+                                                'showTips': False
                                             }
                                         ),
                                     ]
@@ -279,19 +278,6 @@ layout = dmc.Container(
                             ]
                         ),
                         dmc.Space(h="md"),
-                        # Clientside callback to toggle loading overlay
-                        dash.clientside_callback(
-                            """
-                                function(loading_state) {
-                                    if (loading_state && loading_state.is_loading) {
-                                        return true;
-                                    }
-                                    return false;
-                                }
-                            """,
-                            Output("map-loading-overlay", "visible"),
-                            Input("map-graph", "loading_state")
-                        ),
                         html.Div(
                             id="scroll-to-radar-indicator",
                             className="scroll-indicator-container",
@@ -322,9 +308,11 @@ layout = dmc.Container(
                     withBorder=True, shadow="sm", p="md", radius="md",
                     style={"minHeight": "650px"},
                     children=[
-                        dmc.Group(gap="xs", mb="md", children=[
-                            DashIconify(icon="solar:chart-2-linear", color="#339af0"),
-                            dmc.Text("Profil Comparatif Radar", id='radar-dynamic-title', fw=700),
+                        dmc.Group(justify="space-between", mb="md", children=[
+                            dmc.Group(gap="xs", children=[
+                                DashIconify(icon="solar:chart-2-linear", color="#339af0"),
+                                dmc.Text("Profil Comparatif Radar", id='radar-dynamic-title', fw=700),
+                            ]),
                         ]),
                         html.Div(
                             id='radar-placeholder',
@@ -385,6 +373,54 @@ layout = dmc.Container(
                     ]
                 ),
 
+                # Twins Section
+                dmc.Paper(
+                    id='container-twins',
+                    withBorder=True, shadow="sm", p="md", radius="md",
+                    style={"minHeight": "300px", "marginTop": "20px"},
+                    children=[
+                        dmc.Group(justify="space-between", mb="md", children=[
+                            dmc.Group(gap="xs", children=[
+                                DashIconify(icon="solar:users-group-two-rounded-bold-duotone", color="#0b7285", width=22),
+                                dmc.Text("Recherche de Territoires Jumeaux (Benchmark régional)", fw=700, size="lg"),
+                            ]),
+                            dmc.Badge(
+                                "Analyse par distance statistique", 
+                                color="teal", 
+                                variant="filled", 
+                                size="md", 
+                                radius="sm"
+                            )
+                        ]),
+                        
+                        # Guide d'utilisation en termes simples
+                        dmc.Paper(
+                            p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
+                            style={"borderLeft": "4px solid #0b7285"},
+                            children=[
+                                dmc.Text("💡 Guide d'utilisation & Intérêt politique :", fw=700, size="sm", mb=4, c="dark"),
+                                dmc.Text(
+                                    "Comment ça marche ? Cet outil identifie d'autres territoires de la région qui partagent "
+                                    "les mêmes défis et vulnérabilités (socio-économiques, environnementales et d'offre de soins) "
+                                    "que votre territoire cible, sur la base des variables actuellement activées dans vos filtres. "
+                                    "Il compare le profil de votre territoire à celui des 171 autres EPCI de la région.",
+                                    size="xs", c="gray.7", mb=6
+                                ),
+                                dmc.Text(
+                                    "Quel intérêt pour l'action publique ? L'identification de territoires \"jumeaux\" facilite "
+                                    "le partage d'expériences. Si un territoire jumeau a des résultats sanitaires plus favorables, "
+                                    "il peut être opportun d'étudier ses initiatives locales (actions de prévention, CPTS, etc.) "
+                                    "pour les reproduire chez vous.",
+                                    size="xs", c="gray.7"
+                                )
+                            ]
+                        ),
+                        
+                        # Conteneur pour la table des jumeaux
+                        html.Div(id='twins-table-container')
+                    ]
+                ),
+
                 # Clustering Section
                 dmc.Paper(
                     id='container-cluster',
@@ -394,90 +430,49 @@ layout = dmc.Container(
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:widget-linear", color="#339af0"),
-                                dmc.Text("Profiler de Clustering Territorial (K-Means)", id='cluster-dynamic-title', fw=700),
+                                dmc.Text("Profiler de Clustering Territorial (K-Means) - Typologie Régionale Globale", fw=700),
                             ]),
-                            html.Div(id='cluster-active-badge-container')
-                        ]),
-                        # Explicit segmented control for thematic cluster selection
-                        dmc.SegmentedControl(
-                            id='cluster-theme-selector',
-                            value='sante',
-                            data=[
-                                {'label': '❤️ Santé', 'value': 'sante'},
-                                {'label': '💼 Socio-Éco', 'value': 'socio'},
-                                {'label': '🏥 Offre Soins', 'value': 'offre'},
-                                {'label': '🌿 Environnement', 'value': 'env'}
-                            ],
-                            fullWidth=True,
-                            size="sm",
-                            radius="md",
-                            mb="md"
-                        ),
-                        html.Div(
-                            id='cluster-placeholder',
-                            style={'display': 'none'}, # Initially hidden since we always show the profile chart
-                            children=dmc.Center(
-                                style={"width": "100%", "height": "100%"},
-                                children=dmc.Stack(align="center", gap="xl", children=[
-                                    dmc.ThemeIcon(
-                                        DashIconify(icon="solar:widget-bold-duotone", width=100),
-                                        size=140, radius=100, variant="light", color="indigo"
-                                    ),
-                                    dmc.Paper(
-                                        p="xl", radius="lg", withBorder=True, bg="indigo.0",
-                                        shadow="sm", maw=600,
-                                        style={"border": "2px dashed #4c6ef5"},
-                                        children=[
-                                            dmc.Text(
-                                                "Clustering Régional", 
-                                                fw=900, size="lg", c="indigo.9", ta="center", mb=10,
-                                                style={"letterSpacing": "1px", "textTransform": "uppercase"}
-                                            ),
-                                            dmc.Text(
-                                                "Sélectionnez au moins un territoire et des variables dans la barre latérale pour activer le profiler de clustering K-Means.",
-                                                size="md", fw=700, ta="center", c="#1a1b1e",
-                                                style={"lineHeight": "1.6"}
-                                            )
-                                        ]
-                                    )
-                                ])
+                            dmc.Badge(
+                                "Modèle Holistique Standardisé (K=4)", 
+                                color="indigo", 
+                                variant="filled", 
+                                size="md", 
+                                radius="sm",
+                                leftSection=DashIconify(icon="solar:settings-bold-duotone", width=14)
                             )
+                        ]),
+                        dmc.Text(
+                            "Cette typologie classe les 172 territoires (EPCI) d'Auvergne-Rhône-Alpes en 4 grands groupes homogènes, sur la base d'une sélection scientifique de 6 indicateurs transversaux (Social, Santé, Offre de Soins, Démographie et Environnement). Cette vision holistique permet d'identifier les fractures régionales et de cibler des recommandations d'action publique sur-mesure.",
+                            size="xs", c="dimmed", mb="lg"
                         ),
                         dmc.Grid(
-                            id='cluster-main-grid',
                             gutter="md",
-                            style={"flex": 1, "minHeight": 0, "display": "flex"}, # Always displayed
                             children=[
                                 # Non-interactive static map (5 columns wide)
                                 dmc.GridCol(
                                     span=5,
                                     children=[
-                                        dcc.Graph(
-                                            id='cluster-map-graph',
-                                            style={'height': '420px'},
-                                            config={'staticPlot': True, 'displayModeBar': False}
+                                        dmc.Paper(
+                                            withBorder=True, p="xs", radius="md", bg="white",
+                                            children=[
+                                                dmc.Text("Cartographie des 4 Super-Profils", size="sm", fw=700, ta="center", mb="xs"),
+                                                dcc.Graph(
+                                                    id='cluster-map-graph',
+                                                    style={'height': '540px'},
+                                                    config={'staticPlot': True, 'displayModeBar': False}
+                                                ),
+                                            ]
+                                        )
+                                    ]
+                                ),
+                                # 4 Identity Profiles (7 columns wide)
+                                dmc.GridCol(
+                                    span=7,
+                                    children=[
+                                        html.Div(
+                                            id='cluster-profiles-container', 
+                                            style={'maxHeight': '580px', 'overflowY': 'auto', 'paddingRight': '10px'}
                                         ),
-                                    ]
-                                ),
-                                # Profile chart (7 columns wide for clear view of relative percentage gaps)
-                                dmc.GridCol(
-                                    span=7,
-                                    children=[
-                                        dcc.Graph(id='cluster-chart', style={'height': '420px'}, config={'displayModeBar': False}),
-                                    ]
-                                ),
-                                # Reading Guide / Insights (5 columns wide)
-                                dmc.GridCol(
-                                    span=5,
-                                    children=[
-                                        html.Div(id='cluster-reading-guide'),
-                                    ]
-                                ),
-                                # Benchmark table (7 columns wide)
-                                dmc.GridCol(
-                                    span=7,
-                                    children=[
-                                        html.Div(id='cluster-twins-table-container'),
                                     ]
                                 )
                             ]
@@ -582,9 +577,12 @@ def select_epci_on_click(clickData, current_selection):
     Output('highlight-variable-select', 'data'),
     [Input('sidebar-filter-social', 'value'),
      Input('sidebar-filter-offre', 'value'),
-     Input('sidebar-filter-env', 'value')]
+     Input('sidebar-filter-env', 'value')],
+    [State('url', 'pathname')]
 )
-def update_highlight_options(social, offre, env):
+def update_highlight_options(social, offre, env, pathname):
+    if pathname not in ['/exploration', '/carte', '/radar']:
+        raise dash.exceptions.PreventUpdate
     all_vars = (social or []) + (offre or []) + (env or [])
     if not all_vars: return []
     return [{'label': variable_dict.get(v, v), 'value': v} for v in all_vars if v in variable_dict]
@@ -600,10 +598,13 @@ def update_highlight_options(social, offre, env):
      Input({'type': 'exploration-slider', 'index': ALL}, 'value'),
      Input('sidebar-epci-radar', 'value'),
      Input('highlight-variable-select', 'value'),
-     Input('show-hospitals-switch', 'checked')],
-    State({'type': 'exploration-slider', 'index': ALL}, 'id')
+     Input('show-hospitals-switch', 'checked'),
+     Input('url', 'pathname')],
+    [State({'type': 'exploration-slider', 'index': ALL}, 'id')]
 )
-def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hospitals, slider_ids):
+def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hospitals, pathname, slider_ids):
+    if pathname not in ['/exploration', '/carte', '/radar']:
+        raise dash.exceptions.PreventUpdate
     try:
         click_instruction = "<i>Cliquez sur cet EPCI pour l'ajouter au radar chart et au profiler</i><br><br>"
         total_epci = len(gdf_merged)
@@ -620,12 +621,18 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
         # ----------------------------------------------------
         indic_map = {'INCI': "l'incidence", 'MORT': "la mortalité", 'PREV': "la prévalence"}
         patho_map = {'AVC': "de l'AVC", 'CardIsch': "de la Cardiopathie Ischémique", 'InsuCard': "de l'insuffisance cardiaque"}
-        i_str = indic_map.get(ind, ind)
-        p_str = patho_map.get(patho, patho)
-        dynamic_title = f"Carte de {i_str} {p_str} en Auvergne-Rhône-Alpes selon les variables sélectionnées"
+        
+        # Vérification si l'indicateur sélectionné est un indicateur utilisateur direct
+        if ind in gdf_merged.columns:
+            target = ind
+            dynamic_title = f"Carte de l'indicateur : {variable_dict.get(ind, ind)}"
+        else:
+            i_str = indic_map.get(ind, ind)
+            p_str = patho_map.get(patho, patho)
+            dynamic_title = f"Carte de {i_str} {p_str} en Auvergne-Rhône-Alpes"
+            target = f"{ind}_{patho}"
+            if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
 
-        target = f"{ind}_{patho}"
-        if target not in gdf_merged.columns and target == 'INCI_CNR': target = 'Taux_CNR'
         if target not in gdf_merged.columns: return go.Figure(), "Indicateur non trouvé", "", "", dynamic_title
 
         mask = pd.Series([True] * total_epci, index=gdf_merged.index)
@@ -781,7 +788,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
             margin={"r":0, "t":0, "l":0, "b":0},
             paper_bgcolor='white', 
             clickmode='event+select',
-            dragmode='pan'
+            dragmode=False
         )
         
         # Narrative Sentence Generation
@@ -926,7 +933,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
         err = f"Crash Traceback:\n{traceback.format_exc()}"
         print(err)
         # Return a visible error in the stats area for debugging if needed
-        return go.Figure(), dmc.Alert(f"Erreur de rendu : {str(e)}", color="red"), "Erreur technique", "Erreur"
+        return go.Figure(), dmc.Alert(f"Erreur de rendu : {str(e)}", color="red"), "Erreur technique", "Erreur", "Carte"
 
 # --- Radar Callback ---
 @callback(
@@ -936,14 +943,18 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
      Output('radar-placeholder', 'style'),
      Output('radar-guide-paper', 'style'),
      Output('radar-reading-guide', 'children'),
-     Output('radar-dynamic-title', 'children')],
+     Output('radar-dynamic-title', 'children'),
+     Output('download-pdf-btn', 'disabled')],
     [Input('sidebar-filter-social', 'value'), 
      Input('sidebar-filter-offre', 'value'), 
      Input('sidebar-filter-env', 'value'),
      Input('sidebar-epci-radar', 'value'),
-     Input('map-indic-select', 'value'), Input('map-patho-select', 'value')]
+     Input('map-indic-select', 'value'), Input('map-patho-select', 'value')],
+    [State('url', 'pathname')]
 )
-def update_radar(social, offre, env, epci_codes, ind, patho):
+def update_radar(social, offre, env, epci_codes, ind, patho, pathname):
+    if pathname not in ['/exploration', '/carte', '/radar']:
+        raise dash.exceptions.PreventUpdate
     target = f"{ind}_{patho}"
     # Consistency with map logic for CNR
     if target not in gdf_merged.columns and target == 'INCI_CNR' and 'Taux_CNR' in gdf_merged.columns: target = 'Taux_CNR'
@@ -956,7 +967,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     
     # Revert to original: only show if at least 3 variables are selected
     if len(selected_vars_unique) < 3:
-        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées"
+        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées", True
     
     selected_vars = selected_vars_unique
     
@@ -969,7 +980,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
     dynamic_title = f"Radar comparatif{names_str} par rapport à la moyenne régionale des variables sélectionnées"
 
     if not selected_vars: 
-        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", dynamic_title
+        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", dynamic_title, True
     
     fig = go.Figure()
     
@@ -1238,7 +1249,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho):
             dmc.Text("Sélectionnez des territoires et des variables dans le menu à gauche pour afficher l'analyse comparative détaillée.", size="sm", fs="italic", c="dimmed", ta="center", mt="xl")
         )
 
-    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, {'display': 'block'}, guide, dynamic_title
+    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, {'display': 'block'}, guide, dynamic_title, (not epci_codes)
 
 # --- Scroll Affordance Callback ---
 clientside_callback(
@@ -1363,34 +1374,126 @@ THEME_INTERPRETATIONS = {
 
 CLUSTER_COLORS = ['#e03131', '#ff922b', '#fcc419', '#51cf66'] # Rouge, Orange, Jaune, Vert
 
-def make_twins_table(selected_epci_code, selected_vars, twins_list):
-    if not selected_epci_code or not twins_list:
+# --- Jumeaux Statistiques Callbacks ---
+
+@callback(
+    Output('twins-table-container', 'children'),
+    [Input('sidebar-epci-radar', 'value'),
+     Input('sidebar-filter-social', 'value'), 
+     Input('sidebar-filter-offre', 'value'), 
+     Input('sidebar-filter-env', 'value'),
+     Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
+     Input('url', 'pathname')]
+)
+def update_twins_table(epci_codes, social, offre, env, ind, patho, pathname):
+    if pathname not in ['/exploration', '/carte', '/radar']:
+        raise dash.exceptions.PreventUpdate
+        
+    if not epci_codes:
         return dmc.Paper(
             p="md", radius="md", withBorder=True, bg="#f8f9fa",
-            children=dmc.Text("Cliquez sur un territoire sur la carte pour identifier ses jumeaux structuraux.", size="sm", fs="italic", c="dimmed", ta="center")
+            children=dmc.Text("⚠️ Sélectionnez d'abord un territoire de référence (en cliquant sur la carte ou via le menu de gauche) pour trouver ses jumeaux statistiques.", size="sm", fs="italic", c="dimmed", ta="center")
         )
+        
+    # Get active target variable
+    target = f"{ind}_{patho}"
+    if target not in gdf_merged.columns and target == 'INCI_CNR' and 'Taux_CNR' in gdf_merged.columns: 
+        target = 'Taux_CNR'
+        
+    # Combine active variables
+    active_vars = [target] + (social or []) + (offre or []) + (env or [])
+    seen = set()
+    active_vars = [x for x in active_vars if not (x in seen or seen.add(x))]
+    
+    if len(active_vars) < 2:
+        return dmc.Paper(
+            p="md", radius="md", withBorder=True, bg="#f8f9fa",
+            children=dmc.Text("⚠️ Pour comparer les profils de manière pertinente, veuillez sélectionner au moins une variable de filtre (socio-économique, offre de soins ou environnement) dans le menu de gauche.", size="sm", fs="italic", c="dimmed", ta="center")
+        )
+        
+    # Primary selected EPCI
+    target_code = epci_codes[0]
+    
+    # Check if target exists in dataset
+    target_row = gdf_merged[gdf_merged['EPCI_CODE'] == target_code]
+    if target_row.empty:
+        return dmc.Paper(
+            p="md", radius="md", withBorder=True, bg="#f8f9fa",
+            children=dmc.Text("Territoire de référence non identifié dans les données.", size="sm", fs="italic", c="dimmed", ta="center")
+        )
+        
+    # Prepare data for all 172 EPCIs
+    df_comp = gdf_merged[['EPCI_CODE', 'nom_EPCI'] + active_vars].copy()
+    
+    # Impute missing values with column median
+    for v in active_vars:
+        df_comp[v] = pd.to_numeric(df_comp[v], errors='coerce')
+        if df_comp[v].isnull().any():
+            median_val = df_comp[v].median()
+            df_comp[v] = df_comp[v].fillna(median_val if pd.notna(median_val) else 0.0)
+            
+    # Standardize data using Z-score (StandardScaler logic)
+    z_data = df_comp[active_vars].copy()
+    for v in active_vars:
+        mean_val = z_data[v].mean()
+        std_val = z_data[v].std()
+        std_val = std_val if std_val != 0 else 1.0
+        z_data[v] = (z_data[v] - mean_val) / std_val
+        
+    # Find target vector
+    target_idx = df_comp[df_comp['EPCI_CODE'] == target_code].index[0]
+    target_vector = z_data.loc[target_idx].values
+    
+    # Calculate Euclidean distance for all other EPCIs
+    distances = []
+    for idx, row in df_comp.iterrows():
+        if row['EPCI_CODE'] == target_code:
+            continue
+        vector = z_data.loc[idx].values
+        dist = np.sqrt(np.sum((target_vector - vector) ** 2))
+        distances.append({
+            'code': row['EPCI_CODE'],
+            'nom': row['nom_EPCI'],
+            'distance': dist
+        })
+        
+    # Sort by distance
+    distances_sorted = sorted(distances, key=lambda x: x['distance'])
+    twins_list = distances_sorted[:3]
+    
+    # Convert distances to resemblance percentages
+    # Resemblance = 100 * exp(-dist / sqrt(N))
+    n_vars = len(active_vars)
+    for t in twins_list:
+        resemblance = 100.0 * np.exp(-t['distance'] / np.sqrt(n_vars))
+        t['resemblance'] = resemblance
         
     rows = []
     for t in twins_list:
-        resemblance = max(0.0, min(100.0, 100.0 - t['distance'] * 20.0))
+        resemblance = t['resemblance']
         if resemblance >= 85: badge_color = "teal"
         elif resemblance >= 70: badge_color = "blue"
-        elif resemblance >= 50: badge_color = "orange"
+        elif resemblance >= 55: badge_color = "orange"
         else: badge_color = "gray"
+        
+        is_already_selected = t['code'] in epci_codes
+        btn_text = "Déjà sur le radar" if is_already_selected else "Comparer sur le radar"
         
         rows.append(
             dmc.TableTr([
                 dmc.TableTd(dmc.Text(t['nom'], fw=700, size="sm")),
-                dmc.TableTd(dmc.Badge(f"{resemblance:.1f} %", color=badge_color, variant="filled")),
+                dmc.TableTd(dmc.Badge(f"{resemblance:.1f} %", color=badge_color, variant="filled", size="sm")),
                 dmc.TableTd(
                     dmc.Button(
-                        "Analyser", 
+                        btn_text, 
                         id={'type': 'analyze-twin-btn', 'index': t['code']},
-                        variant="light", 
+                        variant="light" if not is_already_selected else "outline", 
+                        color="indigo" if not is_already_selected else "gray",
                         size="compact-xs", 
+                        disabled=is_already_selected,
                         rightSection=DashIconify(icon="solar:chart-square-bold", width=12),
                         radius="md",
-                        className="premium-hover"
+                        className="premium-hover" if not is_already_selected else None
                     )
                 )
             ])
@@ -1398,102 +1501,119 @@ def make_twins_table(selected_epci_code, selected_vars, twins_list):
         
     head = dmc.TableThead(
         dmc.TableTr([
-            dmc.TableTh("Territoire Jumeau (Benchmark)"),
-            dmc.TableTh("Taux de ressemblance sur 100 (%)"),
-            dmc.TableTh("Lien d'analyse rapide"),
+            dmc.TableTh("Territoire Jumeau (Même profil structural)"),
+            dmc.TableTh("Taux de ressemblance"),
+            dmc.TableTh("Action comparative"),
         ])
     )
     
     body = dmc.TableTbody(rows)
+    target_name = target_row['nom_EPCI'].values[0]
     
     return dmc.Paper(
         p="md", radius="md", withBorder=True, bg="white",
         children=[
             dmc.Group(gap="xs", mb="sm", children=[
-                DashIconify(icon="solar:users-group-two-rounded-bold-duotone", color="teal", width=18),
-                dmc.Text("Territoires aux profils similaires (Benchmark)", fw=700, size="sm")
+                DashIconify(icon="solar:link-bold-duotone", color="teal", width=18),
+                dmc.Text(f"Territoires statistiquement les plus proches de : {target_name}", fw=700, size="sm")
             ]),
-            dmc.Text("Ces 3 territoires partagent le même profil statistique pour la thématique choisie. Leurs structures locales (CPTS, mairies) peuvent s'inspirer mutuellement et échanger des bonnes pratiques d'action publique.", size="xs", c="dimmed", mb="md"),
+            dmc.Text(
+                f"Ces 3 territoires partagent un profil de données similaire à celui de {target_name} "
+                f"sur les {n_vars} indicateurs sélectionnés (calculé à partir des écarts à la moyenne régionale). "
+                "Cliquer sur « Comparer sur le radar » permet de visualiser leurs courbes comparatives.",
+                size="xs", c="dimmed", mb="md"
+            ),
             dmc.Table([head, body], striped=True, highlightOnHover=True)
         ]
     )
 
 
 @callback(
-    [Output('cluster-chart', 'figure'),
-     Output('cluster-map-graph', 'figure'),
-     Output('cluster-main-grid', 'style'),
-     Output('cluster-placeholder', 'style'),
-     Output('cluster-reading-guide', 'children'),
-     Output('cluster-twins-table-container', 'children'),
-     Output('cluster-dynamic-title', 'children'),
-     Output('cluster-active-badge-container', 'children')],
-    [Input('cluster-theme-selector', 'value'), 
-     Input('sidebar-epci-radar', 'value')]
+    Output('sidebar-epci-radar', 'value', allow_duplicate=True),
+    Input({'type': 'analyze-twin-btn', 'index': ALL}, 'n_clicks'),
+    State('sidebar-epci-radar', 'value'),
+    prevent_initial_call=True
 )
-def update_cluster(cluster_theme, epci_codes):
-    meta = THEME_METADATA.get(cluster_theme, THEME_METADATA['sante'])
-    theme_label = meta['label']
-    badge_color = meta['badge_color']
-    selected_vars = meta['vars']
-    
-    names_str = ""
-    if epci_codes:
-        names = gdf_merged[gdf_merged['EPCI_CODE'].isin(epci_codes)]['nom_EPCI'].tolist()
-        names_str = f" - Position de {', '.join(names)}"
-    dynamic_title = f"Profiler de Clustering Territorial (K-Means){names_str}"
-    
-    active_badge = dmc.Badge(
-        f"Thématique : {theme_label}", 
-        color=badge_color, 
-        variant="filled", 
-        size="md", 
-        radius="sm",
-        leftSection=DashIconify(icon="solar:settings-bold-duotone", width=14)
-    )
+def add_twin_to_radar(n_clicks, current_selection):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return no_update
+        
+    triggered_id_str = ctx.triggered[0]['prop_id'].split('.')[0]
+    import json
+    try:
+        id_dict = json.loads(triggered_id_str)
+        twin_code = id_dict['index']
+    except Exception:
+        return no_update
+        
+    triggered_val = ctx.triggered[0]['value']
+    if not triggered_val:
+        return no_update
+        
+    selection = current_selection or []
+    if twin_code not in selection:
+        selection = list(selection) + [twin_code]
+        return selection
+    return no_update
 
-    # Load cluster dataframe and precalculated static clusters
-    df_cluster = gdf_merged[['EPCI_CODE', 'nom_EPCI'] + selected_vars].copy()
-    df_cluster['Cluster'] = gdf_merged[f'Cluster_{cluster_theme}']
+
+# --- Clustering K-Means Global Profiler Callback ---
+
+CLUSTER_COLORS = ['#e03131', '#ff922b', '#fcc419', '#51cf66'] # Rouge, Orange, Jaune, Vert
+
+@callback(
+    [Output('cluster-profiles-container', 'children'),
+     Output('cluster-map-graph', 'figure')],
+    [Input('url', 'pathname')]
+)
+def update_cluster_global(pathname):
+    if pathname not in ['/exploration', '/carte', '/radar']:
+        raise dash.exceptions.PreventUpdate
+    # 6 selected variables
+    global_vars = [
+        'FDep_2021',
+        'APL-med_general_2023',
+        'APL_Cardio_EPCI',
+        'Part de personnes isolées 60 ans et plus',
+        'AIR01',
+        'MORT_CardIsch'
+    ]
     
-    # Impute missing values with column median
-    for col in selected_vars:
-        if df_cluster[col].isnull().any():
-            median_val = df_cluster[col].median()
-            df_cluster[col] = df_cluster[col].fillna(median_val if pd.notna(median_val) else 0.0)
-            
-    # Standardize data for Euclidean distance benchmark
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(df_cluster[selected_vars])
+    # Pre-process columns to ensure numeric
+    for col in global_vars:
+        gdf_merged[col] = pd.to_numeric(gdf_merged[col], errors='coerce')
+        gdf_merged[col] = gdf_merged[col].fillna(gdf_merged[col].median())
+        
+    # Calculate regional averages
+    regional_means = {col: gdf_merged[col].mean() for col in global_vars}
     
-    # ----------------------------------------------------
-    # STATIC NON-INTERACTIVE MAP GENERATION
-    # ----------------------------------------------------
+    # 1. Cartography of Global Clusters (Static Map)
     fig_map = go.Figure()
     
     cluster_group_names = {
-        0: "Groupe 1 - Alerte critique / Vulnérabilité maximale",
-        1: "Groupe 2 - Vulnérabilité forte",
-        2: "Groupe 3 - Vulnérabilité modérée",
-        3: "Groupe 4 - Profil favorable / Préservé"
+        0: "Groupe 1 - Haute Vulnérabilité Sociale & Sanitaire",
+        1: "Groupe 2 - Bassins Industriels et Périurbains : Défi Environnemental",
+        2: "Groupe 3 - Ruralité Vieillissante : Défi d'Accès aux Soins",
+        3: "Groupe 4 - Métropoles Connectées : Favorisé & Équipé"
     }
-    cluster_names_mapped = df_cluster['Cluster'].map(cluster_group_names)
+    cluster_names_mapped = gdf_merged['Cluster_Global'].map(cluster_group_names)
     
-    # 1. Base Choropleth Layer colored by cluster ID
+    # Base Choropleth Layer colored by cluster ID
     fig_map.add_trace(go.Choropleth(
         geojson=geojson_data,
-        locations=df_cluster.index.astype(str),
-        z=df_cluster['Cluster'],
+        locations=gdf_merged.index.astype(str),
+        z=gdf_merged['Cluster_Global'],
         colorscale=[[0, '#e03131'], [0.33, '#ff922b'], [0.66, '#fcc419'], [1, '#51cf66']],
         showscale=False,
         marker_line_width=0.5,
         marker_line_color="rgba(255,255,255,0.8)",
-        hoverinfo='skip',
-        customdata=cluster_names_mapped,
+        hoverinfo='text',
+        hovertext=[f"<b>{row['nom_EPCI']}</b><br>Profil : {name}" for name, (_, row) in zip(cluster_names_mapped, gdf_merged.iterrows())],
         name="Typologie de Cluster"
     ))
     
-    # 2. Department outlines
+    # Department outlines
     fig_map.add_trace(go.Choropleth(
         geojson=geojson_deps,
         locations=gdf_deps_4326.index.astype(str),
@@ -1505,30 +1625,7 @@ def update_cluster(cluster_theme, epci_codes):
         hoverinfo='skip'
     ))
     
-    # Determine selection info
-    selected_epci_code = epci_codes[0] if (epci_codes and len(epci_codes) > 0) else None
-    epci_cluster_id = None
-    epci_name = ""
-    
-    if selected_epci_code:
-        row_epci = df_cluster[df_cluster['EPCI_CODE'] == selected_epci_code]
-        if not row_epci.empty:
-            epci_cluster_id = int(row_epci['Cluster'].values[0])
-            epci_name = row_epci['nom_EPCI'].values[0]
-            
-            # 3. Highlight selection
-            fig_map.add_trace(go.Choropleth(
-                geojson=geojson_data,
-                locations=[str(row_epci.index[0])],
-                z=[1],
-                colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
-                showscale=False,
-                marker_line_width=2.5,
-                marker_line_color='#2c3e50', # Deep dark grey contrast border
-                hoverinfo='skip'
-            ))
-            
-    # 4. Major Cities
+    # Major Cities Overlay
     cities = [
         {"name": "Lyon", "lat": 45.7640, "lon": 4.8357},
         {"name": "Saint-Étienne", "lat": 45.4397, "lon": 4.3873},
@@ -1563,149 +1660,106 @@ def update_cluster(cluster_theme, epci_codes):
         paper_bgcolor='white',
         dragmode=False
     )
-
-    # ----------------------------------------------------
-    # PROFILE CHART IN PERCENT GAPS (vs regional average)
-    # ----------------------------------------------------
-    fig_chart = go.Figure()
-    labels_clean = [variable_dict.get(v, v) for v in selected_vars]
     
-    # Calculate regional means
-    reg_means = df_cluster[selected_vars].mean(axis=0)
+    # 2. Generation of the 4 Identity Cards
+    cards_list = []
     
-    n_clusters = 4
-    for c in range(n_clusters):
-        c_df = df_cluster[df_cluster['Cluster'] == c]
-        c_col = CLUSTER_COLORS[c]
-        c_opacity = 1.0
-        
-        # Fade out non-selected clusters if there's an active EPCI
-        if epci_cluster_id is not None and c != epci_cluster_id:
-            c_col = '#e9ecef'
-            c_opacity = 0.4
-            
-        # Calculate percentage gaps for the cluster mean
-        c_mean_raw = c_df[selected_vars].mean(axis=0)
-        c_gap = []
-        for v in selected_vars:
-            mu = reg_means[v]
-            val = c_mean_raw[v]
-            gap = ((val - mu) / mu) * 100 if mu != 0 else 0.0
-            c_gap.append(gap)
-            
-        fig_chart.add_trace(go.Bar(
-            x=labels_clean,
-            y=c_gap,
-            name=f"Profil {c + 1} ({len(c_df)} EPCIs)",
-            marker_color=c_col,
-            opacity=c_opacity,
-            width=0.15,
-            hovertemplate=f"Profil {c + 1}: %{{y:+.1f}}% vs moyenne régionale<extra></extra>"
-        ))
-        
-    if selected_epci_code and epci_cluster_id is not None:
-        row_epci = df_cluster[df_cluster['EPCI_CODE'] == selected_epci_code]
-        epci_vals = row_epci[selected_vars].iloc[0]
-        epci_gap = []
-        for v in selected_vars:
-            mu = reg_means[v]
-            val = epci_vals[v]
-            gap = ((val - mu) / mu) * 100 if mu != 0 else 0.0
-            epci_gap.append(gap)
-            
-        fig_chart.add_trace(go.Scatter(
-            x=labels_clean,
-            y=epci_gap,
-            mode='lines+markers',
-            name=f"{epci_name} (Écart %)",
-            line=dict(color='#2c3e50', width=3, dash='solid'),
-            marker=dict(size=9, color='#e03131', line=dict(color='white', width=1.5)),
-            hovertemplate=f"{epci_name}: %{{y:+.1f}}% vs moyenne régionale<extra></extra>"
-        ))
-        
-    # Draw a line at 0 (regional average)
-    fig_chart.add_shape(
-        type="line",
-        x0=-0.5,
-        x1=len(selected_vars)-0.5,
-        y0=0,
-        y1=0,
-        line=dict(color="rgba(0,0,0,0.4)", width=2, dash="dash"),
-    )
+    profiles_metadata = {
+        0: {
+            "title": "1. Pôles de Précarité Multi-Dimensionnelle & Désertification",
+            "desc": "Territoires ruraux précarisés, anciens bassins industriels et zones de montagne cumulant de graves difficultés économiques, un fort isolement social des séniors, et un déficit d'accès aux soins de premier recours comme spécialisés, le tout corrélé à une mortalité cardiovasculaire supérieure de 21.0% à la moyenne régionale.",
+            "rec": "📢 Action Publique : Renforcer d'urgence l'accès aux soins de premier recours (Maisons de Santé Pluriprofessionnelles), déployer des dispositifs mobiles (médicobus, téléconsultation) et densifier le soutien social à domicile pour rompre l'isolement des aînés.",
+            "hash": "sante"
+        },
+        1: {
+            "title": "2. Bassins Industriels et Périurbains : Vulnérabilité Environnementale",
+            "desc": "Territoires caractérisés par des niveaux de pollution atmosphérique particulaire (PM2.5) nettement supérieurs à la moyenne régionale (+10.2%). Bien que plus favorisés socialement, ils font face à un accès modéré aux spécialistes (cardiologues) et à une exposition environnementale chronique préoccupante.",
+            "rec": "🌱 Action Publique : Agir sur les sources d'émissions (modernisation du chauffage biomasse, mobilités douces), intensifier le dépistage précoce des maladies cardio-respiratoires et aménager des trames vertes urbaines.",
+            "hash": "env"
+        },
+        2: {
+            "title": "3. Ruralité Vieillissante : Isolement & Éloignement des Spécialistes",
+            "desc": "Territoires de moyenne montagne et de grande ruralité bénéficiant d'une excellente qualité de l'air, mais durement confrontés au vieillissement démographique et à l'isolement social des aînés (+7.4% d'isolement). La problématique majeure y est la très faible accessibilité aux spécialistes (-42.2% d'accès aux cardiologues).",
+            "rec": "🚗 Action Publique : Financer des navettes de santé solidaires pour lever le frein à la mobilité vers les spécialistes, soutenir les chantiers de télémédecine et les délégations de tâches (Infirmières en Pratique Avancée).",
+            "hash": "socio"
+        },
+        3: {
+            "title": "4. Métropoles Connectées : Capital Social & Médical Protecteur",
+            "desc": "Grands pôles urbains et couronnes résidentielles aisées bénéficiant d'un niveau socio-économique favorable (-28.1% de précarité FDep) et d'un maillage médical solide, agissant comme d'excellents facteurs protecteurs, en dépit d'une exposition moyenne à la pollution de l'air liée à la densité métropolitaine.",
+            "rec": "🏥 Action Publique : Capitaliser sur la forte densité médicale locale pour structurer des actions d'éducation thérapeutique du patient (ETP), organiser la prévention active en entreprise, et fluidifier le lien ville-hôpital.",
+            "hash": "sante"
+        }
+    }
     
-    fig_chart.update_layout(
-        barmode='group',
-        xaxis=dict(title="Variables thématiques", gridcolor="#e9ecef", tickangle=-10, tickfont=dict(size=9)),
-        yaxis=dict(title="Écart à la moyenne régionale (%)", gridcolor="#e9ecef", ticksuffix="%"),
-        margin={"t":40,"b":60,"l":50,"r":40},
-        height=420,
-        legend=dict(orientation="h", y=-0.2, x=0.5, xanchor="center"),
-        paper_bgcolor='white',
-        plot_bgcolor='white'
-    )
-    
-    # ----------------------------------------------------
-    # TWINS CALCULATION (Euclidean Distance on Standardised Data)
-    # ----------------------------------------------------
-    twins_list = []
-    if selected_epci_code:
-        selected_idx = df_cluster[df_cluster['EPCI_CODE'] == selected_epci_code].index[0]
-        selected_vector = X_scaled[selected_idx]
+    # Helper to generate variable comparison row
+    def make_comp_row(col, cluster_val, regional_val):
+        label = variable_dict.get(col, col)
+        unit = unit_dict.get(col, "")
+        sens = sens_dict.get(col, -1) # -1 = higher is worse, 1 = higher is better
         
-        distances = []
-        for idx in range(len(df_cluster)):
-            if idx == selected_idx: continue
-            dist = np.sqrt(np.sum((X_scaled[idx] - selected_vector) ** 2))
-            distances.append((idx, dist))
+        diff_pct = ((cluster_val - regional_val) / regional_val) * 100 if regional_val != 0 else 0
+        
+        if sens == -1:
+            is_vulnerable = cluster_val > regional_val
+        else:
+            is_vulnerable = cluster_val < regional_val
             
-        sorted_distances = sorted(distances, key=lambda x: x[1])[:3]
-        for idx, dist in sorted_distances:
-            row = df_cluster.iloc[idx]
-            twins_list.append({
-                'nom': row['nom_EPCI'],
-                'code': row['EPCI_CODE'],
-                'distance': dist
-            })
+        color = "#e03131" if is_vulnerable else "#2b8a3e"
+        arrow = "↑" if cluster_val > regional_val else "↓"
+        diff_text = f"{arrow} {abs(diff_pct):.1f}%" if abs(diff_pct) >= 0.1 else "="
+        
+        return dmc.Group(
+            justify="space-between", mb=6,
+            children=[
+                dmc.Text(label, size="xs", fw=600, style={"maxWidth": "60%"}),
+                dmc.Group(gap="xs", children=[
+                    dmc.Text(f"{cluster_val:.2f} {unit}" if abs(cluster_val) < 5 else f"{cluster_val:.1f} {unit}", size="xs", fw=800, c=color),
+                    dmc.Text(f"(Moy: {regional_val:.1f})", size="10px", c="dimmed"),
+                    dmc.Badge(diff_text, size="xs", variant="light", color="red" if is_vulnerable else "green")
+                ])
+            ]
+        )
+        
+    for c in range(4):
+        c_df = gdf_merged[gdf_merged['Cluster_Global'] == c]
+        meta = profiles_metadata[c]
+        color_c = CLUSTER_COLORS[c]
+        
+        # Build list of comparison rows
+        comp_rows = []
+        for col in global_vars:
+            c_val = c_df[col].mean()
+            r_val = regional_means[col]
+            comp_rows.append(make_comp_row(col, c_val, r_val))
             
-    # ----------------------------------------------------
-    # INTERPRETATION TEXT
-    # ----------------------------------------------------
-    if selected_epci_code and epci_cluster_id is not None:
-        c_data = THEME_INTERPRETATIONS.get(cluster_theme, {}).get(epci_cluster_id, {})
-        title_c = c_data.get('title', f"Typologie {epci_cluster_id + 1}")
-        desc_c = c_data.get('desc', "")
-        rec_c = c_data.get('rec', "")
-        hash_c = c_data.get('hash', 'socio')
-        
-        badge_style_color = CLUSTER_COLORS[epci_cluster_id]
-        
-        guide = dmc.Paper(
-            p="md", radius="md", withBorder=True, bg="white",
-            style={"borderColor": badge_style_color, "borderWidth": "1.5px", "minHeight": "100%"},
+        card = dmc.Card(
+            withBorder=True, radius="md", mb="md", shadow="xs",
+            style={"borderLeft": f"5px solid {color_c}", "backgroundColor": "#ffffff"},
             children=[
                 dmc.Group(justify="space-between", mb="xs", children=[
-                    dmc.Badge(title_c, color=badge_color, variant="filled", size="sm"),
-                    dmc.Text(f"Groupe {epci_cluster_id + 1}/4", fw=700, size="xs", c="dimmed")
+                    dmc.Text(meta["title"], fw=800, size="md", c="dark.4"),
+                    dmc.Badge(f"{len(c_df)} territoires", color="gray", variant="light")
                 ]),
-                dmc.Text([
-                    dmc.Text("Territoire : ", fw=700, span=True), dmc.Text(epci_name, fw=800, c="blue.8", span=True)
-                ], size="sm", mb=8),
-                dmc.Text(desc_c, size="xs", c="gray.8", style={"lineHeight": "1.6"}, mb="md"),
+                dmc.Text(meta["desc"], size="xs", c="gray.7", style={"lineHeight": "1.5"}, mb="md"),
+                
+                dmc.Divider(mb="sm", variant="dashed"),
+                dmc.Text("Composition statistique & Écart régional :", size="xs", fw=700, c="dimmed", mb="xs"),
+                html.Div(comp_rows, style={"marginBottom": "15px"}),
+                
                 dmc.Paper(
-                    p="xs", radius="sm", bg="blue.0",
-                    style={"borderLeft": f"3px solid {badge_style_color}"},
+                    p="xs", radius="sm", bg="indigo.0",
                     children=[
-                        dmc.Text(rec_c, size="xs", fw=700, c="blue.9", mb="xs"),
+                        dmc.Text(meta["rec"], size="xs", fw=600, c="indigo.9", style={"lineHeight": "1.4"}, mb="xs"),
                         dcc.Link(
                             dmc.Button(
-                                "Consulter les leviers associés",
+                                "Consulter les leviers politiques associés",
                                 size="compact-xs",
-                                variant="outline",
-                                color="blue",
+                                variant="subtle",
+                                color="indigo",
                                 leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=12),
                                 className="premium-hover"
                             ),
-                            href=f"/leviers#{hash_c}",
+                            href=f"/leviers#{meta['hash']}",
                             target="_blank",
                             style={"textDecoration": "none"}
                         )
@@ -1713,36 +1767,43 @@ def update_cluster(cluster_theme, epci_codes):
                 )
             ]
         )
-    else:
-        guide = dmc.Paper(
-            p="md", radius="md", withBorder=True, bg="#f8f9fa",
-            style={"minHeight": "100%", "display": "flex", "alignItems": "center", "justifyContent": "center"},
-            children=dmc.Text("Cliquez sur un territoire sur la carte pour voir sa fiche d'interprétation et ses recommandations publiques associées.", size="sm", fs="italic", c="dimmed", ta="center")
-        )
+        cards_list.append(card)
         
-    twins_table = make_twins_table(selected_epci_code, selected_vars, twins_list)
-    
-    return fig_chart, fig_map, {'display': 'flex'}, {'display': 'none'}, guide, twins_table, dynamic_title, active_badge
+    return cards_list, fig_map
 
 
-# --- Dynamic Selection Twin Benchmark Callback ---
+# --- PDF Report Download Callback ---
 @callback(
-    Output('sidebar-epci-radar', 'value', allow_duplicate=True),
-    Input({'type': 'analyze-twin-btn', 'index': ALL}, 'n_clicks'),
-    State('sidebar-epci-radar', 'value'),
+    Output("download-pdf-data", "data"),
+    Input("download-pdf-btn", "n_clicks"),
+    [State("sidebar-epci-radar", "value"),
+     State("map-indic-select", "value"),
+     State("map-patho-select", "value"),
+     State("sidebar-filter-social", "value"),
+     State("sidebar-filter-offre", "value"),
+     State("sidebar-filter-env", "value")],
     prevent_initial_call=True
 )
-def select_twin_epci(n_clicks_list, current_selection):
-    if not any(n_clicks_list): return no_update
-    ctx = dash.callback_context
-    trig_id = ctx.triggered[0]['prop_id']
-    if 'analyze-twin-btn' not in trig_id: return no_update
-    
-    import json
-    try:
-        json_str = trig_id.split('.n_clicks')[0]
-        id_dict = json.loads(json_str)
-        twin_code = id_dict['index']
-        return [twin_code]
-    except Exception:
+def download_pdf_report(n_clicks, epci_codes, ind, patho, social, offre, env):
+    if not n_clicks or not epci_codes:
         return no_update
+        
+    target = f"{ind}_{patho}"
+    if target not in gdf_merged.columns and target == 'INCI_CNR' and 'Taux_CNR' in gdf_merged.columns:
+        target = 'Taux_CNR'
+        
+    selected_vars = [target] + (social or []) + (offre or []) + (env or [])
+    seen = set()
+    selected_vars_unique = [x for x in selected_vars if not (x in seen or seen.add(x))]
+    
+    pdf_stream = generate_territory_pdf(
+        epci_codes=epci_codes,
+        selected_vars=selected_vars_unique,
+        gdf_merged=gdf_merged,
+        variable_dict=variable_dict,
+        unit_dict=unit_dict,
+        sens_dict=sens_dict,
+        category_dict=category_dict
+    )
+    
+    return dcc.send_bytes(pdf_stream.getvalue(), filename="Rapport_Diagnostic_Territorial_SeniAura.pdf")

@@ -217,39 +217,114 @@ Le callback génère un diagnostic territorial complet sous forme de grille visu
 
 ## 5.3 — Page Méthodologie (`methodology.py`)
 
-**Taille** : ~210 lignes
+**Taille** : ~450 lignes
 
 #### Structure en onglets
 
 ```
 Tabs (pills, variante bleue)
 ├── Onglet : Liste des variables  → Table des variables (Socioéco, Offre, Env, Santé)
-└── Onglet : Documentation Technique → Boutons vers MkDocs et GitHub
+├── Onglet : Sources des datasets → Liste des sources originales (Odissée, INSEE, DREES, Balises)
+└── Onglet : Documentation Technique → Liens vers MkDocs et le dépôt GitHub
 ```
 
----
+#### Intégration dynamique des variables importées
 
-## 5.4 — Page Leviers d'action (`leviers.py`) [NEW]
+La liste des variables n'est plus statique. Le callback `update_methodology_tables` écoute le sélecteur `dataset-select` (situé dans la sidebar). 
 
-**Taille** : ~45 lignes
+* **Données par défaut** : Si aucun dataset personnalisé n'est sélectionné, la page affiche les variables de référence.
+* **Données utilisateur** : Si un dataset personnalisé est sélectionné, le callback appelle `load_user_dataset` pour extraire les nouvelles variables et leurs métadonnées. Ces variables sont ajoutées dynamiquement dans leurs catégories respectives (Socioéco, Offre de soins, Environnement, Santé) et sont préfixées d'une étoile (⭐) pour indiquer leur origine communautaire.
 
-- Affiche le contenu du fichier `Leviers d'action.md`.
-- Intégrée directement dans la navigation principale du header.
-
-### Tables de variables
-
-Chaque table affiche 4 colonnes à largeur fixe (`layout="fixed"`) pour éviter le débordement :
+Chaque table affiche 5 colonnes avec mise en page à largeur fixe (`layout="fixed"`) :
 
 | Colonne | Largeur | Contenu |
 |:---|:---:|:---|
-| Variable | 200px | Nom court (`Nom_Court` du dictionnaire) |
-| Description | 400px | Description longue |
-| Unité | 100px | `%`, `‰`, `€`, `nb`, etc. |
-| Source | 250px | Institution source |
+| Variable | 180px | Nom d'affichage de la variable (Court) |
+| Description | 350px | Description détaillée de la mesure |
+| Unité | 80px | Unité de mesure (%, taux, €, etc.) |
+| Source | 150px | Organisme producteur de la donnée |
+| Polarité | - | Impact d'une hausse de la variable sur la vulnérabilité |
 
 ---
 
-## 5.4 — Radar Legacy (`radar.py`) ⚠️
+## 5.4 — Page Leviers d'action (`leviers.py`)
+
+**Taille** : ~600 lignes
+
+La page compile les interventions territoriales sous forme de tableau interactif et héberge l'espace collaboratif partagé.
+
+### Callbacks & Espace Collaboratif
+
+| Callback | Déclencheur | Action |
+|:---|:---|:---|
+| `update_all_levers_tables` | actualisation du trigger | Recharge les tables thématiques en fusionnant les leviers de référence et les propositions collaboratives en direct. |
+| `manage_modal_and_captcha` | Clic "Proposer" / "Annuler" | Ouvre/ferme la boîte de dialogue d'ajout et génère un calcul de sécurité anti-spam (CAPTCHA). |
+| `submit_new_lever` | Clic "Soumettre" | Valide la saisie, vérifie le CAPTCHA, et ajoute la proposition de levier. |
+| `vote_for_lever` | Clic "Voter" | Enregistre la note donnée par l'utilisateur (1 à 5 ★) et actualise la moyenne. |
+
+### Liaison aux comptes utilisateurs (Firebase Auth)
+
+Pour garantir l'intégrité de la base de données collaborative :
+1. **Soumission de levier** : Seuls les utilisateurs authentifiés peuvent ajouter une proposition. Le `uid` de l'auteur est enregistré sous le champ `owner_uid`.
+2. **Système de Notation Anti-Doublon** : Lorsqu'un utilisateur vote pour un levier, Dash extrait son `uid` depuis le `session-store`. La note est enregistrée dans un dictionnaire `voted_users` au format `{"user_uid": note}` au sein du fichier serveur `collaborative_levers.json`. 
+3. **Calcul Dynamique** : Si l'utilisateur re-vote pour le même levier, sa note précédente est mise à jour (écrasée). La somme (`RatingSum`), le nombre total de votes (`Votes`) et la moyenne (`Rating`) sont recalculés dynamiquement, interdisant le vote multiple tout en conservant les notes réelles.
+
+---
+
+## 5.5 — Page Dépôt / Ingestion (`upload.py`)
+
+**Taille** : ~460 lignes
+
+Cette page permet l'importation de fichiers de données géographiques personnalisés par les utilisateurs.
+
+### Ingestion & Traitement
+
+1. **Vérification de format** : Le fichier doit être un fichier CSV valide.
+2. **Validation des codes géographiques** :
+   * **Échelle EPCI** : Le fichier doit contenir une colonne `CODE_EPCI` ou `EPCI_CODE`.
+   * **Échelle Commune** : Le fichier doit contenir une colonne `CODE_COMMUNE`, `INSEE_COMMUNE` ou `CODE_INSEE`.
+3. **Configuration Dynamique** : Après analyse de la première ligne, la page affiche un formulaire pour configurer le nom et la catégorie de chaque colonne détectée.
+4. **Agrégation Locale** : Si l'échelle communale est choisie, l'application utilise une table de correspondance commune-EPCI (issue de l'API Géo de l'État ou locale) pour calculer automatiquement la moyenne des indicateurs par EPCI avant l'envoi.
+5. **Stockage Supabase & Firestore** : 
+   * Le fichier brut est téléversé dans Supabase Storage sous `raw/[uid]_[timestamp]_[nom].csv`.
+   * Le fichier propre agrégé est téléversé sous `clean/[uid]_[timestamp]_[nom].csv`.
+   * Les métadonnées (propriétaire, échelle, visibilité publique, configurations de colonnes) sont enregistrées dans Cloud Firestore.
+
+---
+
+## 5.6 — Page Espace Personnel & Authentification (`espace_perso.py`)
+
+**Taille** : ~300 lignes
+
+Ce module unifié gère à la fois l'authentification et l'espace de gestion personnelle de l'utilisateur.
+
+### Comportement conditionnel du Layout
+
+1. **Utilisateur Déconnecté** : Affiche le formulaire de connexion / inscription de référence. Le bouton "Mon Espace" (ou "Se Connecter") du header redirige vers cette page.
+2. **Utilisateur Connecté** : Affiche le profil utilisateur (email, déconnexion) et la table de gestion des datasets importés par l'utilisateur connecté (`owner_uid == user_uid`).
+
+### Table des Datasets & Actions
+
+La table affiche pour chaque dataset :
+* **Nom & Échelle** (badge coloré EPCI/COMMUNE).
+* **Indicateurs détectés** (liste des étiquettes personnalisées configurées lors de l'import).
+* **Commutateur de Visibilité** (`dmc.Switch`) : Permet de basculer instantanément le statut `is_public` dans la base **Cloud Firestore** à l'aide d'une requête REST `PATCH` signée. La modification prend effet immédiatement pour l'ensemble des utilisateurs (le dataset apparaît/disparaît de leur sélecteur public).
+* **Bouton de Suppression** (`dmc.ActionIcon` rouge) : Ouvre le modal de confirmation globale (`delete-dataset-modal` déclaré dans `app_v2.py`) en injectant les métadonnées cibles dans le `delete-dataset-temp-store`.
+
+---
+
+## 5.7 — Suppression de Données
+
+L'application intègre un protocole de suppression sécurisé global qui peut être déclenché depuis deux endroits :
+1. **La Sidebar d'Exploration** : Le bouton de suppression apparaît si l'utilisateur connecté est le propriétaire du dataset actif sélectionné.
+2. **La Table de l'Espace Personnel** : Le bouton d'action à la fin de chaque ligne de dataset permet de supprimer directement n'importe quel dataset importé.
+
+* **Modal de Confirmation** : Les deux boutons déclenchent la même modal de confirmation globale, évitant la duplication de code de dialogue.
+* **Effets secondaires** : La suppression retire le document Firestore et efface les deux fichiers physiques (`raw/` et `clean/`) du bucket **Supabase Storage**. Le `dataset-refresh-trigger` est ensuite incrémenté pour rafraîchir en direct le tableau de l'espace personnel et le menu déroulant de la sidebar.
+
+---
+
+## 5.8 — Radar Legacy (`radar.py`) ⚠️
 
 !!! warning "Non utilisé"
     Ce fichier n'est **pas chargé** par `app_v2.py`. Le radar est intégré directement dans `exploration.py`. Ce fichier est conservé uniquement à titre de référence historique.

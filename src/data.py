@@ -200,49 +200,229 @@ def load_data():
     # Merge
     gdf_merged = gdf_epci.merge(df, left_on='EPCI_CODE', right_on='CODE_EPCI', how='left')
 
-    # 5. Pre-calculate static K-Means clusters (Anti-label switching)
-    themes = {
-        'sante': ['INCI_AVC', 'INCI_CardIsch', 'INCI_InsuCard', 'MORT_AVC', 'MORT_CardIsch', 'MORT_InsuCard', 'PREV_AVC', 'PREV_CardIsch', 'PREV_InsuCard'],
-        'socio': ['FDep_2021', 'MED_SL', 'PR_MD60', 'Part de personnes isolées 60 ans et plus', 'Taux de chomeurs_2022'],
-        'offre': ['APL-med_general_2023', 'APL_Cardio_EPCI', 'Officines_2025', 'Centres_Sante_2025', 'Maisons_Sante_2025'],
-        'env': ['AIR01', 'AIR02', 'BRUIT01', 'BRUIT02']
-    }
+    # 5. Pre-calculate static Global K-Means clusters (K=4, Anti-label switching)
+    global_vars = [
+        'FDep_2021',
+        'APL-med_general_2023',
+        'APL_Cardio_EPCI',
+        'Part de personnes isolées 60 ans et plus',
+        'AIR01',
+        'MORT_CardIsch'
+    ]
     
-    for theme_name, selected_vars in themes.items():
-        df_cluster = gdf_merged[['EPCI_CODE'] + selected_vars].copy()
-        
-        # Impute missing values with column median
-        for col in selected_vars:
-            if col not in df_cluster.columns:
-                df_cluster[col] = 0.0
-            if df_cluster[col].isnull().any():
-                median_val = df_cluster[col].median()
-                df_cluster[col] = df_cluster[col].fillna(median_val if pd.notna(median_val) else 0.0)
-                
-        # Standardize data
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(df_cluster[selected_vars])
-        
-        # Run K-Means with K=4
-        n_clusters = 4
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-        raw_clusters = kmeans.fit_predict(X_scaled)
-        
-        # Anti-Label Switching: Sort clusters by average vulnerability direction
-        directions = np.array([sens_dict.get(v, -1) for v in selected_vars])
-        cluster_vulnerability = []
-        for c in range(n_clusters):
-            c_mean_z = X_scaled[raw_clusters == c].mean(axis=0)
-            vuln_score = np.sum(c_mean_z * (-directions))
-            cluster_vulnerability.append((c, vuln_score))
+    df_cluster = gdf_merged[['EPCI_CODE'] + global_vars].copy()
+    
+    # Impute missing values with column median and force numeric
+    for col in global_vars:
+        if col not in df_cluster.columns:
+            df_cluster[col] = 0.0
+        df_cluster[col] = pd.to_numeric(df_cluster[col], errors='coerce')
+        if df_cluster[col].isnull().any():
+            median_val = df_cluster[col].median()
+            df_cluster[col] = df_cluster[col].fillna(median_val if pd.notna(median_val) else 0.0)
             
-        sorted_clusters = sorted(cluster_vulnerability, key=lambda x: x[1], reverse=True)
-        label_mapping = {raw_c: new_c for new_c, (raw_c, _) in enumerate(sorted_clusters)}
-        
-        gdf_merged[f'Cluster_{theme_name}'] = pd.Series(raw_clusters, index=df_cluster.index).map(label_mapping)
-
-    # 6. Create Department boundaries for overlay
-    # Dissolve by department name to get department shapes
-    gdf_deps = gdf_epci.dissolve(by='DEPARTEMEN')
+    # Standardize data
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(df_cluster[global_vars])
     
+    # Run K-Means with K=4
+    n_clusters = 4
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    raw_clusters = kmeans.fit_predict(X_scaled)
+    
+    # Anti-Label Switching: Sort clusters by average vulnerability direction
+    directions = np.array([sens_dict.get(v, -1) for v in global_vars])
+    cluster_vulnerability = []
+    for c in range(n_clusters):
+        c_mean_z = X_scaled[raw_clusters == c].mean(axis=0)
+        vuln_score = np.sum(c_mean_z * (-directions))
+        cluster_vulnerability.append((c, vuln_score))
+        
+    sorted_clusters = sorted(cluster_vulnerability, key=lambda x: x[1], reverse=True)
+    label_mapping = {raw_c: new_c for new_c, (raw_c, _) in enumerate(sorted_clusters)}
+    
+    gdf_merged['Cluster_Global'] = pd.Series(raw_clusters, index=df_cluster.index).map(label_mapping)
+
+    # Create Department boundaries for overlay
+    gdf_deps = gdf_epci.dissolve(by='DEPARTEMEN')
+
     return gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict
+
+
+def get_commune_epci_mapping():
+    """
+    Récupère la correspondance Commune -> EPCI pour la région Auvergne-Rhône-Alpes
+    depuis l'API Gouv ou utilise un fichier CSV local s'il existe.
+    """
+    mapping_path = os.path.join(DATA_DIR_DASH, "commune_epci_mapping.csv")
+    if os.path.exists(mapping_path):
+        return pd.read_csv(mapping_path, dtype={"CODE_COMMUNE": str, "CODE_EPCI": str})
+        
+    try:
+        import requests
+        # CodeRegion 84 = Auvergne-Rhône-Alpes
+        url = "https://geo.api.gouv.fr/communes?codeRegion=84&fields=code,epci"
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            records = []
+            for item in data:
+                commune_code = item.get("code")
+                epci_data = item.get("epci")
+                if commune_code and epci_data:
+                    epci_code = epci_data.get("code")
+                    if epci_code:
+                        records.append({
+                            "CODE_COMMUNE": str(commune_code).strip(),
+                            "CODE_EPCI": str(epci_code).strip()
+                        })
+            df_map = pd.DataFrame(records)
+            df_map.to_csv(mapping_path, index=False)
+            return df_map
+    except Exception as e:
+        print(f"Erreur lors de la récupération du mapping Commune->EPCI: {e}")
+        
+    return pd.DataFrame(columns=["CODE_COMMUNE", "CODE_EPCI"])
+
+def load_user_dataset(file_path_in_bucket, scale="epci", columns_metadata=None):
+    """
+    Télécharge un dataset utilisateur depuis Supabase avec une URL signée,
+    le lit avec DuckDB (ou Pandas), l'agrège à l'échelle EPCI si nécessaire (échelle communale),
+    le fusionne avec le dataset de référence local, et met à jour les métadonnées.
+    """
+    from src.services.supabase_service import get_signed_url
+    import duckdb
+
+    # 1. Obtenir le chemin d'accès (local ou Supabase)
+    if file_path_in_bucket.startswith("local/"):
+        signed_url = os.path.join(DATA_DIR_DASH, file_path_in_bucket)
+    else:
+        from src.services.supabase_service import get_signed_url
+        res = get_signed_url(file_path_in_bucket, expiration_seconds=600)
+        if not res["success"]:
+            raise ValueError(f"Impossible de récupérer l'URL de Supabase: {res['error']}")
+        signed_url = res["url"]
+
+    # 2. Lire le CSV avec DuckDB
+    try:
+        df_user = duckdb.query(f"SELECT * FROM '{signed_url}'").df()
+    except Exception as e:
+        df_user = pd.read_csv(signed_url)
+
+    # 3. Traiter l'échelle et l'agrégation
+    if scale == "commune":
+        # Renommer dynamiquement vers CODE_COMMUNE si requis
+        cols_lower = [str(c).lower().strip() for c in df_user.columns]
+        target_col = None
+        if "code_commune" in cols_lower:
+            target_col = df_user.columns[cols_lower.index("code_commune")]
+        elif "insee_commune" in cols_lower:
+            target_col = df_user.columns[cols_lower.index("insee_commune")]
+        elif "code_insee" in cols_lower:
+            target_col = df_user.columns[cols_lower.index("code_insee")]
+            
+        if target_col and target_col != "CODE_COMMUNE":
+            df_user = df_user.rename(columns={target_col: "CODE_COMMUNE"})
+
+        # Récupérer la table de correspondance Commune -> EPCI
+        df_mapping = get_commune_epci_mapping()
+        if not df_mapping.empty and "CODE_COMMUNE" in df_user.columns:
+            # S'assurer que le code commune est propre (5 caractères, ex: '01001')
+            df_user['CODE_COMMUNE'] = df_user['CODE_COMMUNE'].astype(str).str.replace('.0', '', regex=False).str.strip().str.zfill(5)
+            # Joindre avec la table de correspondance
+            df_joined = df_user.merge(df_mapping, on="CODE_COMMUNE", how="inner")
+            
+            # Identifier les colonnes numériques à agréger
+            geo_keys = ["code_commune", "code_epci", "epci_code", "insee_commune", "nom_epci", "libepci"]
+            num_cols = [c for c in df_user.columns if str(c).lower().strip() not in geo_keys and c != "CODE_COMMUNE"]
+            
+            for col in num_cols:
+                df_joined[col] = pd.to_numeric(df_joined[col], errors="coerce")
+                
+            # Grouper par EPCI et faire la moyenne
+            df_user = df_joined.groupby("CODE_EPCI")[num_cols].mean().reset_index()
+            df_user['CODE_EPCI'] = df_user['CODE_EPCI'].astype(str).str.strip()
+        else:
+            if "CODE_COMMUNE" not in df_user.columns:
+                raise KeyError("La colonne 'CODE_COMMUNE', 'INSEE_COMMUNE' ou 'CODE_INSEE' est absente du fichier nettoyé.")
+    else:
+        # Échelle EPCI directe
+        # Renommer dynamiquement vers CODE_EPCI si requis
+        cols_lower = [str(c).lower().strip() for c in df_user.columns]
+        target_col = None
+        if "code_epci" in cols_lower:
+            target_col = df_user.columns[cols_lower.index("code_epci")]
+        elif "epci_code" in cols_lower:
+            target_col = df_user.columns[cols_lower.index("epci_code")]
+            
+        if target_col and target_col != "CODE_EPCI":
+            df_user = df_user.rename(columns={target_col: "CODE_EPCI"})
+            
+        if "CODE_EPCI" in df_user.columns:
+            df_user['CODE_EPCI'] = df_user['CODE_EPCI'].astype(str).str.replace('.0', '', regex=False).str.strip()
+        else:
+            raise KeyError("La colonne 'CODE_EPCI' ou 'EPCI_CODE' est absente du fichier nettoyé.")
+
+    # 4. Charger le jeu de données de référence local
+    gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict = load_data()
+
+    # 5. Fusionner le dataset utilisateur avec le dataset fusionné local
+    user_cols_to_add = [c for c in df_user.columns if c == 'CODE_EPCI' or c not in gdf_merged.columns]
+    df_user_filtered = df_user[user_cols_to_add]
+
+    gdf_new = gdf_merged.merge(df_user_filtered, left_on='EPCI_CODE', right_on='CODE_EPCI', how='left')
+    
+    if 'CODE_EPCI_y' in gdf_new.columns:
+        gdf_new = gdf_new.drop(columns=['CODE_EPCI_y'])
+    if 'CODE_EPCI_x' in gdf_new.columns:
+        gdf_new = gdf_new.rename(columns={'CODE_EPCI_x': 'CODE_EPCI'})
+
+    # Find the first user-configured column metadata if any
+    first_meta = {}
+    if columns_metadata:
+        for k, v_meta in columns_metadata.items():
+            if k not in ['CODE_EPCI', 'EPCI_CODE', 'CODE_COMMUNE']:
+                first_meta = v_meta
+                break
+
+    # 6. Enregistrer les métadonnées dynamiques des nouvelles variables
+    new_vars = [c for c in df_user.columns if c not in ['CODE_EPCI', 'EPCI_CODE', 'CODE_COMMUNE']]
+    for var in new_vars:
+        # Lire les valeurs personnalisées depuis columns_metadata si renseignées
+        meta = (columns_metadata or {}).get(var)
+        
+        # Fallback pour les noms de colonnes renommées par Databricks
+        if not meta and first_meta:
+            if "indicateur_brut" in var:
+                meta = {
+                    "label": f"{first_meta.get('label', 'Indicateur')} (Brut)",
+                    "category": first_meta.get("category", "environnement")
+                }
+            elif "indicateur_taux_100k" in var:
+                meta = {
+                    "label": f"{first_meta.get('label', 'Indicateur')} (Taux pour 100k hab.)",
+                    "category": first_meta.get("category", "environnement")
+                }
+            elif "cluster_user" in var:
+                meta = {
+                    "label": f"{first_meta.get('label', 'Indicateur')} (Groupes/Clusters)",
+                    "category": first_meta.get("category", "environnement")
+                }
+        
+        if not meta:
+            meta = {}
+            
+        custom_label = meta.get("label", str(var).replace('_', ' ').strip().capitalize())
+        category = meta.get("category", "environnement")
+        
+        variable_dict[var] = f"⭐ {custom_label}"
+        category_dict[var] = category
+        sens_dict[var] = 0
+        description_dict[var] = f"Indicateur importé : {custom_label}"
+        unit_dict[var] = "valeur"
+        source_dict[var] = "Import utilisateur"
+        classement_dict[var] = "99"
+
+    return gdf_new, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict
+
+
