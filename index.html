@@ -816,6 +816,10 @@
 <td style="text-align: left;">Page dédiée aux interventions et à la littérature scientifique</td>
 </tr>
 <tr>
+<td style="text-align: left;"><strong>🖨️ Génération de Rapports PDF</strong></td>
+<td style="text-align: left;">Export haute résolution (format A2 Paysage) de l'analyse : carte, radar, jumeaux et leviers d'actions</td>
+</tr>
+<tr>
 <td style="text-align: left;"><strong>📚 Méthodologie intégrée</strong></td>
 <td style="text-align: left;">Tables descriptives des variables avec descriptions, unités et sources institutionnelles</td>
 </tr>
@@ -870,10 +874,12 @@
         Map["Carte Interactive\n(Plotly Choropleth)"]
         Radar["Radar Chart\n(Profils Territoriaux)"]
         Analysis["Analyse Narrative\n(Génération de texte)"]
+        PdfEngine["Moteur de Rendu PDF\n(Matplotlib A2 Paysage)"]
 
         Explo --&gt; Map
         Explo --&gt; Radar
         Explo --&gt; Analysis
+        Explo --&gt; PdfEngine
     end
 
     subgraph "Infrastructure &amp; CI/CD"
