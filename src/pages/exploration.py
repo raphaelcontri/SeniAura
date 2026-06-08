@@ -651,10 +651,15 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
             ))
 
         # 3. Department outlines
+        dep_locations = (
+            gdf_deps_4326['DEPARTEMEN'].astype(str) 
+            if 'DEPARTEMEN' in gdf_deps_4326.columns 
+            else gdf_deps_4326.index.astype(str)
+        )
         fig.add_trace(go.Choropleth(
             geojson="/assets/departments-ara.geojson",
             featureidkey="properties.DEPARTEMEN",
-            locations=gdf_deps_4326['DEPARTEMEN'].astype(str),
+            locations=dep_locations,
             z=[0] * len(gdf_deps_4326),
             colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
             showscale=False,
