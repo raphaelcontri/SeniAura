@@ -13,3 +13,6 @@ dash-mantine-components
 dash-iconify
 pyarrow
 duckdb
+matplotlib
+requests
+python-dotenv
