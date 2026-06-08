@@ -29,7 +29,8 @@ ICON_MAP = {
     "Prise en main": "solar:play-bold",
     "Vidéo": "solar:videocamera-bold",
     "maladies": "solar:heart-bold",
-    "cardio": "solar:heart-bold"
+    "cardio": "solar:heart-bold",
+    "faisabilité": "solar:document-bold"
 }
 
 accordion_items = []
@@ -48,6 +49,32 @@ for p in parts[1:]:
         # Assign ID to "Prise en main" specifically for scrolling
         item_id = "accordion-item-prise-en-main" if title.strip() == "Prise en main" else None
         
+        # Build panel children list (Markdown text and optional download button)
+        panel_children = [dcc.Markdown(content, className="intro-text")]
+        
+        if "faisabilité" in title.lower() or ("cardiaura" in title.lower() and "extension" in title.lower()):
+            panel_children.append(
+                dmc.Group(
+                    justify="flex-start",
+                    mt="md",
+                    children=[
+                        html.A(
+                            dmc.Button(
+                                "Télécharger l'étude de faisabilité (PDF)",
+                                variant="gradient",
+                                gradient={"from": "violet", "to": "indigo", "deg": 45},
+                                size="sm",
+                                leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
+                                radius="md",
+                                className="premium-hover"
+                            ),
+                            href="/assets/Etude_faisabilite_extension_nationale_CardiAURA.pdf",
+                            download="Étude de faisabilité de l’extension nationale de CardiAURA.pdf"
+                        )
+                    ]
+                )
+            )
+            
         # Dash IDs must be strings, not None
         acc_item_props = {"children": [
                     dmc.AccordionControl(
@@ -55,7 +82,7 @@ for p in parts[1:]:
                         icon=DashIconify(icon=left_icon, width=22, color="#339af0"),
                         style={"fontWeight": 800, "fontSize": "17px", "color": "#1a1b1e"}
                     ),
-                    dmc.AccordionPanel(dcc.Markdown(content, className="intro-text"))
+                    dmc.AccordionPanel(panel_children)
                 ], "value": title}
         if item_id:
             acc_item_props["id"] = item_id

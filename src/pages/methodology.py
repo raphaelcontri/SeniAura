@@ -322,6 +322,33 @@ layout = dmc.Container(
                                         ], justify="space-between")
                                     ])
                                 ]),
+
+                                # --- Subsection: Rapports & Études ---
+                                dmc.Stack(gap="xs", children=[
+                                    dmc.Group([
+                                        DashIconify(icon="solar:document-text-bold-duotone", width=24, color="violet"),
+                                        dmc.Text("Rapports & Études", fw=700, size="lg")
+                                    ]),
+                                    dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                        dmc.Group([
+                                            dmc.Stack([
+                                                dmc.Text("Étude de faisabilité de l’extension nationale de CardiAURA", fw=500),
+                                                dmc.Text("Ce document analyse les prérequis techniques, méthodologiques et organisationnels pour étendre la solution de diagnostic CardiAURA à l'ensemble du territoire français.", size="xs", c="dimmed")
+                                            ], gap=2),
+                                            html.A(
+                                                dmc.Button(
+                                                    "Télécharger le PDF",
+                                                    variant="gradient",
+                                                    gradient={"from": "violet", "to": "indigo", "deg": 45},
+                                                    size="sm",
+                                                    leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16)
+                                                ),
+                                                href="/assets/Etude_faisabilite_extension_nationale_CardiAURA.pdf",
+                                                download="Étude de faisabilité de l’extension nationale de CardiAURA.pdf"
+                                            )
+                                        ], justify="space-between")
+                                    ])
+                                ]),
                             ])
                         ]
                     )

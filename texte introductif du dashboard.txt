@@ -43,8 +43,12 @@ C’est l’échelle territoriale utilisée ici pour analyser et comparer les do
 > Qu'est-ce qu'une maladie cardio-neuro-vasculaire ?
 Les maladies cardio-neuro-vasculaires (CNV) regroupent les pathologies qui affectent le cœur et les vaisseaux sanguins. Elles incluent les accidents vasculaires cérébraux (AVC), les cardiopathies ischémiques (comme l'infarctus du myocarde) et l'insuffisance cardiaque. Ces maladies sont fortement liées à nos modes de vie (alimentation, sédentarité) et à notre environnement.
 
+> Existe-t-il une étude de faisabilité pour l'extension nationale de CardiAURA ?
+Cette étude évalue la faisabilité technique et méthodologique du déploiement de CardiAURA à l'échelle nationale française. Elle analyse notamment la disponibilité des indicateurs de santé et des différents déterminants (offre de soins, socio-économiques, environnementaux) sur l'ensemble de la France hexagonale et des DROM, tout en identifiant les sources de données complémentaires à mobiliser pour assurer une couverture géographique totale.
+
 > Qui sommes-nous ?
 Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).
 
 Voici la page de l'outil sur data.gouv : https://www.data.gouv.fr/reuses/cardiaura
+
 
