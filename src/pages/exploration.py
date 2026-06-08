@@ -382,14 +382,7 @@ layout = dmc.Container(
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:users-group-two-rounded-bold-duotone", color="#0b7285", width=22),
                                 dmc.Text("Recherche de territoires ayant un diagnostic similaire.", fw=700, size="lg"),
-                            ]),
-                            dmc.Badge(
-                                "Analyse par distance statistique", 
-                                color="teal", 
-                                variant="filled", 
-                                size="md", 
-                                radius="sm"
-                            )
+                            ])
                         ]),
                         
                         # Guide d'utilisation en termes simples
@@ -397,9 +390,8 @@ layout = dmc.Container(
                             p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
                             style={"borderLeft": "4px solid #0b7285"},
                             children=[
-                                dmc.Text("💡 Petit outil annexe : Partage d'expériences", fw=700, size="sm", mb=4, c="dark"),
                                 dmc.Text(
-                                    "Identifiez les territoires aux statistiques similaires pour cibler vos échanges de bonnes pratiques. "
+                                    "Identifiez les territoires ayant des statistiques similaires sur les variables que vous avez sélectionné pour cibler vos échanges de bonnes pratiques. "
                                     "Découvrez quelles politiques (prévention, CPTS, etc.) portent leurs fruits chez vos jumeaux territoriaux "
                                     "les plus performants et envisagez des actions communes.",
                                     size="xs", c="gray.7"
@@ -869,7 +861,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
                 desc_paper
             ])
         
-        return fig, content, "", "Indicateurs de Santé", dynamic_title
+        return fig, content, "", "", dynamic_title
         
     except Exception as e:
         import traceback
