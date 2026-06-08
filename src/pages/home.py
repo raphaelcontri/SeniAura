@@ -129,6 +129,33 @@ for p in parts[1:]:
                         ]
                     )
                 )
+            elif "causes" in title.lower() or "cardio-neuro-vasculaire" in title.lower():
+                panel_children.append(
+                    dmc.Group(
+                        justify="flex-start",
+                        mt="md",
+                        children=[
+                            html.A(
+                                dmc.Button(
+                                    "Télécharger le choix des variables (PDF)",
+                                    variant="gradient",
+                                    gradient={"from": "blue", "to": "cyan", "deg": 45},
+                                    size="sm",
+                                    leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
+                                    radius="md",
+                                    className="premium-hover",
+                                    style={
+                                        "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.2)",
+                                        "fontWeight": 700,
+                                        "transition": "transform 200ms ease"
+                                    }
+                                ),
+                                href="/assets/choix_variables.pdf",
+                                download="choix_variables.pdf"
+                            )
+                        ]
+                    )
+                )
             
         # Dash IDs must be strings, not None
         acc_item_props = {"children": [

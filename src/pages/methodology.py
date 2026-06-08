@@ -354,6 +354,32 @@ layout = dmc.Container(
                                                 download="Étude de faisabilité de l’extension nationale de CardiAURA.pdf"
                                             )
                                         ], justify="space-between")
+                                    ]),
+                                    dmc.Card(withBorder=True, radius="md", p="sm", bg="gray.0", children=[
+                                        dmc.Group([
+                                            dmc.Stack([
+                                                dmc.Text("Tableau de synthèse - Choix des variables", fw=500),
+                                                dmc.Text("Ce document justifie scientifiquement le choix des variables de santé, d'offre de soins, socio-économiques et environnementales retenues dans CardiAURA.", size="xs", c="dimmed")
+                                            ], gap=2),
+                                            html.A(
+                                                dmc.Button(
+                                                    "Télécharger le PDF",
+                                                    variant="gradient",
+                                                    gradient={"from": "blue", "to": "cyan", "deg": 45},
+                                                    size="sm",
+                                                    leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
+                                                    radius="md",
+                                                    className="premium-hover",
+                                                    style={
+                                                        "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.2)",
+                                                        "fontWeight": 700,
+                                                        "transition": "transform 200ms ease"
+                                                    }
+                                                ),
+                                                href="/assets/choix_variables.pdf",
+                                                download="choix_variables.pdf"
+                                            )
+                                        ], justify="space-between")
                                     ])
                                 ]),
                             ])
