@@ -339,9 +339,16 @@ layout = dmc.Container(
                                                 dmc.Button(
                                                     "Télécharger le PDF",
                                                     variant="gradient",
-                                                    gradient={"from": "violet", "to": "indigo", "deg": 45},
+                                                    gradient={"from": "blue", "to": "cyan", "deg": 45},
                                                     size="sm",
-                                                    leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16)
+                                                    leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
+                                                    radius="md",
+                                                    className="premium-hover",
+                                                    style={
+                                                        "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.2)",
+                                                        "fontWeight": 700,
+                                                        "transition": "transform 200ms ease"
+                                                    }
                                                 ),
                                                 href="/assets/Etude_faisabilite_extension_nationale_CardiAURA.pdf",
                                                 download="Étude de faisabilité de l’extension nationale de CardiAURA.pdf"

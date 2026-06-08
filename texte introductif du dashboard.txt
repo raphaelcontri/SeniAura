@@ -43,8 +43,23 @@ C’est l’échelle territoriale utilisée ici pour analyser et comparer les do
 > Qu'est-ce qu'une maladie cardio-neuro-vasculaire ?
 Les maladies cardio-neuro-vasculaires (CNV) regroupent les pathologies qui affectent le cœur et les vaisseaux sanguins. Elles incluent les accidents vasculaires cérébraux (AVC), les cardiopathies ischémiques (comme l'infarctus du myocarde) et l'insuffisance cardiaque. Ces maladies sont fortement liées à nos modes de vie (alimentation, sédentarité) et à notre environnement.
 
-> Existe-t-il une étude de faisabilité pour l'extension nationale de CardiAURA ?
-Cette étude évalue la faisabilité technique et méthodologique du déploiement de CardiAURA à l'échelle nationale française. Elle analyse notamment la disponibilité des indicateurs de santé et des différents déterminants (offre de soins, socio-économiques, environnementaux) sur l'ensemble de la France hexagonale et des DROM, tout en identifiant les sources de données complémentaires à mobiliser pour assurer une couverture géographique totale.
+> Quelles pistes pour améliorer ce dashboard ?
+
+Ce dashboard a été développé en un temps réduit avec des ressources limitées. Lors de nos tests et entretiens utilisateurs, plusieurs retours nous ont été faits.
+
+- Etendre l'analyse à l'échelle nationale (en préservant le maillage EPCI). Dans ce contexte, par manque de temps, nous nous sommes limités à étudier la faisabilité d'une telle proposition, sans l'immplémenter (cf lle rapport de l'étude de faisabilité). 
+
+- Réaliser des tests utilisateurs avec davantage de professionnels : nous avons pu contacter différentes associations et institutions ("Fabrique Territoires Santé", l'ARS d'Ile de France) mais des tests utilisateurs plus approfondis permettraient de mieux comprendre les besoins du terrain. 
+
+- Améliorer l'expériecne utilisateur et optimiser le backend du dashboard. Nous ne sommes pas des experts de l'UX. Nous avons fait de notre mieux pour rendre le dashboard le plus facile possible à utilsier en revanche, tout avis extérieur serait le bienvenu pour améliorer l'expérience utilisateur du dashboard (par exemple en postant une pull request sur le github du projet ou en écrivant un avis sur la réutilisation sur DataGouv : https://www.data.gouv.fr/reuses/cardiaura)
+
+
+- Ajouter les hopitaux sur la carte. 
+
+- Intégrer des dynamiques temporelles. 
+
+- Segmenter les territoires par clustering afin de définir des profils types, facilitant ainsi la mutualisation de politiques publiques adaptées plutôt qu'une approche individualisée par EPCI.
+
 
 > Qui sommes-nous ?
 Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).

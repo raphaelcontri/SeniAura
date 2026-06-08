@@ -30,7 +30,8 @@ ICON_MAP = {
     "Vidéo": "solar:videocamera-bold",
     "maladies": "solar:heart-bold",
     "cardio": "solar:heart-bold",
-    "faisabilité": "solar:document-bold"
+    "faisabilité": "solar:document-bold",
+    "pistes": "solar:document-bold"
 }
 
 accordion_items = []
@@ -52,7 +53,7 @@ for p in parts[1:]:
         # Build panel children list (Markdown text and optional download button)
         panel_children = [dcc.Markdown(content, className="intro-text")]
         
-        if "faisabilité" in title.lower() or ("cardiaura" in title.lower() and "extension" in title.lower()):
+        if "faisabilité" in title.lower() or "pistes" in title.lower() or "améliorer" in title.lower() or ("cardiaura" in title.lower() and "extension" in title.lower()):
             panel_children.append(
                 dmc.Group(
                     justify="flex-start",
@@ -62,11 +63,16 @@ for p in parts[1:]:
                             dmc.Button(
                                 "Télécharger l'étude de faisabilité (PDF)",
                                 variant="gradient",
-                                gradient={"from": "violet", "to": "indigo", "deg": 45},
+                                gradient={"from": "blue", "to": "cyan", "deg": 45},
                                 size="sm",
                                 leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
                                 radius="md",
-                                className="premium-hover"
+                                className="premium-hover",
+                                style={
+                                    "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.2)",
+                                    "fontWeight": 700,
+                                    "transition": "transform 200ms ease"
+                                }
                             ),
                             href="/assets/Etude_faisabilite_extension_nationale_CardiAURA.pdf",
                             download="Étude de faisabilité de l’extension nationale de CardiAURA.pdf"
