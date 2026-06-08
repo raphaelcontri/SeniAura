@@ -45,25 +45,23 @@ Les maladies cardio-neuro-vasculaires (CNV) regroupent les pathologies qui affec
 
 > Quelles pistes pour améliorer ce dashboard ?
 
-Ce dashboard a été développé en un temps réduit avec des ressources limitées. Lors de nos tests et entretiens utilisateurs, plusieurs retours nous ont été faits.
+Ce dashboard a été développé en un temps réduit avec des ressources limitées. Lors de nos tests et entretiens utilisateurs, plusieurs retours nous ont été faits :
 
-- Etendre l'analyse à l'échelle nationale (en préservant le maillage EPCI). Dans ce contexte, par manque de temps, nous nous sommes limités à étudier la faisabilité d'une telle proposition, sans l'immplémenter (cf lle rapport de l'étude de faisabilité). 
+- **Étendre l'analyse à l'échelle nationale (en préservant le maillage EPCI)** : dans ce contexte, par manque de temps, nous nous sommes limités à étudier la faisabilité d'une telle proposition, sans l'implémenter (cf. le rapport de l'étude de faisabilité).
 
-- Réaliser des tests utilisateurs avec davantage de professionnels : nous avons pu contacter différentes associations et institutions ("Fabrique Territoires Santé", l'ARS d'Ile de France) mais des tests utilisateurs plus approfondis permettraient de mieux comprendre les besoins du terrain. 
+- **Réaliser des tests utilisateurs avec davantage de professionnels** : nous avons pu contacter différentes associations et institutions ("Fabrique Territoires Santé", l'ARS d'Île-de-France) mais des tests utilisateurs plus approfondis permettraient de mieux comprendre les besoins du terrain.
 
-- Améliorer l'expériecne utilisateur et optimiser le backend du dashboard. Nous ne sommes pas des experts de l'UX. Nous avons fait de notre mieux pour rendre le dashboard le plus facile possible à utilsier en revanche, tout avis extérieur serait le bienvenu pour améliorer l'expérience utilisateur du dashboard (par exemple en postant une pull request sur le github du projet ou en écrivant un avis sur la réutilisation sur DataGouv : https://www.data.gouv.fr/reuses/cardiaura)
+- **Améliorer l'expérience utilisateur et optimiser le backend du dashboard** : nous ne sommes pas des experts de l'UX. Nous avons fait de notre mieux pour rendre le dashboard le plus facile possible à utiliser. En revanche, tout avis extérieur serait le bienvenu pour améliorer l'expérience utilisateur du dashboard (par exemple en soumettant une *pull request* sur le GitHub du projet ou en écrivant un avis sur la réutilisation sur DataGouv : https://www.data.gouv.fr/reuses/cardiaura).
 
+- **Ajouter les hôpitaux sur la carte**.
 
-- Ajouter les hopitaux sur la carte. 
+- **Intégrer des dynamiques temporelles**.
 
-- Intégrer des dynamiques temporelles. 
-
-- Segmenter les territoires par clustering afin de définir des profils types, facilitant ainsi la mutualisation de politiques publiques adaptées plutôt qu'une approche individualisée par EPCI.
+- **Segmenter les territoires par clustering** afin de définir des profils types, facilitant ainsi la mutualisation de politiques publiques adaptées plutôt qu'une approche individualisée par EPCI.
 
 
 > Qui sommes-nous ?
 Ce projet a été réalisé par 5 étudiants du CPES “Sciences des données, société et santé” de Paris-Saclay, dans le cadre du Challenge Open Data University (Latitudes x HEC Paris). Commanditaire : Fondation Roche. Comité d'experts : Inspection Générale des Affaires Sociales (IGAS).
 
-Voici la page de l'outil sur data.gouv : https://www.data.gouv.fr/reuses/cardiaura
 
 

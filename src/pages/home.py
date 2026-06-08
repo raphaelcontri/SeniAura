@@ -51,21 +51,37 @@ for p in parts[1:]:
         item_id = "accordion-item-prise-en-main" if title.strip() == "Prise en main" else None
         
         # Build panel children list (Markdown text and optional download button)
-        panel_children = [dcc.Markdown(content, className="intro-text")]
-        
-        if "faisabilité" in title.lower() or "pistes" in title.lower() or "améliorer" in title.lower() or ("cardiaura" in title.lower() and "extension" in title.lower()):
+        if "pistes" in title.lower() or "améliorer" in title.lower():
+            # Split the content to insert the button directly after the first point
+            parts_split = content.split("- **Réaliser", 1)
+            if len(parts_split) == 2:
+                intro_and_first = parts_split[0]
+                rest_of_points = "- **Réaliser" + parts_split[1]
+            else:
+                parts_split = content.split("- Réaliser", 1)
+                if len(parts_split) == 2:
+                    intro_and_first = parts_split[0]
+                    rest_of_points = "- Réaliser" + parts_split[1]
+                else:
+                    intro_and_first = content
+                    rest_of_points = ""
+            
+            panel_children = [dcc.Markdown(intro_and_first, className="intro-text")]
+            
             panel_children.append(
                 dmc.Group(
                     justify="flex-start",
-                    mt="md",
+                    mt="xs",
+                    mb="md",
+                    style={"paddingLeft": "28px"},  # Indent to align nicely under the bullet point text
                     children=[
                         html.A(
                             dmc.Button(
                                 "Télécharger l'étude de faisabilité (PDF)",
                                 variant="gradient",
                                 gradient={"from": "blue", "to": "cyan", "deg": 45},
-                                size="sm",
-                                leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
+                                size="xs",
+                                leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=14),
                                 radius="md",
                                 className="premium-hover",
                                 style={
@@ -80,6 +96,39 @@ for p in parts[1:]:
                     ]
                 )
             )
+            
+            if rest_of_points:
+                panel_children.append(dcc.Markdown(rest_of_points, className="intro-text"))
+        else:
+            panel_children = [dcc.Markdown(content, className="intro-text")]
+            
+            if "faisabilité" in title.lower() or ("cardiaura" in title.lower() and "extension" in title.lower()):
+                panel_children.append(
+                    dmc.Group(
+                        justify="flex-start",
+                        mt="md",
+                        children=[
+                            html.A(
+                                dmc.Button(
+                                    "Télécharger l'étude de faisabilité (PDF)",
+                                    variant="gradient",
+                                    gradient={"from": "blue", "to": "cyan", "deg": 45},
+                                    size="sm",
+                                    leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
+                                    radius="md",
+                                    className="premium-hover",
+                                    style={
+                                        "boxShadow": "0 4px 12px rgba(51, 154, 240, 0.2)",
+                                        "fontWeight": 700,
+                                        "transition": "transform 200ms ease"
+                                    }
+                                ),
+                                href="/assets/Etude_faisabilite_extension_nationale_CardiAURA.pdf",
+                                download="Étude de faisabilité de l’extension nationale de CardiAURA.pdf"
+                            )
+                        ]
+                    )
+                )
             
         # Dash IDs must be strings, not None
         acc_item_props = {"children": [
