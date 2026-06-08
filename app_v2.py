@@ -6,8 +6,8 @@ import os
 import pandas as pd
 
 # Import layouts from pages
-from src.pages import home, methodology, exploration, leviers, upload, espace_perso
-from src.data import load_data, load_user_dataset
+from src.pages import home, methodology, exploration, leviers, upload
+from src.data import load_data
 
 # Load data for filter options
 gdf_merged, variable_dict, category_dict, sens_dict, description_dict, unit_dict, gdf_deps, source_dict, classement_dict = load_data()
@@ -479,18 +479,6 @@ header = dmc.AppShellHeader(
                                 "color": "#6741d9",
                                 "visibility": "hidden"
                             }
-                        ),
-                        dmc.Button(
-                            "Mon Espace",
-                            id="header-auth-btn",
-                            variant="outline",
-                            color="blue",
-                            radius="md",
-                            size="sm",
-                            leftSection=DashIconify(icon="solar:user-bold", width=16),
-                            style={
-                                "display": "none"
-                            }
                         )
                     ]
                 ),
@@ -572,7 +560,6 @@ app.layout = dmc.MantineProvider(
                                         html.Div(id='page-exploration', children=exploration.layout, style={'display': 'none'}),
                                         html.Div(id='page-leviers', children=leviers.layout, style={'display': 'none'}),
                                         html.Div(id='page-methodology', children=methodology.layout, style={'display': 'none'}),
-                                        html.Div(id='page-espace-perso', children=espace_perso.layout, style={'display': 'none'}),
                                         html.Div(id='page-upload', children=upload.layout, style={'display': 'none'}),
                                     ]
                                 )
@@ -656,12 +643,11 @@ def unified_navigation(url_path, tab_val, current_navbar):
      Output('page-exploration', 'style'),
      Output('page-leviers', 'style'),
      Output('page-methodology', 'style'),
-     Output('page-espace-perso', 'style'),
      Output('page-upload', 'style')],
     [Input('url', 'pathname')]
 )
 def display_page(pathname):
-    styles = [{'display': 'none'} for _ in range(6)]
+    styles = [{'display': 'none'} for _ in range(5)]
     
     if pathname == '/':
         styles[0] = {'display': 'block'}
@@ -671,10 +657,8 @@ def display_page(pathname):
         styles[2] = {'display': 'block'}
     elif pathname == '/methodologie':
         styles[3] = {'display': 'block'}
-    elif pathname == '/espace-perso':
-        styles[4] = {'display': 'block'}
     elif pathname == '/upload':
-        styles[5] = {'display': 'block'}
+        styles[4] = {'display': 'block'}
     else:
         # Fallback to home page style
         styles[0] = {'display': 'block'}
@@ -732,22 +716,7 @@ def close_aside(n, pathname):
         return False
     return dash.no_update
 
-# --- Callbacks d'authentification du Header (Connexion / Déconnexion) ---
-
-@app.callback(
-    Output("url", "pathname", allow_duplicate=True),
-    Input("header-auth-btn", "n_clicks"),
-    prevent_initial_call=True
-)
-def handle_header_auth_clicks(n_clicks):
-    if n_clicks:
-        return "/espace-perso"
-    return dash.no_update
-
-
 # --- Callbacks pour la gestion dynamique des jeux de données utilisateur ---
-
-from src.services.firebase_service import get_available_datasets
 
 @app.callback(
     [Output("available-datasets-store", "data"),
@@ -824,28 +793,50 @@ def update_active_dataset_data(dataset_value, available_datasets, session_data):
         if not dataset_meta:
             g, v, c, s, d, u, gd, sd, cl = load_data()
         else:
-            scale = dataset_meta.get("scale", "epci")
             columns_metadata = dataset_meta.get("columns_metadata", {})
-            clean_file_path = dataset_value.replace("raw/", "clean/")
+            local_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", dataset_value)
             
             try:
-                g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
-                    file_path_in_bucket=clean_file_path,
-                    scale=scale,
-                    columns_metadata=columns_metadata
-                )
+                # Load the local CSV file
+                df_user = pd.read_csv(local_path)
+                
+                # Merge with base data
+                g_base, v_base, c_base, s_base, d_base, u_base, gd_base, sd_base, cl_base = load_data()
+                
+                # Simplified merging logic since the upload already aggregated it
+                if "CODE_EPCI" in df_user.columns:
+                    df_user['CODE_EPCI'] = df_user['CODE_EPCI'].astype(str).str.replace('.0', '', regex=False).str.strip()
+                    cols_to_add = [col for col in df_user.columns if col == 'CODE_EPCI' or col not in g_base.columns]
+                    df_user_filtered = df_user[cols_to_add]
+                    
+                    g_new = g_base.merge(df_user_filtered, left_on='EPCI_CODE', right_on='CODE_EPCI', how='left')
+                    if 'CODE_EPCI_y' in g_new.columns:
+                        g_new = g_new.drop(columns=['CODE_EPCI_y'])
+                    if 'CODE_EPCI_x' in g_new.columns:
+                        g_new = g_new.rename(columns={'CODE_EPCI_x': 'CODE_EPCI'})
+                        
+                    # Update dictionaries
+                    new_vars = [col for col in df_user.columns if col not in ['CODE_EPCI', 'EPCI_CODE', 'CODE_COMMUNE']]
+                    for var in new_vars:
+                        meta = columns_metadata.get(var, {})
+                        custom_label = meta.get("label", str(var).replace('_', ' ').strip().capitalize())
+                        category = meta.get("category", "environnement")
+                        
+                        v_base[var] = f"⭐ {custom_label}"
+                        c_base[var] = category
+                        s_base[var] = 0
+                        d_base[var] = f"Indicateur importé : {custom_label}"
+                        u_base[var] = "valeur"
+                        sd_base[var] = "Import local"
+                        cl_base[var] = "99"
+                        
+                    g, v, c, s, d, u, gd, sd, cl = g_new, v_base, c_base, s_base, d_base, u_base, gd_base, sd_base, cl_base
+                else:
+                    print("Erreur: CODE_EPCI absent du dataset local.")
+                    g, v, c, s, d, u, gd, sd, cl = g_base, v_base, c_base, s_base, d_base, u_base, gd_base, sd_base, cl_base
             except Exception as ex:
-                print(f"Fichier propre non trouve ou erreur ({clean_file_path}): {ex}")
-                print("Tentative de chargement direct du fichier brut...")
-                try:
-                    g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
-                        file_path_in_bucket=dataset_value,  # Fallback sur le raw/
-                        scale=scale,
-                        columns_metadata=columns_metadata
-                    )
-                except Exception as ex2:
-                    print(f"Erreur de chargement du dataset brut ({dataset_value}): {ex2}")
-                    g, v, c, s, d, u, gd, sd, cl = load_data()
+                print(f"Erreur de chargement du dataset local ({local_path}): {ex}")
+                g, v, c, s, d, u, gd, sd, cl = load_data()
                 
     gdf_merged = g
     variable_dict = v
@@ -937,20 +928,7 @@ def toggle_delete_dataset_button(dataset_value, session_data, available_datasets
             leftSection=DashIconify(icon="solar:trash-bin-trash-bold", width=14)
         )
         
-    # Sinon, vérifier l'authentification et le propriétaire (Cloud)
-    if session_data and session_data.get("authenticated"):
-        if owner_uid == session_data.get("uid"):
-            return dmc.Button(
-                "Supprimer ce dataset",
-                id={"type": "open-delete-btn", "index": "sidebar"},
-                color="red",
-                variant="light",
-                size="xs",
-                fullWidth=True,
-                radius="md",
-                leftSection=DashIconify(icon="solar:trash-bin-trash-bold", width=14)
-            )
-    return []
+
 
 
 @app.callback(
@@ -1028,37 +1006,8 @@ def execute_dataset_deletion(confirm_clicks, target_dataset, session_data, curre
         next_refresh = (current_refresh or 0) + 1
         return False, [], "default", next_refresh, updated_local_datasets
         
-    # --- Mode Cloud existant ---
-    # Check authentication
-    if not session_data or not session_data.get("authenticated"):
-        return True, dmc.Alert("Session expirée. Veuillez vous reconnecter.", color="red", radius="md"), dash.no_update, dash.no_update, dash.no_update
-        
-    # Verify ownership
-    user_uid = session_data.get("uid")
-    if user_uid != owner_uid:
-        return True, dmc.Alert("Vous n'êtes pas le propriétaire de ce jeu de données.", color="red", radius="md"), dash.no_update, dash.no_update, dash.no_update
-        
-    id_token = session_data.get("idToken")
-    
-    # 1. Delete from Firestore metadata
-    from src.services.firebase_service import delete_dataset_metadata
-    meta_res = delete_dataset_metadata(id_token=id_token, doc_id=doc_id)
-    if not meta_res["success"]:
-        return True, dmc.Alert(f"Erreur lors de la suppression des métadonnées : {meta_res.get('error')}", color="red", radius="md"), dash.no_update, dash.no_update, dash.no_update
-        
-    # 2. Delete from Supabase Storage (raw and clean paths)
-    from src.services.supabase_service import delete_csv_file
-    raw_res = delete_csv_file(file_path)
-    clean_file_path = file_path.replace("raw/", "clean/")
-    clean_res = delete_csv_file(clean_file_path)
-    
-    if not raw_res["success"]:
-        print(f"Warning: Failed to delete raw file {file_path}: {raw_res.get('error')}")
-    if not clean_res["success"]:
-        print(f"Warning: Failed to delete clean file {clean_file_path}: {clean_res.get('error')}")
-        
-    next_refresh = (current_refresh or 0) + 1
-    return False, [], "default", next_refresh, updated_local_datasets
+        next_refresh = (current_refresh or 0) + 1
+        return False, [], "default", next_refresh, updated_local_datasets
 
 
 if __name__ == '__main__':

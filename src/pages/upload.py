@@ -8,8 +8,6 @@ import pandas as pd
 import time
 import json
 import os
-from src.services.supabase_service import upload_csv_file
-from src.services.firebase_service import save_dataset_metadata
 from src.services.databricks_service import trigger_databricks_run
 
 # Déclarer l'interface utilisateur de la page d'import
@@ -94,20 +92,7 @@ layout = dmc.Container(
                                 )
                             ]),
                             
-                            # Étape 2 : Échelle géographique
-                            dmc.Box([
-                                dmc.Text("2. Échelle géographique des données", fw=700, size="sm", mb=5),
-                                dmc.Select(
-                                    id="upload-scale",
-                                    data=[
-                                        {"label": "Échelle EPCI (Codes EPCI requis)", "value": "epci"},
-                                        {"label": "Échelle Communale (Codes INSEE Commune requis - Agrégation automatique)", "value": "commune"}
-                                    ],
-                                    value="epci",
-                                    radius="md",
-                                    comboboxProps={"withinPortal": True}
-                                )
-                            ]),
+
                             
                             # Étape 3 : Visibilité (Public vs Privé) - Masqué dans l'UI offline
                             dmc.Box([
@@ -139,7 +124,7 @@ layout = dmc.Container(
                             
                             # Étape 4 : Fichier CSV
                             dmc.Box([
-                                dmc.Text("3. Sélectionner le fichier CSV", fw=700, size="sm", mb=5),
+                                dmc.Text("2. Sélectionner le fichier CSV", fw=700, size="sm", mb=5),
                                 dcc.Upload(
                                     id="upload-file",
                                     children=html.Div([
@@ -206,16 +191,6 @@ layout = dmc.Container(
                                 dcc.Download(id="download-config-json")
                             ], gap="sm"),
                             
-                            # Bouton de soumission principal (Cloud - Masqué)
-                            dmc.Button(
-                                "Importer les données dans Databricks",
-                                id="upload-submit-btn",
-                                radius="md",
-                                size="md",
-                                color="blue",
-                                leftSection=DashIconify(icon="solar:database-bold", width=18),
-                                style={"display": "none"}
-                            )
                         ]
                     )
                 ]
@@ -242,11 +217,10 @@ def display_selected_file(filename):
 @callback(
     Output("dynamic-columns-container", "children"),
     Input("upload-file", "contents"),
-    [State("upload-scale", "value"),
-     State("loaded-config-store", "data")],
+    [State("loaded-config-store", "data")],
     prevent_initial_call=True
 )
-def generate_column_config(file_contents, scale, loaded_config):
+def generate_column_config(file_contents, loaded_config):
     if not file_contents:
         return []
         
@@ -271,7 +245,7 @@ def generate_column_config(file_contents, scale, loaded_config):
             
         children = [
             dmc.Divider(my="md"),
-            dmc.Text("4. Configurer les indicateurs détectés dans le fichier", fw=700, size="sm", mb=5),
+            dmc.Text("3. Configurer les indicateurs détectés dans le fichier", fw=700, size="sm", mb=5),
             dmc.Text("Spécifiez la catégorie et le nom d'affichage de chaque colonne.", size="xs", c="dimmed", mb="md")
         ]
         
@@ -336,221 +310,21 @@ def generate_column_config(file_contents, scale, loaded_config):
     except Exception as e:
         return dmc.Alert(f"Erreur de lecture des colonnes : {str(e)}", color="red")
 
-# Callback principal pour gérer la validation, l'upload et l'enregistrement
-@callback(
-    Output("upload-alert-container", "children"),
-    Input("upload-submit-btn", "n_clicks"),
-    [State("session-store", "data"),
-     State("upload-name", "value"),
-     State("upload-public-switch", "checked"),
-     State("upload-file", "contents"),
-     State("upload-file", "filename"),
-     State("upload-scale", "value"),
-     State({"type": "col-label", "index": dash.ALL}, "value"),
-     State({"type": "col-category", "index": dash.ALL}, "value"),
-     State({"type": "col-label", "index": dash.ALL}, "id")],
-    prevent_initial_call=True
-)
-def process_data_upload(n_clicks, session_data, dataset_name, is_public, file_contents, filename, scale, col_labels, col_categories, col_ids):
-    if not n_clicks:
-        return no_update
-        
-    # Vérification d'authentification de sécurité
-    if not session_data or not session_data.get("authenticated"):
-        return dmc.Alert(
-            "Session expirée. Veuillez vous reconnecter pour importer des fichiers.",
-            title="Non autorisé",
-            color="red",
-            radius="md",
-            icon=DashIconify(icon="solar:lock-bold")
-        )
-        
-    if not dataset_name or not file_contents:
-        return dmc.Alert(
-            "Veuillez renseigner un nom pour le jeu de données et sélectionner un fichier CSV.",
-            title="Champs obligatoires",
-            color="orange",
-            radius="md"
-        )
-        
-    # 1. Décodage et validation du fichier CSV en mémoire avec Pandas
-    try:
-        content_type, content_string = file_contents.split(",")
-        decoded = base64.b64decode(content_string)
-        
-        # Charger dans Pandas
-        df = pd.read_csv(io.BytesIO(decoded))
-        
-        # Validation géographique selon l'échelle
-        columns_lower = [str(c).lower().strip() for c in df.columns]
-        target_col = None
-        
-        if scale == "epci":
-            if "code_epci" in columns_lower:
-                target_col = df.columns[columns_lower.index("code_epci")]
-            elif "epci_code" in columns_lower:
-                target_col = df.columns[columns_lower.index("epci_code")]
-                
-            if not target_col:
-                return dmc.Alert(
-                    "Pour l'échelle EPCI, le fichier CSV doit contenir obligatoirement une colonne nommée 'CODE_EPCI' ou 'EPCI_CODE'.",
-                    title="Erreur de validation",
-                    color="red",
-                    radius="md",
-                    icon=DashIconify(icon="solar:danger-bold")
-                )
-            df = df.rename(columns={target_col: "CODE_EPCI"})
-            df["CODE_EPCI"] = df["CODE_EPCI"].astype(str).str.replace(".0", "", regex=False).str.strip()
-            
-        elif scale == "commune":
-            if "code_commune" in columns_lower:
-                target_col = df.columns[columns_lower.index("code_commune")]
-            elif "insee_commune" in columns_lower:
-                target_col = df.columns[columns_lower.index("insee_commune")]
-            elif "code_insee" in columns_lower:
-                target_col = df.columns[columns_lower.index("code_insee")]
-                
-            if not target_col:
-                return dmc.Alert(
-                    "Pour l'échelle communale, le fichier CSV doit contenir obligatoirement une colonne de codes communes nommée 'CODE_COMMUNE', 'INSEE_COMMUNE' ou 'CODE_INSEE'.",
-                    title="Erreur de validation",
-                    color="red",
-                    radius="md",
-                    icon=DashIconify(icon="solar:danger-bold")
-                )
-            df = df.rename(columns={target_col: "CODE_COMMUNE"})
-            df["CODE_COMMUNE"] = df["CODE_COMMUNE"].astype(str).str.replace(".0", "", regex=False).str.strip().str.zfill(5)
-        
-        # 2. Sauvegarde du fichier formaté sous forme d'octets
-        output_buffer = io.BytesIO()
-        df.to_csv(output_buffer, index=False)
-        output_buffer.seek(0)
-        formatted_bytes = output_buffer.read()
-        
-    except Exception as e:
-        return dmc.Alert(
-            f"Impossible de lire le fichier CSV. Détails : {str(e)}",
-            title="Erreur de lecture",
-            color="red",
-            radius="md"
-        )
-        
-    # 3. Téléversement dans Supabase Storage
-    uid = session_data["uid"]
-    id_token = session_data["idToken"]
-    timestamp = int(time.time())
-    
-    safe_filename = filename.replace(" ", "_").replace("'", "_")
-    bucket_filepath = f"raw/{uid}_{timestamp}_{safe_filename}"
-    
-    upload_res = upload_csv_file(bucket_filepath, formatted_bytes)
-    
-    if not upload_res["success"]:
-        return dmc.Alert(
-            f"Erreur lors du transfert du fichier : {upload_res['error']}",
-            title="Échec de l'upload",
-            color="red",
-            radius="md"
-        )
-        
-    # --- Traitement local automatique (Génération instantanée du fichier propre) ---
-    try:
-        if scale == "commune":
-            from src.data import get_commune_epci_mapping
-            df_mapping = get_commune_epci_mapping()
-            if not df_mapping.empty:
-                df["CODE_COMMUNE"] = df["CODE_COMMUNE"].astype(str).str.replace(".0", "", regex=False).str.strip().str.zfill(5)
-                df_joined = df.merge(df_mapping, on="CODE_COMMUNE", how="inner")
-                
-                geo_keys = ["code_commune", "code_epci", "epci_code", "insee_commune", "nom_epci", "libepci"]
-                num_cols = [c for c in df.columns if str(c).lower().strip() not in geo_keys and c != "CODE_COMMUNE"]
-                for col in num_cols:
-                    df_joined[col] = pd.to_numeric(df_joined[col], errors="coerce")
-                    
-                df_clean = df_joined.groupby("CODE_EPCI")[num_cols].mean().reset_index()
-            else:
-                df_clean = df.copy()
-        else:
-            # Échelle EPCI : le fichier brut est déjà propre
-            df_clean = df.copy()
-            
-        # Sauvegarder le clean CSV sous forme d'octets
-        clean_buffer = io.BytesIO()
-        df_clean.to_csv(clean_buffer, index=False)
-        clean_buffer.seek(0)
-        clean_bytes = clean_buffer.read()
-        
-        # Téléverser dans clean/
-        clean_bucket_filepath = bucket_filepath.replace("raw/", "clean/")
-        upload_csv_file(clean_bucket_filepath, clean_bytes)
-        print(f"Fichier propre genere localement et televerse dans Supabase: {clean_bucket_filepath}")
-    except Exception as local_ex:
-        print(f"Erreur lors du traitement propre local (non bloquant) : {local_ex}")
-        
-    # 4. Construire les métadonnées de colonnes dynamiques
-    columns_metadata = {}
-    for label, category, cid in zip(col_labels, col_categories, col_ids):
-        col_name = cid["index"]
-        columns_metadata[col_name] = {
-            "label": label,
-            "category": category
-        }
-        
-    # 5. Enregistrement des métadonnées dans Cloud Firestore via REST API
-    meta_res = save_dataset_metadata(
-        id_token=id_token,
-        uid=uid,
-        dataset_name=dataset_name,
-        file_path=bucket_filepath,
-        is_public=is_public,
-        scale=scale,
-        columns_metadata=columns_metadata
-    )
-    
-    if not meta_res["success"]:
-        return dmc.Alert(
-            f"Le fichier a été téléversé, mais l'enregistrement des métadonnées a échoué : {meta_res['error']}",
-            title="Erreur de métadonnées",
-            color="orange",
-            radius="md"
-        )
-        
-    # Déclencher le traitement Databricks si possible (Option payante)
-    db_res = trigger_databricks_run(file_path_in_bucket=bucket_filepath, scale=scale)
-    if db_res["success"]:
-        db_status_text = f"Traitement Databricks lancé automatiquement en arrière-plan (Run ID: {db_res['run_id']}). Le fichier propre sera disponible dans quelques instants."
-    else:
-        # CE/Non configuré : pas une erreur bloquante, juste informatif
-        db_status_text = "Note : Vous utilisez l'édition gratuite Community Edition (ou les identifiants API Databricks ne sont pas configurés dans le .env). Veuillez ouvrir votre Notebook Databricks et l'exécuter manuellement pour générer les fichiers de résultats propres."
 
-    # 5. Tout est OK ! Retourner une alerte de succès
-    return dmc.Alert(
-        children=[
-            dmc.Text(f"Félicitations ! Le jeu de données '{dataset_name}' a été importé à l'échelle {scale.upper()}.", fw=600),
-            dmc.Text(f"Dimensions : {df.shape[0]} lignes et {df.shape[1]} colonnes chargées en mémoire.", size="xs"),
-            dmc.Text("Les catégories et noms personnalisés ont été enregistrés.", size="xs", mt=5),
-            dmc.Text(db_status_text, size="xs", mt=5, fw=600, c="blue" if db_res["success"] else "gray")
-        ],
-        title="Importation réussie !",
-        color="green",
-        radius="md",
-        icon=DashIconify(icon="solar:check-circle-bold")
-    )
 
 
 # Callback pour charger le fichier de configuration JSON
 @callback(
     [Output("loaded-config-store", "data"),
      Output("selected-config-name-display", "children"),
-     Output("upload-name", "value"),
-     Output("upload-scale", "value")],
+     Output("upload-name", "value")],
     Input("upload-config-file", "contents"),
     State("upload-config-file", "filename"),
     prevent_initial_call=True
 )
 def load_config_json(file_contents, filename):
     if not file_contents:
-        return no_update, no_update, no_update, no_update
+        return no_update, no_update, no_update
         
     try:
         content_type, content_string = file_contents.split(",")
@@ -559,20 +333,19 @@ def load_config_json(file_contents, filename):
         
         # Validation du format
         if not isinstance(config_data, dict):
-            return {}, dmc.Text("Erreur : Le fichier de configuration doit être un objet JSON.", color="red", size="xs"), no_update, no_update
+            return {}, dmc.Text("Erreur : Le fichier de configuration doit être un objet JSON.", color="red", size="xs"), no_update
             
         dataset_name = config_data.get("dataset_name", "")
-        scale = config_data.get("scale", "epci")
         
         display_msg = dmc.Group([
             DashIconify(icon="solar:check-circle-bold", width=14, color="teal"),
             dmc.Text(f"Configuration chargée : {filename}", size="xs", fw=600, color="teal")
         ], gap="xs")
         
-        return config_data, display_msg, dataset_name, scale
+        return config_data, display_msg, dataset_name
         
     except Exception as e:
-        return {}, dmc.Text(f"Erreur lors de la lecture du fichier de configuration : {str(e)}", color="red", size="xs"), no_update, no_update
+        return {}, dmc.Text(f"Erreur lors de la lecture du fichier de configuration : {str(e)}", color="red", size="xs"), no_update
 
 
 # Callback pour exporter la configuration en JSON
@@ -580,13 +353,12 @@ def load_config_json(file_contents, filename):
     Output("download-config-json", "data"),
     Input("export-config-btn", "n_clicks"),
     [State("upload-name", "value"),
-     State("upload-scale", "value"),
      State({"type": "col-label", "index": ALL}, "value"),
      State({"type": "col-category", "index": ALL}, "value"),
      State({"type": "col-label", "index": ALL}, "id")],
     prevent_initial_call=True
 )
-def export_config_to_json(n_clicks, dataset_name, scale, col_labels, col_categories, col_ids):
+def export_config_to_json(n_clicks, dataset_name, col_labels, col_categories, col_ids):
     if not n_clicks:
         return no_update
         
@@ -603,7 +375,7 @@ def export_config_to_json(n_clicks, dataset_name, scale, col_labels, col_categor
         "format": "cardiaura_config",
         "version": "1.0",
         "dataset_name": dataset_name or "Dataset local",
-        "scale": scale,
+        "scale": "epci",
         "columns_metadata": columns_metadata
     }
     
@@ -623,7 +395,6 @@ def export_config_to_json(n_clicks, dataset_name, scale, col_labels, col_categor
     [State("upload-name", "value"),
      State("upload-file", "contents"),
      State("upload-file", "filename"),
-     State("upload-scale", "value"),
      State({"type": "col-label", "index": ALL}, "value"),
      State({"type": "col-category", "index": ALL}, "value"),
      State({"type": "col-label", "index": ALL}, "id"),
@@ -631,7 +402,7 @@ def export_config_to_json(n_clicks, dataset_name, scale, col_labels, col_categor
      State("dataset-refresh-trigger", "data")],
     prevent_initial_call=True
 )
-def process_local_upload(n_clicks, dataset_name, file_contents, filename, scale, col_labels, col_categories, col_ids, local_datasets, refresh_trigger):
+def process_local_upload(n_clicks, dataset_name, file_contents, filename, col_labels, col_categories, col_ids, local_datasets, refresh_trigger):
     if not n_clicks:
         return no_update, no_update, no_update
         
@@ -653,39 +424,20 @@ def process_local_upload(n_clicks, dataset_name, file_contents, filename, scale,
         columns_lower = [str(c).lower().strip() for c in df.columns]
         target_col = None
         
-        if scale == "epci":
-            if "code_epci" in columns_lower:
-                target_col = df.columns[columns_lower.index("code_epci")]
-            elif "epci_code" in columns_lower:
-                target_col = df.columns[columns_lower.index("epci_code")]
-                
-            if not target_col:
-                return dmc.Alert(
-                    "Pour l'échelle EPCI, le fichier CSV doit contenir obligatoirement une colonne nommée 'CODE_EPCI' ou 'EPCI_CODE'.",
-                    title="Erreur de validation",
-                    color="red",
-                    radius="md"
-                ), no_update, no_update
-            df = df.rename(columns={target_col: "CODE_EPCI"})
-            df["CODE_EPCI"] = df["CODE_EPCI"].astype(str).str.replace(".0", "", regex=False).str.strip()
+        if "code_epci" in columns_lower:
+            target_col = df.columns[columns_lower.index("code_epci")]
+        elif "epci_code" in columns_lower:
+            target_col = df.columns[columns_lower.index("epci_code")]
             
-        elif scale == "commune":
-            if "code_commune" in columns_lower:
-                target_col = df.columns[columns_lower.index("code_commune")]
-            elif "insee_commune" in columns_lower:
-                target_col = df.columns[columns_lower.index("insee_commune")]
-            elif "code_insee" in columns_lower:
-                target_col = df.columns[columns_lower.index("code_insee")]
-                
-            if not target_col:
-                return dmc.Alert(
-                    "Pour l'échelle communale, le fichier CSV doit contenir obligatoirement une colonne de codes communes nommée 'CODE_COMMUNE', 'INSEE_COMMUNE' ou 'CODE_INSEE'.",
-                    title="Erreur de validation",
-                    color="red",
-                    radius="md"
-                ), no_update, no_update
-            df = df.rename(columns={target_col: "CODE_COMMUNE"})
-            df["CODE_COMMUNE"] = df["CODE_COMMUNE"].astype(str).str.replace(".0", "", regex=False).str.strip().str.zfill(5)
+        if not target_col:
+            return dmc.Alert(
+                "Le fichier CSV doit contenir obligatoirement une colonne nommée 'CODE_EPCI' ou 'EPCI_CODE' pour pouvoir être importé.",
+                title="Erreur de validation",
+                color="red",
+                radius="md"
+            ), no_update, no_update
+        df = df.rename(columns={target_col: "CODE_EPCI"})
+        df["CODE_EPCI"] = df["CODE_EPCI"].astype(str).str.replace(".0", "", regex=False).str.strip()
             
         # Échappement anti-injection CSV (Sécurité formule)
         for col in df.select_dtypes(include=['object']).columns:
@@ -715,20 +467,7 @@ def process_local_upload(n_clicks, dataset_name, file_contents, filename, scale,
     local_path = os.path.join(local_dir, local_filename)
     
     try:
-        if scale == "commune":
-            from src.data import get_commune_epci_mapping
-            df_mapping = get_commune_epci_mapping()
-            if not df_mapping.empty:
-                df_joined = df.merge(df_mapping, on="CODE_COMMUNE", how="inner")
-                geo_keys = ["code_commune", "code_epci", "epci_code", "insee_commune", "nom_epci", "libepci"]
-                num_cols = [c for c in df.columns if str(c).lower().strip() not in geo_keys and c != "CODE_COMMUNE"]
-                for col in num_cols:
-                    df_joined[col] = pd.to_numeric(df_joined[col], errors="coerce")
-                df_clean = df_joined.groupby("CODE_EPCI")[num_cols].mean().reset_index()
-            else:
-                df_clean = df.copy()
-        else:
-            df_clean = df.copy()
+        df_clean = df.copy()
             
         df_clean.to_csv(local_path, index=False)
         
@@ -759,7 +498,7 @@ def process_local_upload(n_clicks, dataset_name, file_contents, filename, scale,
         "file_path": f"local/{local_filename}",
         "owner_uid": "local",
         "is_public": True,
-        "scale": scale,
+        "scale": "epci",
         "columns_metadata": columns_metadata
     }
     

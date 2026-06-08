@@ -27,6 +27,7 @@ Il a été développé dans le cadre d'un **projet Capstone HEC** en partenariat
 | **📝 Analyse narrative** | Interprétations textuelles automatiques et positionnement en quintiles régionaux |
 | **👁️ Highlight d'exclusion** | Visualisation des EPCI exclus par une variable spécifique parmi les filtres actifs |
 | **💡 Leviers d'action** | Page dédiée aux interventions et à la littérature scientifique |
+| **🖨️ Génération de Rapports PDF** | Export haute résolution (format A2 Paysage) de l'analyse : carte, radar, jumeaux et leviers d'actions |
 | **📚 Méthodologie intégrée** | Tables descriptives des variables avec descriptions, unités et sources institutionnelles |
 | **🧩 Demographics genrés** | 6 agrégats démographiques H/F ventilés par classe d'âge (0-24, 25-64, 65+) |
 
@@ -82,10 +83,12 @@ graph TD
         Map["Carte Interactive\n(Plotly Choropleth)"]
         Radar["Radar Chart\n(Profils Territoriaux)"]
         Analysis["Analyse Narrative\n(Génération de texte)"]
+        PdfEngine["Moteur de Rendu PDF\n(Matplotlib A2 Paysage)"]
         
         Explo --> Map
         Explo --> Radar
         Explo --> Analysis
+        Explo --> PdfEngine
     end
 
     subgraph "Infrastructure & CI/CD"

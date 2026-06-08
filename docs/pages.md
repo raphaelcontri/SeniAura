@@ -213,6 +213,27 @@ Le callback génère un diagnostic territorial complet sous forme de grille visu
 *   **Jumeaux Territoriaux** (`cluster-twins-table-container`) : Un tableau premium liste les 3 EPCI jumeaux avec leur taux de ressemblance exact. Les boutons **"Analyser"** mettent à jour instantanément tout le tableau de bord pour se focaliser sur le territoire jumeau sélectionné, facilitant les échanges de bonnes pratiques CPTS/CLS.
 *   **Fiches Narratives d'Interprétation** (`cluster-reading-guide`) : Affiche le titre clinique/sociologique du cluster (ex: *"Surtaux Généralisé & Alerte Clinique"*, *"Désertification Médicale Critique"*) ainsi qu'un **bouton d'action direct avec ancre d'URL** (`/leviers#sante`, `/leviers#socio`, `/leviers#env`) ouvrant automatiquement le bon onglet sur la page des leviers d'action.
 
+### Callback 7 : `download_pdf_report`
+
+```
+Input  : btn-download-pdf.n_clicks
+State  : sidebar-epci-radar, variables sélectionnées, dataframe complet
+Output : dcc.Download (fichier PDF)
+```
+
+#### Moteur de Rendu PDF ("Dashboard Statique A2")
+
+Le bouton "Générer un PDF" déclenche un script Python dédié (`src/utils/pdf_generator.py`) qui utilise `matplotlib` avec l'interface orientée objet pour dessiner un tableau de bord professionnel au **format A2 Paysage (23.4 × 16.5 pouces)**.
+L'objectif est d'avoir un "Énorme Dashboard" zoomable numériquement, sans aucune troncation de texte ni chevauchement, idéal pour être partagé ou imprimé par des acteurs publics.
+
+1. **Calcul dynamique des polices** : Les tailles de police (points absolus) sont auto-calculées (`_ax_dims_pts`) en fonction de l'espace _physique_ disponible pour chaque graphique.
+2. **Tableau Comparatif unifié** : Un seul immense tableau regroupe tous les EPCI sélectionnés, comparés à la moyenne régionale. Le texte s'adapte via la bibliothèque native `textwrap` pour ne jamais déborder.
+3. **Graphiques vectoriels Haute Densité** : 
+   - Un **Radar combiné** pour superposer les profils des territoires.
+   - Une **Carte interactive** pointant spécifiquement les EPCI actifs.
+   - Les **Jumeaux Statistiques** avec barre de ressemblance (%).
+4. **Leviers d'action ciblés** : Les leviers d'action du territoire de référence (1er EPCI sélectionné) sont automatiquement inclus dans le rapport PDF.
+
 ---
 
 ## 5.3 — Page Méthodologie (`methodology.py`)

@@ -12,7 +12,4 @@ numpy
 dash-mantine-components
 dash-iconify
 pyarrow
-pyrebase4
-supabase
 duckdb
-python-dotenv

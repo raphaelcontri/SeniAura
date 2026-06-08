@@ -6,7 +6,6 @@ import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 import random
-from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from src.data import load_data
 from src.utils.pdf_generator import generate_territory_pdf
@@ -382,7 +381,7 @@ layout = dmc.Container(
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:users-group-two-rounded-bold-duotone", color="#0b7285", width=22),
-                                dmc.Text("Recherche de Territoires Jumeaux (Benchmark régional)", fw=700, size="lg"),
+                                dmc.Text("Recherche de territoires ayant un diagnostic similaire.", fw=700, size="lg"),
                             ]),
                             dmc.Badge(
                                 "Analyse par distance statistique", 
@@ -398,85 +397,29 @@ layout = dmc.Container(
                             p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
                             style={"borderLeft": "4px solid #0b7285"},
                             children=[
-                                dmc.Text("💡 Guide d'utilisation & Intérêt politique :", fw=700, size="sm", mb=4, c="dark"),
+                                dmc.Text("💡 Petit outil annexe : Partage d'expériences", fw=700, size="sm", mb=4, c="dark"),
                                 dmc.Text(
-                                    "Comment ça marche ? Cet outil identifie d'autres territoires de la région qui partagent "
-                                    "les mêmes défis et vulnérabilités (socio-économiques, environnementales et d'offre de soins) "
-                                    "que votre territoire cible, sur la base des variables actuellement activées dans vos filtres. "
-                                    "Il compare le profil de votre territoire à celui des 171 autres EPCI de la région.",
-                                    size="xs", c="gray.7", mb=6
-                                ),
-                                dmc.Text(
-                                    "Quel intérêt pour l'action publique ? L'identification de territoires \"jumeaux\" facilite "
-                                    "le partage d'expériences. Si un territoire jumeau a des résultats sanitaires plus favorables, "
-                                    "il peut être opportun d'étudier ses initiatives locales (actions de prévention, CPTS, etc.) "
-                                    "pour les reproduire chez vous.",
+                                    "Identifiez les territoires aux statistiques similaires pour cibler vos échanges de bonnes pratiques. "
+                                    "Découvrez quelles politiques (prévention, CPTS, etc.) portent leurs fruits chez vos jumeaux territoriaux "
+                                    "les plus performants et envisagez des actions communes.",
                                     size="xs", c="gray.7"
                                 )
                             ]
                         ),
+
+                        dmc.Group([
+                            dmc.Text("Territoire de référence à comparer :", size="sm", fw=600),
+                            dmc.Select(
+                                id="twins-target-select",
+                                data=[],
+                                placeholder="Choisissez un territoire",
+                                style={"width": 300},
+                                size="sm"
+                            )
+                        ], mb="md"),
                         
                         # Conteneur pour la table des jumeaux
                         html.Div(id='twins-table-container')
-                    ]
-                ),
-
-                # Clustering Section
-                dmc.Paper(
-                    id='container-cluster',
-                    withBorder=True, shadow="sm", p="md", radius="md",
-                    style={"minHeight": "650px"},
-                    children=[
-                        dmc.Group(justify="space-between", mb="md", children=[
-                            dmc.Group(gap="xs", children=[
-                                DashIconify(icon="solar:widget-linear", color="#339af0"),
-                                dmc.Text("Profiler de Clustering Territorial (K-Means) - Typologie Régionale Globale", fw=700),
-                            ]),
-                            dmc.Badge(
-                                "Modèle Holistique Standardisé (K=4)", 
-                                color="indigo", 
-                                variant="filled", 
-                                size="md", 
-                                radius="sm",
-                                leftSection=DashIconify(icon="solar:settings-bold-duotone", width=14)
-                            )
-                        ]),
-                        dmc.Text(
-                            "Cette typologie classe les 172 territoires (EPCI) d'Auvergne-Rhône-Alpes en 4 grands groupes homogènes, sur la base d'une sélection scientifique de 6 indicateurs transversaux (Social, Santé, Offre de Soins, Démographie et Environnement). Cette vision holistique permet d'identifier les fractures régionales et de cibler des recommandations d'action publique sur-mesure.",
-                            size="xs", c="dimmed", mb="lg"
-                        ),
-                        dmc.Grid(
-                            gutter="md",
-                            children=[
-                                # Non-interactive static map (5 columns wide)
-                                dmc.GridCol(
-                                    span=5,
-                                    children=[
-                                        dmc.Paper(
-                                            withBorder=True, p="xs", radius="md", bg="white",
-                                            children=[
-                                                dmc.Text("Cartographie des 4 Super-Profils", size="sm", fw=700, ta="center", mb="xs"),
-                                                dcc.Graph(
-                                                    id='cluster-map-graph',
-                                                    style={'height': '540px'},
-                                                    config={'staticPlot': True, 'displayModeBar': False}
-                                                ),
-                                            ]
-                                        )
-                                    ]
-                                ),
-                                # 4 Identity Profiles (7 columns wide)
-                                dmc.GridCol(
-                                    span=7,
-                                    children=[
-                                        html.Div(
-                                            id='cluster-profiles-container', 
-                                            style={'maxHeight': '580px', 'overflowY': 'auto', 'paddingRight': '10px'}
-                                        ),
-                                    ]
-                                )
-                            ]
-                        )
                     ]
                 )
             ]
@@ -1377,19 +1320,44 @@ CLUSTER_COLORS = ['#e03131', '#ff922b', '#fcc419', '#51cf66'] # Rouge, Orange, J
 # --- Jumeaux Statistiques Callbacks ---
 
 @callback(
+    Output("twins-target-select", "data"),
+    Output("twins-target-select", "value"),
+    Input("sidebar-epci-radar", "value"),
+    State("twins-target-select", "value")
+)
+def update_twins_dropdown(epci_codes, current_target):
+    if not epci_codes:
+        return [], None
+    
+    options = []
+    for code in epci_codes:
+        row = gdf_merged[gdf_merged['EPCI_CODE'] == code]
+        if not row.empty:
+            name = row.iloc[0]['nom_EPCI']
+            options.append({"label": name, "value": code})
+    
+    if current_target in epci_codes:
+        new_target = current_target
+    else:
+        new_target = epci_codes[0]
+        
+    return options, new_target
+
+@callback(
     Output('twins-table-container', 'children'),
-    [Input('sidebar-epci-radar', 'value'),
+    [Input('twins-target-select', 'value'),
+     Input('sidebar-epci-radar', 'value'),
      Input('sidebar-filter-social', 'value'), 
      Input('sidebar-filter-offre', 'value'), 
      Input('sidebar-filter-env', 'value'),
      Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
      Input('url', 'pathname')]
 )
-def update_twins_table(epci_codes, social, offre, env, ind, patho, pathname):
+def update_twins_table(target_code, epci_codes, social, offre, env, ind, patho, pathname):
     if pathname not in ['/exploration', '/carte', '/radar']:
         raise dash.exceptions.PreventUpdate
         
-    if not epci_codes:
+    if not epci_codes or not target_code:
         return dmc.Paper(
             p="md", radius="md", withBorder=True, bg="#f8f9fa",
             children=dmc.Text("⚠️ Sélectionnez d'abord un territoire de référence (en cliquant sur la carte ou via le menu de gauche) pour trouver ses jumeaux statistiques.", size="sm", fs="italic", c="dimmed", ta="center")
@@ -1411,9 +1379,6 @@ def update_twins_table(epci_codes, social, offre, env, ind, patho, pathname):
             children=dmc.Text("⚠️ Pour comparer les profils de manière pertinente, veuillez sélectionner au moins une variable de filtre (socio-économique, offre de soins ou environnement) dans le menu de gauche.", size="sm", fs="italic", c="dimmed", ta="center")
         )
         
-    # Primary selected EPCI
-    target_code = epci_codes[0]
-    
     # Check if target exists in dataset
     target_row = gdf_merged[gdf_merged['EPCI_CODE'] == target_code]
     if target_row.empty:
@@ -1556,220 +1521,6 @@ def add_twin_to_radar(n_clicks, current_selection):
         selection = list(selection) + [twin_code]
         return selection
     return no_update
-
-
-# --- Clustering K-Means Global Profiler Callback ---
-
-CLUSTER_COLORS = ['#e03131', '#ff922b', '#fcc419', '#51cf66'] # Rouge, Orange, Jaune, Vert
-
-@callback(
-    [Output('cluster-profiles-container', 'children'),
-     Output('cluster-map-graph', 'figure')],
-    [Input('url', 'pathname')]
-)
-def update_cluster_global(pathname):
-    if pathname not in ['/exploration', '/carte', '/radar']:
-        raise dash.exceptions.PreventUpdate
-    # 6 selected variables
-    global_vars = [
-        'FDep_2021',
-        'APL-med_general_2023',
-        'APL_Cardio_EPCI',
-        'Part de personnes isolées 60 ans et plus',
-        'AIR01',
-        'MORT_CardIsch'
-    ]
-    
-    # Pre-process columns to ensure numeric
-    for col in global_vars:
-        gdf_merged[col] = pd.to_numeric(gdf_merged[col], errors='coerce')
-        gdf_merged[col] = gdf_merged[col].fillna(gdf_merged[col].median())
-        
-    # Calculate regional averages
-    regional_means = {col: gdf_merged[col].mean() for col in global_vars}
-    
-    # 1. Cartography of Global Clusters (Static Map)
-    fig_map = go.Figure()
-    
-    cluster_group_names = {
-        0: "Groupe 1 - Haute Vulnérabilité Sociale & Sanitaire",
-        1: "Groupe 2 - Bassins Industriels et Périurbains : Défi Environnemental",
-        2: "Groupe 3 - Ruralité Vieillissante : Défi d'Accès aux Soins",
-        3: "Groupe 4 - Métropoles Connectées : Favorisé & Équipé"
-    }
-    cluster_names_mapped = gdf_merged['Cluster_Global'].map(cluster_group_names)
-    
-    # Base Choropleth Layer colored by cluster ID
-    fig_map.add_trace(go.Choropleth(
-        geojson=geojson_data,
-        locations=gdf_merged.index.astype(str),
-        z=gdf_merged['Cluster_Global'],
-        colorscale=[[0, '#e03131'], [0.33, '#ff922b'], [0.66, '#fcc419'], [1, '#51cf66']],
-        showscale=False,
-        marker_line_width=0.5,
-        marker_line_color="rgba(255,255,255,0.8)",
-        hoverinfo='text',
-        hovertext=[f"<b>{row['nom_EPCI']}</b><br>Profil : {name}" for name, (_, row) in zip(cluster_names_mapped, gdf_merged.iterrows())],
-        name="Typologie de Cluster"
-    ))
-    
-    # Department outlines
-    fig_map.add_trace(go.Choropleth(
-        geojson=geojson_deps,
-        locations=gdf_deps_4326.index.astype(str),
-        z=[0] * len(gdf_deps_4326),
-        colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
-        showscale=False,
-        marker_line_width=1.2,
-        marker_line_color='rgba(0,0,0,0.5)',
-        hoverinfo='skip'
-    ))
-    
-    # Major Cities Overlay
-    cities = [
-        {"name": "Lyon", "lat": 45.7640, "lon": 4.8357},
-        {"name": "Saint-Étienne", "lat": 45.4397, "lon": 4.3873},
-        {"name": "Grenoble", "lat": 45.1885, "lon": 5.7248},
-        {"name": "Clermont-Ferrand", "lat": 45.7772, "lon": 3.0870},
-        {"name": "Valence", "lat": 44.9333, "lon": 4.8917},
-        {"name": "Annecy", "lat": 45.8992, "lon": 6.1293},
-        {"name": "Chambéry", "lat": 45.5646, "lon": 5.9238},
-        {"name": "Bourg-en-Bresse", "lat": 46.2052, "lon": 5.2258},
-        {"name": "Montluçon", "lat": 46.3401, "lon": 2.6020},
-        {"name": "Aurillac", "lat": 44.9264, "lon": 2.4418},
-        {"name": "Le Puy-en-Velay", "lat": 45.0428, "lon": 3.8829},
-        {"name": "Moulins", "lat": 46.5667, "lon": 3.3333},
-        {"name": "Privas", "lat": 44.7333, "lon": 4.6000},
-    ]
-    
-    fig_map.add_trace(go.Scattergeo(
-        lat=[c["lat"] for c in cities],
-        lon=[c["lon"] for c in cities],
-        text=[c["name"] for c in cities],
-        mode="markers+text",
-        marker=dict(size=4, color="black", opacity=0.7),
-        textposition="top center",
-        textfont=dict(family="Inter, sans-serif", size=8, color="black"),
-        hoverinfo="skip",
-        showlegend=False
-    ))
-    
-    fig_map.update_geos(fitbounds="locations", visible=False)
-    fig_map.update_layout(
-        margin={"r":0, "t":0, "l":0, "b":0},
-        paper_bgcolor='white',
-        dragmode=False
-    )
-    
-    # 2. Generation of the 4 Identity Cards
-    cards_list = []
-    
-    profiles_metadata = {
-        0: {
-            "title": "1. Pôles de Précarité Multi-Dimensionnelle & Désertification",
-            "desc": "Territoires ruraux précarisés, anciens bassins industriels et zones de montagne cumulant de graves difficultés économiques, un fort isolement social des séniors, et un déficit d'accès aux soins de premier recours comme spécialisés, le tout corrélé à une mortalité cardiovasculaire supérieure de 21.0% à la moyenne régionale.",
-            "rec": "📢 Action Publique : Renforcer d'urgence l'accès aux soins de premier recours (Maisons de Santé Pluriprofessionnelles), déployer des dispositifs mobiles (médicobus, téléconsultation) et densifier le soutien social à domicile pour rompre l'isolement des aînés.",
-            "hash": "sante"
-        },
-        1: {
-            "title": "2. Bassins Industriels et Périurbains : Vulnérabilité Environnementale",
-            "desc": "Territoires caractérisés par des niveaux de pollution atmosphérique particulaire (PM2.5) nettement supérieurs à la moyenne régionale (+10.2%). Bien que plus favorisés socialement, ils font face à un accès modéré aux spécialistes (cardiologues) et à une exposition environnementale chronique préoccupante.",
-            "rec": "🌱 Action Publique : Agir sur les sources d'émissions (modernisation du chauffage biomasse, mobilités douces), intensifier le dépistage précoce des maladies cardio-respiratoires et aménager des trames vertes urbaines.",
-            "hash": "env"
-        },
-        2: {
-            "title": "3. Ruralité Vieillissante : Isolement & Éloignement des Spécialistes",
-            "desc": "Territoires de moyenne montagne et de grande ruralité bénéficiant d'une excellente qualité de l'air, mais durement confrontés au vieillissement démographique et à l'isolement social des aînés (+7.4% d'isolement). La problématique majeure y est la très faible accessibilité aux spécialistes (-42.2% d'accès aux cardiologues).",
-            "rec": "🚗 Action Publique : Financer des navettes de santé solidaires pour lever le frein à la mobilité vers les spécialistes, soutenir les chantiers de télémédecine et les délégations de tâches (Infirmières en Pratique Avancée).",
-            "hash": "socio"
-        },
-        3: {
-            "title": "4. Métropoles Connectées : Capital Social & Médical Protecteur",
-            "desc": "Grands pôles urbains et couronnes résidentielles aisées bénéficiant d'un niveau socio-économique favorable (-28.1% de précarité FDep) et d'un maillage médical solide, agissant comme d'excellents facteurs protecteurs, en dépit d'une exposition moyenne à la pollution de l'air liée à la densité métropolitaine.",
-            "rec": "🏥 Action Publique : Capitaliser sur la forte densité médicale locale pour structurer des actions d'éducation thérapeutique du patient (ETP), organiser la prévention active en entreprise, et fluidifier le lien ville-hôpital.",
-            "hash": "sante"
-        }
-    }
-    
-    # Helper to generate variable comparison row
-    def make_comp_row(col, cluster_val, regional_val):
-        label = variable_dict.get(col, col)
-        unit = unit_dict.get(col, "")
-        sens = sens_dict.get(col, -1) # -1 = higher is worse, 1 = higher is better
-        
-        diff_pct = ((cluster_val - regional_val) / regional_val) * 100 if regional_val != 0 else 0
-        
-        if sens == -1:
-            is_vulnerable = cluster_val > regional_val
-        else:
-            is_vulnerable = cluster_val < regional_val
-            
-        color = "#e03131" if is_vulnerable else "#2b8a3e"
-        arrow = "↑" if cluster_val > regional_val else "↓"
-        diff_text = f"{arrow} {abs(diff_pct):.1f}%" if abs(diff_pct) >= 0.1 else "="
-        
-        return dmc.Group(
-            justify="space-between", mb=6,
-            children=[
-                dmc.Text(label, size="xs", fw=600, style={"maxWidth": "60%"}),
-                dmc.Group(gap="xs", children=[
-                    dmc.Text(f"{cluster_val:.2f} {unit}" if abs(cluster_val) < 5 else f"{cluster_val:.1f} {unit}", size="xs", fw=800, c=color),
-                    dmc.Text(f"(Moy: {regional_val:.1f})", size="10px", c="dimmed"),
-                    dmc.Badge(diff_text, size="xs", variant="light", color="red" if is_vulnerable else "green")
-                ])
-            ]
-        )
-        
-    for c in range(4):
-        c_df = gdf_merged[gdf_merged['Cluster_Global'] == c]
-        meta = profiles_metadata[c]
-        color_c = CLUSTER_COLORS[c]
-        
-        # Build list of comparison rows
-        comp_rows = []
-        for col in global_vars:
-            c_val = c_df[col].mean()
-            r_val = regional_means[col]
-            comp_rows.append(make_comp_row(col, c_val, r_val))
-            
-        card = dmc.Card(
-            withBorder=True, radius="md", mb="md", shadow="xs",
-            style={"borderLeft": f"5px solid {color_c}", "backgroundColor": "#ffffff"},
-            children=[
-                dmc.Group(justify="space-between", mb="xs", children=[
-                    dmc.Text(meta["title"], fw=800, size="md", c="dark.4"),
-                    dmc.Badge(f"{len(c_df)} territoires", color="gray", variant="light")
-                ]),
-                dmc.Text(meta["desc"], size="xs", c="gray.7", style={"lineHeight": "1.5"}, mb="md"),
-                
-                dmc.Divider(mb="sm", variant="dashed"),
-                dmc.Text("Composition statistique & Écart régional :", size="xs", fw=700, c="dimmed", mb="xs"),
-                html.Div(comp_rows, style={"marginBottom": "15px"}),
-                
-                dmc.Paper(
-                    p="xs", radius="sm", bg="indigo.0",
-                    children=[
-                        dmc.Text(meta["rec"], size="xs", fw=600, c="indigo.9", style={"lineHeight": "1.4"}, mb="xs"),
-                        dcc.Link(
-                            dmc.Button(
-                                "Consulter les leviers politiques associés",
-                                size="compact-xs",
-                                variant="subtle",
-                                color="indigo",
-                                leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=12),
-                                className="premium-hover"
-                            ),
-                            href=f"/leviers#{meta['hash']}",
-                            target="_blank",
-                            style={"textDecoration": "none"}
-                        )
-                    ]
-                )
-            ]
-        )
-        cards_list.append(card)
-        
-    return cards_list, fig_map
 
 
 # --- PDF Report Download Callback ---

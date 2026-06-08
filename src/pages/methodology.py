@@ -419,25 +419,34 @@ def update_methodology_tables(dataset_value, available_datasets, pathname):
         else:
             scale = dataset_meta.get("scale", "epci")
             columns_metadata = dataset_meta.get("columns_metadata", {})
-            clean_file_path = dataset_value.replace("raw/", "clean/")
-            
+            local_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", dataset_value)
             try:
-                from src.data import load_user_dataset
-                g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
-                    file_path_in_bucket=clean_file_path,
-                    scale=scale,
-                    columns_metadata=columns_metadata
-                )
+                import pandas as pd
+                df_user = pd.read_csv(local_path)
+                g_base, v_base, c_base, s_base, d_base, u_base, gd_base, sd_base, cl_base = load_data()
+                if "CODE_EPCI" in df_user.columns:
+                    df_user['CODE_EPCI'] = df_user['CODE_EPCI'].astype(str).str.replace('.0', '', regex=False).str.strip()
+                    cols_to_add = [col for col in df_user.columns if col == 'CODE_EPCI' or col not in g_base.columns]
+                    df_user_filtered = df_user[cols_to_add]
+                    g_new = g_base.merge(df_user_filtered, left_on='EPCI_CODE', right_on='CODE_EPCI', how='left')
+                    if 'CODE_EPCI_y' in g_new.columns: g_new = g_new.drop(columns=['CODE_EPCI_y'])
+                    if 'CODE_EPCI_x' in g_new.columns: g_new = g_new.rename(columns={'CODE_EPCI_x': 'CODE_EPCI'})
+                    new_vars = [col for col in df_user.columns if col not in ['CODE_EPCI', 'EPCI_CODE', 'CODE_COMMUNE']]
+                    for var in new_vars:
+                        meta = columns_metadata.get(var, {})
+                        custom_label = meta.get("label", str(var).replace('_', ' ').strip().capitalize())
+                        v_base[var] = f"⭐ {custom_label}"
+                        c_base[var] = meta.get("category", "environnement")
+                        s_base[var] = 0
+                        d_base[var] = f"Indicateur importé : {custom_label}"
+                        u_base[var] = "valeur"
+                        sd_base[var] = "Import local"
+                        cl_base[var] = "99"
+                    g, v, c, s, d, u, gd, sd, cl = g_new, v_base, c_base, s_base, d_base, u_base, gd_base, sd_base, cl_base
+                else:
+                    g, v, c, s, d, u, gd, sd, cl = g_base, v_base, c_base, s_base, d_base, u_base, gd_base, sd_base, cl_base
             except Exception:
-                try:
-                    from src.data import load_user_dataset
-                    g, v, c, s, d, u, gd, sd, cl = load_user_dataset(
-                        file_path_in_bucket=dataset_value,
-                        scale=scale,
-                        columns_metadata=columns_metadata
-                    )
-                except Exception:
-                    g, v, c, s, d, u, gd, sd, cl = load_data()
+                g, v, c, s, d, u, gd, sd, cl = load_data()
                     
     socio_list = get_vars_by_category_dynamic('Socioéco', v, c, cl, d, u, sd, s, g)
     offre_list = get_vars_by_category_dynamic('Offre de soins', v, c, cl, d, u, sd, s, g)
