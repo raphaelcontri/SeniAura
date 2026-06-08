@@ -38,6 +38,17 @@ gdf_deps_4326 = gdf_deps.to_crs(epsg=4326).reset_index()
 gdf_deps_4326['id'] = gdf_deps_4326.index.astype(str)
 geojson_deps = gdf_deps_4326.__geo_interface__
 
+# Save department boundaries to assets once at startup to optimize transfer
+import json
+import os
+assets_dep_path = "assets/departments-ara.geojson"
+if not os.path.exists(assets_dep_path):
+    try:
+        with open(assets_dep_path, "w", encoding="utf-8") as f:
+            json.dump(geojson_deps, f)
+    except Exception as e:
+        print(f"Error saving departments geojson: {e}")
+
 MARKER_COLORS = ['#e03131', '#1971c2', '#2b8a3e', '#e67700', '#9c36b5', '#0b7285', '#5c940d', '#d9480f']
 
 THEME_METADATA = {
@@ -608,8 +619,9 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
 
         # 1. Background layer (All territories) - Using ID for robust mapping
         fig.add_trace(go.Choropleth(
-            geojson=geojson_data,
-            locations=gdf_merged.index.astype(str),
+            geojson="/assets/epci-ara-simplified.geojson",
+            featureidkey="properties.EPCI_CODE",
+            locations=gdf_merged['EPCI_CODE'].astype(str),
             z=[0] * total_epci,
             colorscale=[[0, '#f1f3f5'], [1, '#f1f3f5']],
             showscale=False,
@@ -625,8 +637,9 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
         if not df_focus.empty:
             focus_text = df_focus['nom_EPCI'] + demo_text_series.loc[df_focus.index]
             fig.add_trace(go.Choropleth(
-                geojson=geojson_data,
-                locations=df_focus.index.astype(str),
+                geojson="/assets/epci-ara-simplified.geojson",
+                featureidkey="properties.EPCI_CODE",
+                locations=df_focus['EPCI_CODE'].astype(str),
                 z=df_focus[target],
                 colorscale="Blues",
                 marker_line_width=0.5,
@@ -639,8 +652,9 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
 
         # 3. Department outlines
         fig.add_trace(go.Choropleth(
-            geojson=geojson_deps,
-            locations=gdf_deps_4326.index.astype(str),
+            geojson="/assets/departments-ara.geojson",
+            featureidkey="properties.DEPARTEMEN",
+            locations=gdf_deps_4326['DEPARTEMEN'].astype(str),
             z=[0] * len(gdf_deps_4326),
             colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
             showscale=False,
@@ -660,8 +674,9 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
                 
                 if not df_excl_highlight.empty:
                     fig.add_trace(go.Choropleth(
-                        geojson=geojson_data,
-                        locations=df_excl_highlight.index.astype(str),
+                        geojson="/assets/epci-ara-simplified.geojson",
+                        featureidkey="properties.EPCI_CODE",
+                        locations=df_excl_highlight['EPCI_CODE'].astype(str),
                         z=[1] * len(df_excl_highlight),
                         colorscale=[[0, '#adb5bd'], [1, '#adb5bd']],
                         showscale=False,
@@ -678,8 +693,9 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
             hl = gdf_merged[gdf_merged['EPCI_CODE'].isin(sel)]
             if not hl.empty:
                 fig.add_trace(go.Choropleth(
-                    geojson=geojson_data,
-                    locations=hl.index.astype(str),
+                    geojson="/assets/epci-ara-simplified.geojson",
+                    featureidkey="properties.EPCI_CODE",
+                    locations=hl['EPCI_CODE'].astype(str),
                     z=[1] * len(hl),
                     colorscale=[[0, 'rgba(224, 49, 49, 0.05)'], [1, 'rgba(224, 49, 49, 0.05)']],
                     showscale=False,
