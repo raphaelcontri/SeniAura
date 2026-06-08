@@ -270,8 +270,8 @@ layout = dmc.Container(
                             variant="filled", color="indigo", radius="md", size="lg"
                         ),
                         dmc.Stack(gap=2, children=[
-                            dmc.Text("Espace Réseau Territorial & Collaboratif", fw=800, size="lg", c="indigo.9"),
-                            dmc.Text("Générez une ligne au format Markdown pour soumettre vos propres initiatives locales et enrichir la base commune.", size="sm", c="indigo.7")
+                            dmc.Text("Suggérez un levier d'actions.", fw=800, size="lg", c="indigo.9"),
+                            dmc.Text("Proposez un nouveau levier d’action via le formulaire ci-contre pour inspirer la communauté d’utilisateurs.", size="sm", c="indigo.7")
                         ])
                     ]),
                     dmc.Button(
