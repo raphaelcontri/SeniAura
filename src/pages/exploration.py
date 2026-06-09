@@ -196,7 +196,7 @@ layout = dmc.Container(
                 dmc.Paper(
                     id='container-map',
                     withBorder=True, shadow="sm", p="md", radius="md",
-                    style={"minHeight": "650px"},
+                    style={"minHeight": "600px"},
                     children=[
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
@@ -218,14 +218,31 @@ layout = dmc.Container(
                                 )
                             ),
                         ]),
-                        dmc.Paper(
-                            p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
-                            style={"borderLeft": "4px solid #339af0"},
+                        dmc.Box(
+                            mb="md",
                             children=[
-                                dmc.Text(
-                                    "Visualisez la répartition géographique des indicateurs de santé (AVC, infarctus, etc.) à l'échelle des EPCI d'Auvergne-Rhône-Alpes. Filtrez les zones en ajustant les sliders dans le volet de gauche pour repérer les territoires vulnérables ou prioritaires.",
-                                    size="sm", c="gray.8"
-                                )
+                                dmc.Group(
+                                    gap="xs", mb=5, align="center", wrap="nowrap",
+                                    children=[
+                                        DashIconify(icon="solar:map-point-bold", width=18, color="#339af0"),
+                                        dmc.Text("Territoires EPCI à analyser ou comparer", fw=700, size="sm", c="#2c3e50"),
+                                        dmc.Tooltip(
+                                            multiline=True, w=250, withArrow=True,
+                                            label="Sélectionnez des EPCI via ce menu ou en cliquant directement sur la carte pour les analyser sur le radar comparatif.",
+                                            children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                        )
+                                    ]
+                                ),
+                                dmc.MultiSelect(
+                                    id='sidebar-epci-radar',
+                                    data=[{'label': n, 'value': c} for n, c in zip(gdf_merged['nom_EPCI'], gdf_merged['EPCI_CODE']) if pd.notnull(n)],
+                                    placeholder="Choisir EPCI...",
+                                    searchable=True,
+                                    clearable=True,
+                                    radius="md",
+                                    comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
+                                    styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                                ),
                             ]
                         ),
                         dmc.Grid(
@@ -254,7 +271,7 @@ layout = dmc.Container(
                                         ]),
                                         dcc.Graph(
                                             id='map-graph',
-                                            style={'height': "600px", "width": "100%", "borderRadius": "inherit"}, 
+                                            style={'height': "550px", "width": "100%", "borderRadius": "inherit"}, 
                                             config={
                                                 'displayModeBar': False, 
                                                 'scrollZoom': False,
@@ -270,7 +287,7 @@ layout = dmc.Container(
                                     children=[
                                         dmc.Paper(
                                             withBorder=True, p="md", radius="md", bg="#f8f9fa",
-                                            style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
+                                            style={'minHeight': '550px', 'maxHeight': '550px', 'overflowY': 'auto'},
                                             children=[
                                                 dmc.Group(justify="space-between", mb="xs", children=[
                                                     dmc.Text("INTERPRETATIONS", size="lg", fw=800, c="dark"),
@@ -311,25 +328,28 @@ layout = dmc.Container(
                                 )
                             ]
                         ),
-                        dmc.Space(h="md"),
+                        dmc.Space(h="xs"),
                         html.Div(
                             id="scroll-to-radar-indicator",
                             className="scroll-indicator-container",
                             style={
                                 "display": "flex", 
                                 "flexDirection": "column", 
-                                "alignItems": "center", 
+                                "alignItems": "flex-start", 
                                 "cursor": "pointer",
-                                "opacity": 0.8
+                                "opacity": 0.9,
+                                "marginTop": "5px",
+                                "width": "fit-content",
+                                "transformOrigin": "left center"
                             },
                             n_clicks=0,
                             children=[
-                                dmc.Text("Comparer les territoires (Radar)", size="xs", fw=700, c="blue.7", style={"textTransform": "uppercase", "letterSpacing": "0.8px"}),
-                                DashIconify(
-                                    icon="solar:alt-arrow-down-linear", 
-                                    width=24, 
-                                    color="#339af0",
-                                    className="bounce"
+                                dmc.Button(
+                                    "Poursuivre l'Analyse",
+                                    color="red",
+                                    radius="md",
+                                    className="bounce",
+                                    rightSection=DashIconify(icon="solar:alt-arrow-down-linear", width=16)
                                 )
                             ]
                         )
@@ -348,16 +368,7 @@ layout = dmc.Container(
                                 dmc.Text("Profil Comparatif Radar", id='radar-dynamic-title', fw=700),
                             ]),
                         ]),
-                        dmc.Paper(
-                            p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
-                            style={"borderLeft": "4px solid #339af0"},
-                            children=[
-                                dmc.Text(
-                                    "Comparez les statistiques des territoires sélectionnés par rapport à la moyenne régionale sur les différentes variables d'offre de soins, environnementales ou socio-économiques. Sélectionnez des territoires dans le volet de gauche pour générer le profil et identifier les forces et faiblesses relatives.",
-                                    size="sm", c="gray.8"
-                                )
-                            ]
-                        ),
+
                         html.Div(
                             id='radar-placeholder',
                             style={'display': 'flex', 'height': '600px'},
@@ -417,48 +428,7 @@ layout = dmc.Container(
                     ]
                 ),
 
-                # Twins Section
-                dmc.Paper(
-                    id='container-twins',
-                    withBorder=True, shadow="sm", p="md", radius="md",
-                    style={"minHeight": "300px", "marginTop": "20px"},
-                    children=[
-                        dmc.Group(justify="space-between", mb="md", children=[
-                            dmc.Group(gap="xs", children=[
-                                DashIconify(icon="solar:users-group-two-rounded-bold-duotone", color="#0b7285", width=22),
-                                dmc.Text("Recherche de territoires ayant un diagnostic similaire", fw=700, size="lg"),
-                            ])
-                        ]),
-                        
-                        # Guide d'utilisation en termes simples
-                        dmc.Paper(
-                            p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
-                            style={"borderLeft": "4px solid #0b7285"},
-                            children=[
-                                dmc.Text(
-                                    "Identifiez les territoires ayant des statistiques similaires sur les variables que vous avez sélectionné pour cibler vos échanges de bonnes pratiques. "
-                                    "De cette manière, vous pourrez découvrir quelles politiques (prévention, CPTS, etc.) portent leurs fruits chez vos jumeaux territoriaux "
-                                    "les plus performants et envisagez des actions communes.",
-                                    size="sm", c="gray.8"
-                                )
-                            ]
-                        ),
 
-                        dmc.Group([
-                            dmc.Text("Territoire de référence à comparer :", size="sm", fw=600),
-                            dmc.Select(
-                                id="twins-target-select",
-                                data=[],
-                                placeholder="Choisissez un territoire",
-                                style={"width": 300},
-                                size="sm"
-                            )
-                        ], mb="md"),
-                        
-                        # Conteneur pour la table des jumeaux
-                        html.Div(id='twins-table-container')
-                    ]
-                )
             ]
         ),
     ]
@@ -1387,207 +1357,4 @@ THEME_INTERPRETATIONS = {
 
 CLUSTER_COLORS = ['#e03131', '#ff922b', '#fcc419', '#51cf66'] # Rouge, Orange, Jaune, Vert
 
-# --- Jumeaux Statistiques Callbacks ---
 
-@callback(
-    Output("twins-target-select", "data"),
-    Output("twins-target-select", "value"),
-    Input("sidebar-epci-radar", "value"),
-    State("twins-target-select", "value")
-)
-def update_twins_dropdown(epci_codes, current_target):
-    if not epci_codes:
-        return [], None
-    
-    options = []
-    for code in epci_codes:
-        row = gdf_merged[gdf_merged['EPCI_CODE'] == code]
-        if not row.empty:
-            name = row.iloc[0]['nom_EPCI']
-            options.append({"label": name, "value": code})
-    
-    if current_target in epci_codes:
-        new_target = current_target
-    else:
-        new_target = epci_codes[0]
-        
-    return options, new_target
-
-@callback(
-    Output('twins-table-container', 'children'),
-    [Input('twins-target-select', 'value'),
-     Input('sidebar-epci-radar', 'value'),
-     Input('sidebar-filter-social', 'value'), 
-     Input('sidebar-filter-offre', 'value'), 
-     Input('sidebar-filter-env', 'value'),
-     Input('map-indic-select', 'value'), Input('map-patho-select', 'value'),
-     Input('url', 'pathname')]
-)
-def update_twins_table(target_code, epci_codes, social, offre, env, ind, patho, pathname):
-    if pathname not in ['/exploration', '/carte', '/radar']:
-        raise dash.exceptions.PreventUpdate
-        
-    if not epci_codes or not target_code:
-        return dmc.Paper(
-            p="md", radius="md", withBorder=True, bg="#f8f9fa",
-            children=dmc.Text("⚠️ Sélectionnez d'abord un territoire de référence (en cliquant sur la carte ou via le menu de gauche) pour trouver ses jumeaux statistiques.", size="sm", fs="italic", c="dimmed", ta="center")
-        )
-        
-    # Get active target variable
-    target = f"{ind}_{patho}"
-    if target not in gdf_merged.columns and target == 'INCI_CNR' and 'Taux_CNR' in gdf_merged.columns: 
-        target = 'Taux_CNR'
-        
-    # Combine active variables
-    active_vars = [target] + (social or []) + (offre or []) + (env or [])
-    seen = set()
-    active_vars = [x for x in active_vars if not (x in seen or seen.add(x))]
-    
-    if len(active_vars) < 2:
-        return dmc.Paper(
-            p="md", radius="md", withBorder=True, bg="#f8f9fa",
-            children=dmc.Text("⚠️ Pour comparer les profils de manière pertinente, veuillez sélectionner au moins une variable de filtre (socio-économique, offre de soins ou environnement) dans le menu de gauche.", size="sm", fs="italic", c="dimmed", ta="center")
-        )
-        
-    # Check if target exists in dataset
-    target_row = gdf_merged[gdf_merged['EPCI_CODE'] == target_code]
-    if target_row.empty:
-        return dmc.Paper(
-            p="md", radius="md", withBorder=True, bg="#f8f9fa",
-            children=dmc.Text("Territoire de référence non identifié dans les données.", size="sm", fs="italic", c="dimmed", ta="center")
-        )
-        
-    # Prepare data for all 172 EPCIs
-    df_comp = gdf_merged[['EPCI_CODE', 'nom_EPCI'] + active_vars].copy()
-    
-    # Impute missing values with column median
-    for v in active_vars:
-        df_comp[v] = pd.to_numeric(df_comp[v], errors='coerce')
-        if df_comp[v].isnull().any():
-            median_val = df_comp[v].median()
-            df_comp[v] = df_comp[v].fillna(median_val if pd.notna(median_val) else 0.0)
-            
-    # Standardize data using Z-score (StandardScaler logic)
-    z_data = df_comp[active_vars].copy()
-    for v in active_vars:
-        mean_val = z_data[v].mean()
-        std_val = z_data[v].std()
-        std_val = std_val if std_val != 0 else 1.0
-        z_data[v] = (z_data[v] - mean_val) / std_val
-        
-    # Find target vector
-    target_idx = df_comp[df_comp['EPCI_CODE'] == target_code].index[0]
-    target_vector = z_data.loc[target_idx].values
-    
-    # Calculate Euclidean distance for all other EPCIs
-    distances = []
-    for idx, row in df_comp.iterrows():
-        if row['EPCI_CODE'] == target_code:
-            continue
-        vector = z_data.loc[idx].values
-        dist = np.sqrt(np.sum((target_vector - vector) ** 2))
-        distances.append({
-            'code': row['EPCI_CODE'],
-            'nom': row['nom_EPCI'],
-            'distance': dist
-        })
-        
-    # Sort by distance
-    distances_sorted = sorted(distances, key=lambda x: x['distance'])
-    twins_list = distances_sorted[:3]
-    
-    # Convert distances to resemblance percentages
-    # Resemblance = 100 * exp(-dist / sqrt(N))
-    n_vars = len(active_vars)
-    for t in twins_list:
-        resemblance = 100.0 * np.exp(-t['distance'] / np.sqrt(n_vars))
-        t['resemblance'] = resemblance
-        
-    rows = []
-    for t in twins_list:
-        resemblance = t['resemblance']
-        if resemblance >= 85: badge_color = "teal"
-        elif resemblance >= 70: badge_color = "blue"
-        elif resemblance >= 55: badge_color = "orange"
-        else: badge_color = "gray"
-        
-        is_already_selected = t['code'] in epci_codes
-        btn_text = "Déjà sur le radar" if is_already_selected else "Comparer sur le radar"
-        
-        rows.append(
-            dmc.TableTr([
-                dmc.TableTd(dmc.Text(t['nom'], fw=700, size="sm")),
-                dmc.TableTd(dmc.Badge(f"{resemblance:.1f} %", color=badge_color, variant="filled", size="sm")),
-                dmc.TableTd(
-                    dmc.Button(
-                        btn_text, 
-                        id={'type': 'analyze-twin-btn', 'index': t['code']},
-                        variant="light" if not is_already_selected else "outline", 
-                        color="indigo" if not is_already_selected else "gray",
-                        size="compact-xs", 
-                        disabled=is_already_selected,
-                        rightSection=DashIconify(icon="solar:chart-square-bold", width=12),
-                        radius="md",
-                        className="premium-hover" if not is_already_selected else None
-                    )
-                )
-            ])
-        )
-        
-    head = dmc.TableThead(
-        dmc.TableTr([
-            dmc.TableTh("Territoire Jumeau (Même profil structural)"),
-            dmc.TableTh("Taux de ressemblance"),
-            dmc.TableTh("Action comparative"),
-        ])
-    )
-    
-    body = dmc.TableTbody(rows)
-    target_name = target_row['nom_EPCI'].values[0]
-    
-    return dmc.Paper(
-        p="md", radius="md", withBorder=True, bg="white",
-        children=[
-            dmc.Group(gap="xs", mb="sm", children=[
-                DashIconify(icon="solar:link-bold-duotone", color="teal", width=18),
-                dmc.Text(f"Territoires statistiquement les plus proches de : {target_name}", fw=700, size="sm")
-            ]),
-            dmc.Text(
-                f"Ces 3 territoires partagent un profil de données similaire à celui de {target_name} "
-                f"sur les {n_vars} indicateurs sélectionnés (calculé à partir des écarts à la moyenne régionale). "
-                "Cliquer sur « Comparer sur le radar » permet de visualiser leurs courbes comparatives.",
-                size="xs", c="dimmed", mb="md"
-            ),
-            dmc.Table([head, body], striped=True, highlightOnHover=True)
-        ]
-    )
-
-
-@callback(
-    Output('sidebar-epci-radar', 'value', allow_duplicate=True),
-    Input({'type': 'analyze-twin-btn', 'index': ALL}, 'n_clicks'),
-    State('sidebar-epci-radar', 'value'),
-    prevent_initial_call=True
-)
-def add_twin_to_radar(n_clicks, current_selection):
-    ctx = dash.callback_context
-    if not ctx.triggered:
-        return no_update
-        
-    triggered_id_str = ctx.triggered[0]['prop_id'].split('.')[0]
-    import json
-    try:
-        id_dict = json.loads(triggered_id_str)
-        twin_code = id_dict['index']
-    except Exception:
-        return no_update
-        
-    triggered_val = ctx.triggered[0]['value']
-    if not triggered_val:
-        return no_update
-        
-    selection = current_selection or []
-    if twin_code not in selection:
-        selection = list(selection) + [twin_code]
-        return selection
-    return no_update

@@ -1,9 +1,9 @@
 **CardiAura** est la plateforme d'**intelligence territoriale** au service de la santé en **Auvergne-Rhône-Alpes**. Conçu pour les décideurs, cet outil de pilotage permet de transformer les données de santé en **leviers d'actions concrets et ciblés** à l'échelle fine de chaque EPCI.
 
-Face au défi majeur des maladies **cardio-neuro-vasculaires (CNV)** - enjeux de santé majeurs liés aux déterminants sociaux et environnementaux de santé - le dispositif s'articule autour de **trois modules clés** (onglet Exploration) :
+Face au défi majeur des maladies **cardio-neuro-vasculaires (CNV)** - enjeux de santé majeurs liés aux déterminants sociaux et environnementaux de santé - le dispositif s'articule autour de **trois modules clés** :
 - 🗺️ Une **carte interactive dynamique** pour révéler instantanément les vulnérabilités de vos territoires grâce à des filtres avancés.
 - 📊 Un **radar comparatif** pour analyser, mesurer et comparer les profils de vos EPCI par rapport aux moyennes régionales.
-- 👥 Une **recherche de jumeaux territoriaux** pour identifier les territoires aux profils similaires, s'inspirer de leurs bonnes pratiques (CPTS, prévention) et initier des collaborations concrètes.
+- 💡 Une sélection de **leviers d'actions** ciblés pour chaque EPCI selon ses vulnérabilités, fondés sur la littérature scientifique et les retours d'expérience pour guider les politiques de prévention.
 
 
 > Quel est l'objectif de ce dashboard ? 

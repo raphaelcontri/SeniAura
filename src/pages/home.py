@@ -249,7 +249,7 @@ layout = dmc.Container(
                 variant="separated",
                 radius="md",
                 chevronPosition="right",
-                value=parts[1].split("\n", 1)[0] if len(parts) > 1 else None,
+                value=None,
                 styles={
                     "item": {
                         "border": "1.5px solid #339af0",

@@ -189,50 +189,15 @@ sidebar = dmc.AppShellNavbar(
 
                         # --- Filter Section (Hidden on Home/Methodology) ---
                         html.Div(id='sidebar-filters-section', children=[
-                            # Source de données
-                            dmc.Box(mb="md", children=[
-                                dmc.Group(
-                                    gap="xs", mb=5, align="center",
-                                    children=[
-                                        dmc.ThemeIcon(
-                                            DashIconify(icon="solar:database-bold", width=18),
-                                            variant="light", radius="md", size="md", color="blue"
-                                        ),
-                                        dmc.Text("Source de données", fw=700, size="sm", c="#2c3e50"),
-                                        dmc.Tooltip(
-                                            multiline=True, w=250, withArrow=True,
-                                            label="Sélectionnez le jeu de données actif. Vous pouvez choisir les données régionales par défaut ou vos imports nettoyés.",
-                                            children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
-                                        )
-                                    ]
-                                ),
+                            # Source de données (hidden to preserve callbacks)
+                            dmc.Box(style={'display': 'none'}, children=[
                                 dmc.Select(
                                     id='dataset-select',
                                     data=[{'label': '📊 Données régionales par défaut', 'value': 'default'}],
                                     value='default',
-                                    size="sm",
-                                    radius="md",
-                                    comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
-                                    styles={"dropdown": {"backgroundColor": "#f8f9fa", "border": "1px solid #dee2e6"}}
                                 ),
-                                dcc.Link(
-                                    dmc.Button(
-                                        "Importer un CSV (local)",
-                                        id="aside-upload-btn",
-                                        variant="light",
-                                        color="blue",
-                                        fullWidth=True,
-                                        leftSection=DashIconify(icon="solar:cloud-upload-bold", width=14),
-                                        radius="md",
-                                        size="xs",
-                                        style={"marginTop": "5px"}
-                                    ),
-                                    href="/upload",
-                                    style={"textDecoration": "none"}
-                                ),
-                                html.Div(id='delete-dataset-btn-container', style={'marginTop': '10px'})
+                                html.Div(id='delete-dataset-btn-container')
                             ]),
-                            dmc.Divider(variant="solid", mb="md", c="gray.2"),
                             dmc.Group(
                                 gap="xs", mb=5, align="center",
                                 children=[
@@ -260,7 +225,8 @@ sidebar = dmc.AppShellNavbar(
                                         ], 
                                         value='INCI', size="sm", radius="md",
                                         comboboxProps={"withinPortal": True, "shadow": "md", "offset": 5},
-                                        styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}}
+                                        styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff"}},
+                                        renderOption={"function": "renderIndicatorOption"}
                                     ),
                                 ]),
                                 dmc.Box([
@@ -309,33 +275,7 @@ sidebar = dmc.AppShellNavbar(
                                 ]
                             ),
 
-                            # Socio-Économie group
-                            dmc.Group(
-                                gap="xs", align="center", mb=5, wrap="nowrap",
-                                children=[
-                                    dmc.Text("Socio-Économie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
-                                    dmc.Tooltip(
-                                        multiline=True, w=220, withArrow=True,
-                                        label="Une fois les filtres socio-économiques sélectionnés, vous pouvez changer les valeurs des filtres avec les sliders qui s'affichent automatiquement. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
-                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
-                                    )
-                                ]
-                            ),
-                            dmc.MultiSelect(
-                                id='sidebar-filter-social', 
-                                data=social_options, 
-                                placeholder="Sélectionner...", 
-                                clearable=True, 
-                                searchable=True, 
-                                radius="md", 
-                                mb=5, 
-                                comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
-                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}},
-                                renderOption={"function": "renderVariableOptionWithTooltip"}
-                            ),
-                            dmc.Stack(id='slider-container-social', gap="xs", mb="md", px=10),
-
-                            # Offre de Soins group
+                            # Offre de Soins group (moved up)
                             dmc.Group(
                                 gap="xs", align="center", mb=5, wrap="nowrap",
                                 children=[
@@ -360,6 +300,32 @@ sidebar = dmc.AppShellNavbar(
                                 renderOption={"function": "renderVariableOptionWithTooltip"}
                             ),
                             dmc.Stack(id='slider-container-offre', gap="xs", mb="md", px=10),
+
+                            # Socio-Économie group (moved down)
+                            dmc.Group(
+                                gap="xs", align="center", mb=5, wrap="nowrap",
+                                children=[
+                                    dmc.Text("Socio-Économie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
+                                    dmc.Tooltip(
+                                        multiline=True, w=220, withArrow=True,
+                                        label="Une fois les filtres socio-économiques sélectionnés, vous pouvez changer les valeurs des filtres avec les sliders qui s'affichent automatiquement. Les EPCI qui ne correspondent pas aux plages d'au moins une des variables seront grisés.",
+                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
+                                    )
+                                ]
+                            ),
+                            dmc.MultiSelect(
+                                id='sidebar-filter-social', 
+                                data=social_options, 
+                                placeholder="Sélectionner...", 
+                                clearable=True, 
+                                searchable=True, 
+                                radius="md", 
+                                mb=5, 
+                                comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}},
+                                renderOption={"function": "renderVariableOptionWithTooltip"}
+                            ),
+                            dmc.Stack(id='slider-container-social', gap="xs", mb="md", px=10),
 
                             # Environnement group
                             dmc.Group(
@@ -386,33 +352,6 @@ sidebar = dmc.AppShellNavbar(
                                 renderOption={"function": "renderVariableOptionWithTooltip"}
                             ),
                             dmc.Stack(id='slider-container-env', gap="xs", mb="md", px=10),
-
-                            dmc.Group(
-                                gap="xs", mb=5, align="center", wrap="nowrap",
-                                children=[
-                                    dmc.ThemeIcon(
-                                        DashIconify(icon="solar:map-point-bold", width=20),
-                                        variant="light", radius="md", size="md", color="teal"
-                                    ),
-                                    dmc.Text("EPCI à comparer", fw=700, size="sm", c="#2c3e50", style={"letterSpacing": "0.5px"}),
-                                    dmc.Tooltip(
-                                        multiline=True, w=250, withArrow=True,
-                                        label="Sélectionnez des EPCI via le menu \"Choisir EPCI\" ou en cliquant directement sur la carte. Ils s'ajouteront alors au radar comparatif.",
-                                        children=dmc.ActionIcon(DashIconify(icon="akar-icons:question", width=14), size="xs", variant="subtle", color="gray")
-                                    )
-                                ]
-                            ),
-                            dmc.MultiSelect(
-                                id='sidebar-epci-radar',
-                                data=epci_radar_options,
-                                placeholder="Choisir EPCI...",
-                                searchable=True,
-                                clearable=True,
-                                radius="md",
-                                mb="sm",
-                                comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
-                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
-                            ),
                         ]),
                     ]
                 ),
