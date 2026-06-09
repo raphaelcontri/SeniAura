@@ -1,21 +1,22 @@
-**CardiAura** est un outil de pilotage et de diagnostic territorial dédié à l'**Auvergne-Rhône-Alpes**. Il permet d'identifier des **leviers d'actions concrets** pour les politiques publiques à l'échelle fine des EPCI. 
+**CardiAura** est la plateforme d'**intelligence territoriale** au service de la santé en **Auvergne-Rhône-Alpes**. Conçu pour les décideurs, cet outil de pilotage permet de transformer les données de santé en **leviers d'actions concrets et ciblés** à l'échelle fine de chaque EPCI.
 
-Centré sur les maladies **cardio-neuro-vasculaires (CNV)** - enjeux de santé majeurs liés aux déterminants sociaux et environnementaux de santé - le dispositif s'articule autour de deux outils (onglet Exploration) :
-- Une **carte interactive** pour visualiser les indicateurs et filtres.
-- Un **radar comparatif** pour analyser les profils territoriaux.
+Face au défi majeur des maladies **cardio-neuro-vasculaires (CNV)** - enjeux de santé majeurs liés aux déterminants sociaux et environnementaux de santé - le dispositif s'articule autour de **trois modules clés** (onglet Exploration) :
+- 🗺️ Une **carte interactive dynamique** pour révéler instantanément les vulnérabilités de vos territoires grâce à des filtres avancés.
+- 📊 Un **radar comparatif** pour analyser, mesurer et comparer les profils de vos EPCI par rapport aux moyennes régionales.
+- 👥 Une **recherche de jumeaux territoriaux** pour identifier les territoires aux profils similaires, s'inspirer de leurs bonnes pratiques (CPTS, prévention) et initier des collaborations concrètes.
 
 
 > Quel est l'objectif de ce dashboard ? 
-Le présent site internet se veut être un outil pour les décideurs politiques de la région Auvergne-Rhône-Alpes, permettant :
-- D'identifier les forces et faiblesses des EPCI* en termes de vulnérabilité sanitaire, socio-économique et environnementale.
-- De déterminer des leviers d'actions pour guider le déploiement de politiques publiques de prévention spécifiques aux caractéristiques des territoires.
-- De répondre au constat de P. Peretti-Watel et J.-P. Moatti dans *Le Principe de Prévention* (2009), en évitant une approche "descendante" et uniforme qui ignorerait les spécificités sociales et territoriales des populations, risquant ainsi d'accroître les inégalités de santé au lieu de les réduire.
+Le présent site internet se veut être un outil pour les **décideurs politiques** de la région **Auvergne-Rhône-Alpes**, permettant :
+- D'**identifier les forces et faiblesses des EPCI*** en termes de **vulnérabilité sanitaire, socio-économique et environnementale**.
+- De **déterminer des leviers d'actions** pour guider le déploiement de **politiques publiques de prévention** spécifiques aux caractéristiques des territoires.
+- De répondre au constat de **P. Peretti-Watel et J.-P. Moatti** dans *Le Principe de Prévention* (2009), en évitant une **approche "descendante" et uniforme** qui ignorerait les spécificités sociales et territoriales des populations, risquant ainsi d'**accroître les inégalités de santé** au lieu de les réduire.
 
 
 
-*Un EPCI (Établissement Public de Coopération Intercommunale) est un regroupement de communes qui travaillent ensemble sur des compétences communes (aménagement, santé, environnement, etc.).
-Ils peuvent être des Communautés de Communes (CC) ou des Communautés d'Agglomération (CA).
-C’est l’échelle territoriale utilisée ici pour analyser et comparer les données.*
+*Un **EPCI** (Établissement Public de Coopération Intercommunale) est un **regroupement de communes** qui travaillent ensemble sur des **compétences communes** (aménagement, santé, environnement, etc.).
+Ils peuvent être des **Communautés de Communes (CC)** ou des **Communautés d'Agglomération (CA)**.
+C’est l’**échelle territoriale** utilisée ici pour analyser et comparer les données.*
 
 
 > Prise en main
@@ -67,6 +68,19 @@ Ce dashboard a été développé en un temps réduit avec des ressources limité
 - **Intégrer des dynamiques temporelles**.
 
 - **Segmenter les territoires par clustering** afin de définir des profils types, facilitant ainsi la mutualisation de politiques publiques adaptées plutôt qu'une approche individualisée par EPCI.
+
+- **Intégrer de nouvelles variables comportementales et cliniques** (telles que le **tabac**, l'**alcool**, la **sédentarité**, l'**obésité**, l'**hypertension artérielle** et le **cholestérol**) pour enrichir l'analyse des facteurs de risque.
+
+
+> Limites de ce dashboard
+Malgré la richesse des indicateurs proposés, cet outil présente plusieurs limites méthodologiques et techniques :
+
+- **Données comportementales et cliniques manquantes** : L'outil ne dispose pas actuellement d'accès direct à des variables clés sur les modes de vie et la santé individuelle (ex. : **tabac, alcool, sédentarité, obésité, hypertension artérielle, cholestérol**), qui sont pourtant des facteurs de risque majeurs des maladies CNV.
+- **Accès limité aux données des Outre-mer** : Les bases de données nationales centralisées présentent souvent des **données lacunaires, incomplètes ou non harmonisées** pour les territoires d'Outre-mer (DROM), ce qui rend difficile leur inclusion et comparaison équitable dans l'outil.
+- **Granularité territoriale (Échelle EPCI)** : Bien que le maillage EPCI offre une vision territoriale fine, il peut masquer des **disparités infracommunales importantes** (ex. : contrastes profonds entre quartiers prioritaires de la ville et zones résidentielles aisées d'une même communauté d'agglomération).
+- **Temporalité statique** : Les données affichées correspondent à des moyennes temporelles (ex. : 2021-2023) et forment un **instantané statique**, empêchant pour le moment d'analyser l'évolution des tendances de santé à long terme ou l'impact récent d'une politique publique.
+- **Corrélation n'est pas causalité** : Le croisement des indicateurs de santé avec les variables environnementales ou socio-économiques montre des **associations géographiques**, mais ne permet pas de prouver un lien de causalité directe à l'échelle individuelle (risque de "biais écologique").
+- **Fiabilité et actualisation des sources tierces** : L'outil dépend entièrement de la mise à jour et de l'exactitude des bases de données publiques externes (SNDS, INSEE, SPF, etc.), qui accusent parfois un **décalage temporel** de plusieurs années.
 
 
 > Qui sommes-nous ?

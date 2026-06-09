@@ -8,7 +8,6 @@ import pandas as pd
 import random
 from sklearn.preprocessing import StandardScaler
 from src.data import load_data
-from src.utils.pdf_generator import generate_territory_pdf
 
 try:
     df_hosp = pd.read_csv("data/hospitals_ara.csv")
@@ -204,7 +203,31 @@ layout = dmc.Container(
                                 DashIconify(icon="solar:map-linear", color="#339af0"),
                                 dmc.Text("Carte ", id='map-dynamic-title', fw=700),
                             ]),
+                            dmc.Tooltip(
+                                label="Nous avons réalisé les analyses nécessaires démontrant qu'il est possible d'étendre cette étude à d'autres régions françaises. Vous pouvez retrouver l'ensemble des variables requises pour cette extension nationale en consultant la FAQ sur la page d'accueil !",
+                                multiline=True,
+                                w=300,
+                                withArrow=True,
+                                children=dmc.Badge(
+                                    "Extension nationale possible",
+                                    color="teal",
+                                    variant="light",
+                                    size="sm",
+                                    radius="md",
+                                    style={"cursor": "pointer"}
+                                )
+                            ),
                         ]),
+                        dmc.Paper(
+                            p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
+                            style={"borderLeft": "4px solid #339af0"},
+                            children=[
+                                dmc.Text(
+                                    "Visualisez la répartition géographique des indicateurs de santé (AVC, infarctus, etc.) à l'échelle des EPCI d'Auvergne-Rhône-Alpes. Filtrez les zones en ajustant les sliders dans le volet de gauche pour repérer les territoires vulnérables ou prioritaires.",
+                                    size="sm", c="gray.8"
+                                )
+                            ]
+                        ),
                         dmc.Grid(
                             gutter="md",
                             style={"flex": 1, "minHeight": 0},
@@ -250,7 +273,7 @@ layout = dmc.Container(
                                             style={'minHeight': '600px', 'maxHeight': '600px', 'overflowY': 'auto'},
                                             children=[
                                                 dmc.Group(justify="space-between", mb="xs", children=[
-                                                    dmc.Text("Interprétations : ", size="lg", fw=800, tt="uppercase", c="dark"),
+                                                    dmc.Text("INTERPRETATIONS", size="lg", fw=800, c="dark"),
                                                     html.Div(id='map-reading-guide', style={'fontSize': '11px', 'color': 'gray'})
                                                 ]),
                                                 html.Div(id='map-stats-header-content'),
@@ -279,6 +302,7 @@ layout = dmc.Container(
                                                         placeholder="Choisir une variable",
                                                         data=[],
                                                         clearable=True,
+                                                        renderOption={"function": "renderVariableOptionWithTooltip"}
                                                     )
                                                 ])
                                             ]
@@ -324,6 +348,16 @@ layout = dmc.Container(
                                 dmc.Text("Profil Comparatif Radar", id='radar-dynamic-title', fw=700),
                             ]),
                         ]),
+                        dmc.Paper(
+                            p="md", radius="md", withBorder=True, bg="#f8f9fa", mb="md",
+                            style={"borderLeft": "4px solid #339af0"},
+                            children=[
+                                dmc.Text(
+                                    "Comparez les statistiques des territoires sélectionnés par rapport à la moyenne régionale sur les différentes variables d'offre de soins, environnementales ou socio-économiques. Sélectionnez des territoires dans le volet de gauche pour générer le profil et identifier les forces et faiblesses relatives.",
+                                    size="sm", c="gray.8"
+                                )
+                            ]
+                        ),
                         html.Div(
                             id='radar-placeholder',
                             style={'display': 'flex', 'height': '600px'},
@@ -392,7 +426,7 @@ layout = dmc.Container(
                         dmc.Group(justify="space-between", mb="md", children=[
                             dmc.Group(gap="xs", children=[
                                 DashIconify(icon="solar:users-group-two-rounded-bold-duotone", color="#0b7285", width=22),
-                                dmc.Text("Recherche de territoires ayant un diagnostic similaire.", fw=700, size="lg"),
+                                dmc.Text("Recherche de territoires ayant un diagnostic similaire", fw=700, size="lg"),
                             ])
                         ]),
                         
@@ -403,9 +437,9 @@ layout = dmc.Container(
                             children=[
                                 dmc.Text(
                                     "Identifiez les territoires ayant des statistiques similaires sur les variables que vous avez sélectionné pour cibler vos échanges de bonnes pratiques. "
-                                    "Découvrez quelles politiques (prévention, CPTS, etc.) portent leurs fruits chez vos jumeaux territoriaux "
+                                    "De cette manière, vous pourrez découvrir quelles politiques (prévention, CPTS, etc.) portent leurs fruits chez vos jumeaux territoriaux "
                                     "les plus performants et envisagez des actions communes.",
-                                    size="xs", c="gray.7"
+                                    size="sm", c="gray.8"
                                 )
                             ]
                         ),
@@ -477,8 +511,46 @@ def update_sliders(social, offre, env, current_vals, current_ids):
             mn_rounded = round(mn, 3 if (mx-mn) < 10 else 1)
             mx_rounded = round(mx, 3 if (mx-mn) < 10 else 1)
             initial_val_rounded = [round(v, 3 if (mx-mn) < 10 else 1) for v in initial_val]
+            
+            # Retrieve category, description, polarity to format tooltip
+            cat = category_dict.get(var, "")
+            friendly_cat = "Socio-Économie" if "socio" in cat.lower() else (
+                "Offre de Soins" if "soins" in cat.lower() or "offre" in cat.lower() else (
+                    "Environnement" if "env" in cat.lower() else (
+                        "Santé" if "sant" in cat.lower() else cat.capitalize()
+                    )
+                )
+            )
+            desc = description_dict.get(var, "Description non disponible.")
+            sens = sens_dict.get(var, 0)
+            if sens == 1:
+                sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
+            elif sens == -1:
+                sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
+            else:
+                sens_msg = ""
+            
+            tooltip_text = f"{label_var} (Indicateur {friendly_cat}) : {desc}{sens_msg}"
+            
             sliders.append(dmc.Box(mb=8, px=0, children=[
-                dmc.Text(label_full, size="10px", fw=600, mb=2, c="dimmed"),
+                dmc.Group(
+                    gap="xs", align="center", mb=2, wrap="nowrap",
+                    children=[
+                        dmc.Text(label_full, size="10px", fw=600, c="dimmed"),
+                        dmc.Tooltip(
+                            label=tooltip_text,
+                            multiline=True,
+                            w=260,
+                            withArrow=True,
+                            children=dmc.ActionIcon(
+                                DashIconify(icon="solar:info-circle-linear", width=14),
+                                size="xs",
+                                variant="subtle",
+                                color="gray"
+                            )
+                        )
+                    ]
+                ),
                 dcc.RangeSlider(
                     id={'type': 'exploration-slider', 'index': var},
                     min=mn_rounded, max=mx_rounded, value=initial_val_rounded,
@@ -531,7 +603,30 @@ def update_highlight_options(social, offre, env, pathname):
         raise dash.exceptions.PreventUpdate
     all_vars = (social or []) + (offre or []) + (env or [])
     if not all_vars: return []
-    return [{'label': variable_dict.get(v, v), 'value': v} for v in all_vars if v in variable_dict]
+    
+    options = []
+    for v in all_vars:
+        if v not in variable_dict: continue
+        label = variable_dict[v]
+        cat_raw = category_dict.get(v, "")
+        friendly_cat = "Socio-Économie" if "socio" in cat_raw.lower() else (
+            "Offre de Soins" if "soins" in cat_raw.lower() or "offre" in cat_raw.lower() else (
+                "Environnement" if "env" in cat_raw.lower() else (
+                    "Santé" if "sant" in cat_raw.lower() else cat_raw.capitalize()
+                )
+            )
+        )
+        desc = description_dict.get(v, "Description non disponible.")
+        sens = sens_dict.get(v, 0)
+        if sens == 1:
+            sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
+        elif sens == -1:
+            sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
+        else:
+            sens_msg = ""
+        tooltip_text = f"{label} (Indicateur {friendly_cat}) : {desc}{sens_msg}"
+        options.append({'label': label, 'value': v, 'tooltip': tooltip_text})
+    return options
 
 # --- Map Callback ---
 @callback(
@@ -747,133 +842,98 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
             dragmode=False
         )
         
-        # Narrative Sentence Generation
-        narrative_children = []
-        if summaries:
-            narrative_children = [dmc.Text("Les territoires qui correspondent à vos filtres sont ceux dont : ", span=True)]
-            for i, s in enumerate(summaries):
-                unit = unit_dict.get(s['id'], "")
-                if i > 0:
-                    narrative_children.append(dmc.Text(" et ", fw=700, c="blue.7", span=True))
-                
-                narrative_children.extend([
-                    dmc.Text(f" la variable {s['label']} ", fw=800, span=True),
-                    dmc.Text(" est entre ", span=True),
-                    dmc.Text(f"{s['val'][0]:.1f}", fw=800, c="blue.9", span=True),
-                    dmc.Text(" et ", span=True),
-                    dmc.Text(f"{s['val'][1]:.1f}", fw=800, c="blue.9", span=True),
-                    dmc.Text(f" (unité : {unit})" if unit else "", span=True),
-                ])
-            narrative_children.append(dmc.Text(".", span=True))
-        
         # Stats UI
         inclus = len(df_focus)
         exclus = total_epci - inclus
         
+        # Build a list of how many EPCIs each variable suppresses
+        if summaries:
+            list_items = []
+            for s in summaries:
+                total_excluded = s['out'] + s['nan']
+                list_items.append(
+                    dmc.Text([
+                        dmc.Text(f"• {s['label']}", fw=600, span=True),
+                        dmc.Text(" : ", span=True),
+                        dmc.Text(f"supprime {total_excluded} EPCI", fw=700, c="red.7" if total_excluded > 0 else "gray.6", span=True),
+                        dmc.Text(f" (dont {s['nan']} données manquantes)" if s['nan'] > 0 else "", size="xs", c="dimmed", span=True)
+                    ], size="sm")
+                )
+            
+            stats_list_paper = dmc.Paper(
+                p="sm", withBorder=True, radius="md", bg="white", mt="sm",
+                children=[
+                    dmc.Text("Impact individuel des filtres sélectionnés :", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb="xs"),
+                    dmc.Stack(gap=2, children=list_items)
+                ]
+            )
+        else:
+            stats_list_paper = None
+
         stats_header = dmc.Paper(
             p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
             children=[
-                dmc.Group(
-                    justify="space-between",
-                    align="center",
+                dmc.Stack(
+                    gap="md",
                     children=[
-                        dmc.Text([
-                            "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
-                            dmc.Text(str(inclus), fw=700, c="blue", span=True), " sont inclus par filtres sélectionnés et ",
-                            dmc.Text(str(exclus), fw=700, c="red", span=True), " sont exclus. Les territoires exclus sont ceux dont les données sont en dehors d'au moins une des plages de variables sélectionnées."
-                        ], size="md", c="gray.9"),
+                        dmc.Stack(
+                            gap=2,
+                            children=[
+                                dmc.Text([
+                                    "Sur ", dmc.Text(str(total_epci), fw=700, span=True), " EPCI en région AURA, ",
+                                    dmc.Text(str(inclus), fw=700, c="blue", span=True), " sont inclus par filtres sélectionnés et ",
+                                    dmc.Text(str(exclus), fw=700, c="red", span=True), " sont exclus."
+                                ], size="md", c="gray.9"),
+                                dmc.Text(
+                                    "Les territoires exclus sont ceux dont les données sont en dehors d'au moins une des plages de variables sélectionnées.",
+                                    size="xs", fs="italic", c="dimmed"
+                                )
+                            ]
+                        ),
                         dcc.Link(
                             dmc.Button(
                                 "Quels leviers d'action pour ces territoires ?", 
                                 variant="outline", 
                                 color="blue", 
                                 size="xs",
+                                fullWidth=True,
                                 leftSection=DashIconify(icon="solar:lightbulb-bold-duotone", width=16),
                                 className="premium-hover"
                             ),
-                            href="/leviers"
+                            href="/leviers",
+                            style={"textDecoration": "none"}
                         )
                     ]
                 )
             ]
         )
         
-        narrative_paper = dmc.Paper(
-            p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
-            children=[
-                dmc.Text(narrative_children, size="md", fw=400, c="gray.9", style={"lineHeight": "1.7"})
-            ]
-        ) if narrative_children else None
-
-        # Descriptions des variables
-        desc_children = []
-        if target:
-            ind_desc = description_dict.get(target, "")
-            if not ind_desc:
-                ind_desc = "Description non disponible."
-            
-            sens = sens_dict.get(target, 0)
-            if sens == 1:
-                sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
-            elif sens == -1:
-                sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
-            else:
-                sens_msg = ""
-                
-            desc_children.append(dmc.Text([
-                dmc.Text(f"{variable_dict.get(target, target)} (Indicateur Santé) : ", fw=700, span=True), 
-                dmc.Text(ind_desc, span=True),
-                dmc.Text(sens_msg, size="xs", fw=600, c="blue.7", span=True)
-            ], size="sm"))
-                
-        for s in summaries:
-            var_desc = description_dict.get(s['id'], "")
-            if not var_desc:
-                var_desc = "Description non disponible."
-            
-            sens = sens_dict.get(s['id'], 0)
-            if sens == 1:
-                sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
-            elif sens == -1:
-                sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
-            else:
-                sens_msg = ""
-                
-            desc_children.append(dmc.Text([
-                dmc.Text(f"{s['label']} : ", fw=700, span=True), 
-                dmc.Text(var_desc, span=True),
-                dmc.Text(sens_msg, size="xs", fw=600, c="blue.7", span=True)
-            ], size="sm"))
-                
+        # Simplified description helper link card
         desc_paper = dmc.Paper(
-            p="md", withBorder=True, radius="md", bg="blue.0", mb="md",
+            p="sm", withBorder=True, radius="md", bg="gray.0",
             children=[
                 dmc.Group(
-                    justify="space-between", align="center", mb="xs",
+                    gap="xs", align="center", wrap="nowrap",
                     children=[
-                        dmc.Text("Descriptions des variables", fw=700),
-                        dcc.Link(
-                            dmc.Button(
-                                "Liste variables et méthodologie",
-                                size="xs",
-                                variant="outline",
-                                color="blue",
-                                radius="md",
-                                leftSection=DashIconify(icon="solar:library-bold-duotone", width=16),
-                                className="premium-hover"
+                        DashIconify(icon="solar:info-circle-bold", color="blue", width=18),
+                        dmc.Text([
+                            "Retrouvez le descriptif détaillé et la méthodologie de l'ensemble des variables sur la ",
+                            dcc.Link(
+                                "page dédiée", 
+                                href="/methodologie", 
+                                style={"color": "#1c7ed6", "fontWeight": 600, "textDecoration": "underline"}
                             ),
-                            href="/methodologie"
-                        )
+                            "."
+                        ], size="sm", c="gray.7")
                     ]
-                ),
-                dmc.Stack(gap="xs", children=desc_children)
+                )
             ]
-        ) if desc_children else None
+        )
 
         if summaries:
             content = dmc.Stack(gap="xs", children=[
                 stats_header,
-                narrative_paper,
+                stats_list_paper,
                 desc_paper
             ])
         else:
@@ -899,8 +959,7 @@ def update_map(ind, patho, slider_vals, epci_selection, highlight_var, show_hosp
      Output('radar-placeholder', 'style'),
      Output('radar-guide-paper', 'style'),
      Output('radar-reading-guide', 'children'),
-     Output('radar-dynamic-title', 'children'),
-     Output('download-pdf-btn', 'disabled')],
+     Output('radar-dynamic-title', 'children')],
     [Input('sidebar-filter-social', 'value'), 
      Input('sidebar-filter-offre', 'value'), 
      Input('sidebar-filter-env', 'value'),
@@ -921,9 +980,8 @@ def update_radar(social, offre, env, epci_codes, ind, patho, pathname):
     seen = set()
     selected_vars_unique = [x for x in selected_vars if not (x in seen or seen.add(x))]
     
-    # Revert to original: only show if at least 3 variables are selected
     if len(selected_vars_unique) < 3:
-        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées", True
+        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", "Radar comparatif par rapport à la moyenne régionale des variables sélectionnées"
     
     selected_vars = selected_vars_unique
     
@@ -936,7 +994,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho, pathname):
     dynamic_title = f"Radar comparatif{names_str} par rapport à la moyenne régionale des variables sélectionnées"
 
     if not selected_vars: 
-        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", dynamic_title, True
+        return go.Figure(), {'display': 'none'}, {'display': 'none'}, {'display': 'flex', 'height': '600px'}, {'display': 'none'}, "", dynamic_title
     
     fig = go.Figure()
     
@@ -1168,7 +1226,6 @@ def update_radar(social, offre, env, epci_codes, ind, patho, pathname):
             style={"minHeight": "100%"},
             children=[
                 dmc.Group(gap="xs", mb="sm", children=[
-                    DashIconify(icon="solar:ranking-bold-duotone", color="#339af0", width=20),
                     dmc.Text("Guide de lecture : Positionnement du territoire au sein de la région", fw=800, size="sm", tt="uppercase"),
                     dmc.Tooltip(
                         label="Comparaison avec les 172 territoires de la région : Rouge/Orange pour les valeurs les plus hautes, Bleu pour les plus basses, Gris pour la moyenne.",
@@ -1205,7 +1262,7 @@ def update_radar(social, offre, env, epci_codes, ind, patho, pathname):
             dmc.Text("Sélectionnez des territoires et des variables dans le menu à gauche pour afficher l'analyse comparative détaillée.", size="sm", fs="italic", c="dimmed", ta="center", mt="xl")
         )
 
-    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, {'display': 'block'}, guide, dynamic_title, (not epci_codes)
+    return fig, {'display': 'block', 'height': '600px'}, {'display': 'flex'}, {'display': 'none'}, {'display': 'block'}, guide, dynamic_title
 
 # --- Scroll Affordance Callback ---
 clientside_callback(
@@ -1534,40 +1591,3 @@ def add_twin_to_radar(n_clicks, current_selection):
         selection = list(selection) + [twin_code]
         return selection
     return no_update
-
-
-# --- PDF Report Download Callback ---
-@callback(
-    Output("download-pdf-data", "data"),
-    Input("download-pdf-btn", "n_clicks"),
-    [State("sidebar-epci-radar", "value"),
-     State("map-indic-select", "value"),
-     State("map-patho-select", "value"),
-     State("sidebar-filter-social", "value"),
-     State("sidebar-filter-offre", "value"),
-     State("sidebar-filter-env", "value")],
-    prevent_initial_call=True
-)
-def download_pdf_report(n_clicks, epci_codes, ind, patho, social, offre, env):
-    if not n_clicks or not epci_codes:
-        return no_update
-        
-    target = f"{ind}_{patho}"
-    if target not in gdf_merged.columns and target == 'INCI_CNR' and 'Taux_CNR' in gdf_merged.columns:
-        target = 'Taux_CNR'
-        
-    selected_vars = [target] + (social or []) + (offre or []) + (env or [])
-    seen = set()
-    selected_vars_unique = [x for x in selected_vars if not (x in seen or seen.add(x))]
-    
-    pdf_stream = generate_territory_pdf(
-        epci_codes=epci_codes,
-        selected_vars=selected_vars_unique,
-        gdf_merged=gdf_merged,
-        variable_dict=variable_dict,
-        unit_dict=unit_dict,
-        sens_dict=sens_dict,
-        category_dict=category_dict
-    )
-    
-    return dcc.send_bytes(pdf_stream.getvalue(), filename="Rapport_Diagnostic_Territorial_SeniAura.pdf")

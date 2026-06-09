@@ -23,11 +23,37 @@ def get_options(target_cats):
             if rank in ['0', '1', '2', '3']:
                 continue
             is_priority = (rank == '67')
-            options.append({'label': label, 'value': col, 'priority': is_priority})
+            
+            # Format tooltip description
+            cat_raw = category_dict.get(col, "")
+            friendly_cat = "Socio-Économie" if "socio" in cat_raw.lower() else (
+                "Offre de Soins" if "soins" in cat_raw.lower() or "offre" in cat_raw.lower() else (
+                    "Environnement" if "env" in cat_raw.lower() else (
+                        "Santé" if "sant" in cat_raw.lower() else cat_raw.capitalize()
+                    )
+                )
+            )
+            desc = description_dict.get(col, "Description non disponible.")
+            sens = sens_dict.get(col, 0)
+            if sens == 1:
+                sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
+            elif sens == -1:
+                sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
+            else:
+                sens_msg = ""
+            
+            tooltip_text = f"{label} (Indicateur {friendly_cat}) : {desc}{sens_msg}"
+            
+            options.append({
+                'label': label, 
+                'value': col, 
+                'priority': is_priority,
+                'tooltip': tooltip_text
+            })
             
     # Sort by priority (True first) then alphabetical
     sorted_options = sorted(options, key=lambda x: (not x['priority'], x['label']))
-    return [{'label': x['label'], 'value': x['value']} for x in sorted_options]
+    return [{'label': x['label'], 'value': x['value'], 'tooltip': x['tooltip']} for x in sorted_options]
 
 social_options = get_options(['socioéco'])
 offre_options = get_options(['offre de soins'])
@@ -238,7 +264,25 @@ sidebar = dmc.AppShellNavbar(
                                     ),
                                 ]),
                                 dmc.Box([
-                                    dmc.Text("Pathologie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed", mb=5),
+                                    dmc.Group(
+                                        gap="xs", align="center", mb=5, wrap="nowrap",
+                                        children=[
+                                            dmc.Text("Pathologie", size="xs", fw=700, tt="uppercase", lts=1, c="dimmed"),
+                                            dmc.Tooltip(
+                                                id="main-indicator-tooltip",
+                                                label="",
+                                                multiline=True,
+                                                w=260,
+                                                withArrow=True,
+                                                children=dmc.ActionIcon(
+                                                    DashIconify(icon="solar:info-circle-linear", width=14),
+                                                    size="xs",
+                                                    variant="subtle",
+                                                    color="gray"
+                                                )
+                                            )
+                                        ]
+                                    ),
                                     dmc.Select(
                                         id='map-patho-select', 
                                         data=[{'label': 'AVC', 'value': 'AVC'},{'label': 'Cardiopathie Ischémique', 'value': 'CardIsch'},{'label': 'Insuffisance Cardiaque', 'value': 'InsuCard'}], 
@@ -286,7 +330,8 @@ sidebar = dmc.AppShellNavbar(
                                 radius="md", 
                                 mb=5, 
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
-                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}},
+                                renderOption={"function": "renderVariableOptionWithTooltip"}
                             ),
                             dmc.Stack(id='slider-container-social', gap="xs", mb="md", px=10),
 
@@ -311,7 +356,8 @@ sidebar = dmc.AppShellNavbar(
                                 radius="md", 
                                 mb=5, 
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
-                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}},
+                                renderOption={"function": "renderVariableOptionWithTooltip"}
                             ),
                             dmc.Stack(id='slider-container-offre', gap="xs", mb="md", px=10),
 
@@ -336,7 +382,8 @@ sidebar = dmc.AppShellNavbar(
                                 radius="md", 
                                 mb=5, 
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
-                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
+                                styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}},
+                                renderOption={"function": "renderVariableOptionWithTooltip"}
                             ),
                             dmc.Stack(id='slider-container-env', gap="xs", mb="md", px=10),
 
@@ -366,20 +413,6 @@ sidebar = dmc.AppShellNavbar(
                                 comboboxProps={"withinPortal": True, "dropdownPosition": "bottom", "shadow": "xl", "transitionProps": {"transition": "pop-top-left", "duration": 200}, "offset": 7},
                                 styles={"dropdown": {"backgroundColor": "#e7f5ff", "border": "1px solid #d0ebff", "boxShadow": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"}}
                             ),
-                            dmc.Button(
-                                "Télécharger le rapport PDF",
-                                id="download-pdf-btn",
-                                variant="light",
-                                color="indigo",
-                                fullWidth=True,
-                                leftSection=DashIconify(icon="solar:download-minimalistic-bold", width=16),
-                                radius="md",
-                                size="sm",
-                                className="premium-hover",
-                                disabled=True,
-                                style={"marginTop": "15px"}
-                            ),
-                            dcc.Download(id="download-pdf-data"),
                         ]),
                     ]
                 ),
@@ -1008,6 +1041,30 @@ def execute_dataset_deletion(confirm_clicks, target_dataset, session_data, curre
         
         next_refresh = (current_refresh or 0) + 1
         return False, [], "default", next_refresh, updated_local_datasets
+
+
+@app.callback(
+    Output("main-indicator-tooltip", "label"),
+    [Input("map-indic-select", "value"),
+     Input("map-patho-select", "value")]
+)
+def update_main_indicator_tooltip(ind, patho):
+    target = f"{ind}_{patho}"
+    if target == 'INCI_CNR': target = 'Taux_CNR'
+    
+    friendly_cat = "Santé"
+    label_var = variable_dict.get(target, target)
+    desc = description_dict.get(target, "Description non disponible.")
+    sens = sens_dict.get(target, 0)
+    
+    if sens == 1:
+        sens_msg = " (Plus cette variable est élevée, moins le territoire est vulnérable)"
+    elif sens == -1:
+        sens_msg = " (Plus cette variable est élevée, plus le territoire est vulnérable)"
+    else:
+        sens_msg = ""
+        
+    return f"{label_var} (Indicateur {friendly_cat}) : {desc}{sens_msg}"
 
 
 if __name__ == '__main__':
